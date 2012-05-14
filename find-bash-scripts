@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# find all bash files under current path
+find path "./.*" -prune -o -type f -print0 | xargs -0 -I {} sh -c 'head -qn1 "{}" | grep -q 'bash' && echo "{}" '
+

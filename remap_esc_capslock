@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# to find which keycodes and action names you want to remap
+# xev
+
+# remap them for current session. 
+
+# Here, 9 was the keycode for Escape, and 66 was the keycode for Caps_Lock, and I wanted to change them.
+
+# Reason to do so:
+# Caps lock is next to useless, but is on a very easy to reach place, Esc is fundamental
+# key to VIM editing, and since it does not trigger the caps lock state, can be used
+# to do nice things with some keyboard macro program such as Autokeys)
+xmodmap -e "keycode 9 = Caps_Lock"
+xmodmap -e "keycode 66 = Escape"
+
+# save the current keymap configuration in your home dir under a file named .Xmodmap
+cd ~
+xmodmap -pke > .Xmodmap
+
+# make the changes load every time you log
+# to do so, create a file called .xinitrc containing exactly "xmodmap .Xmodmap":
+echo "xmodmap .Xmodmap" > .xinitrc
+

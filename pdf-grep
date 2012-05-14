@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c 'pdftotext -q -l 20 "{}" /tmp/out && grep -i isbn /tmp/out'

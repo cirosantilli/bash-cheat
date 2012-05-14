@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+# TODO: NOT WORKING!!!
+
+parentdirname=${PWD##*/}
+echo $parentdirname
+cd ..
+wait
+restore_backup $parentdirname
+wait
+cd $parentdirname
+wait
+ls

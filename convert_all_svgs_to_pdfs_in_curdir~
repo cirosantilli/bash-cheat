@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+for F in *; do N=${F%.*}; inkscape -f $N.svg -A $N.pdf; done

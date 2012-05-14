@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+usage()
+{
+	echo "Usage: sed_multifile dotext find replace dosubstitute"
+}
+
+# argument checking
+if [ $# -ne 4 ]
+then
+	usage
+	exit
+fi
+
+# decide write or not
+if [ $4 -eq 0 ]
+then # don't replace
+	find . -type f -name "*$1" -print0 | xargs -0 sed -n "s/$2/$3/gp"
+else # replace
+	find . -type f -name "*$1" -print0 | xargs -0 sed -i "s/$2/$3/g"
+fi

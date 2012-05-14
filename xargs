@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# xargs with multiple commands per line
+find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c 'pdftotext -l 20 "{}" /tmp/out && grep isbn /tmp/out'

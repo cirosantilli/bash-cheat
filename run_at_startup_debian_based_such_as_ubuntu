@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+gksudo gedit /etc/rc.local

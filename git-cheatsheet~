@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+#- configuration
+git config --global user.name "Ciro Duran Santilli"
+git config --global user.email "ciro.santilli@gmail.com"
+
+#- initialize a repo
+git init
+git remote add github git@github.com:cirosantilli/python.git # add 'python' github repo under name github
+
+#- add
+find . -name '*.py' -exec git add {} +
+find . -name '*.py' | xargs git add
+
+#- rename
+git mv -f old.py new.py
+git rm --cached # remove from track, but keep source
+
+#- commit
+git commit -a
+git commit -a -v # commit all and view differences and view log
+git commit -m 'commit message'
+
+# see tracked changes and untracked files
+git status
+
+# time travel
+git log 		# see hashes of versions
+git reset -hard 	# go back to last commit and lose all
+git reset -hard [START OF HASH]	# go back to hashe's commit and lose all that comes after it
+git checkout master # go back to last  commit and lose changes
+git checkout [START OF HASH] # go back to given Hash and KEEP changes. new commits will start branches
+
+#- pull
+git pull github master
+
+#- push
+git push github master
+
+#- tags
+git tag "v1.3"
+git push --tags

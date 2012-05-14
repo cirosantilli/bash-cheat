@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+#sudo fdisk -l # information about your partitions
+mount_at="/media/OS"
+partition="/dev/sda3"
+
+if [ ! -d $mount_at ] #create mound directory if it doesn't exist
+then
+  mkdir $mount_at
+fi
+
+mount -t ntfs $partition $mount_at

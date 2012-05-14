@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# search criteria
+find . -type f -iname '*.pdf' -o -iname '*.djvu' -iname '*differential*' -iname '*geometry*'
+
+# find xargs combo:
+find . -iname '*.pdf' -print0 | xargs -0 -I {} pdftotext {} /tmp/out
+
+# find all content (HASH) duplicates of file1
+$ find . -xdev -samefile file1
+
+#find all duplicates
+find -not -empty -type f -printf “%s\n” | sort -rn | uniq -d | xargs -I{} -n1 find -type f -size {}c -print0 | xargs -0 md5sum | sort | uniq -w32 --all-repeated=separate

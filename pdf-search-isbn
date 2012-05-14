@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+#touch /tmp/finalout; find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c 'pdftotext -q -l 20 "{}" /tmp/out && grep -i isbn /tmp/out >> /tmp/finalout && echo -e "{}\n" >> /tmp/finalout'; vim /tmp/finalout
+
+out="/tmp/out"
+tmpout="/tmp/tmpout"
+
+touch $out
+find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c "pdftotext -q -l 20 \"{}\" $tmpout && grep -i isbn $tmpout >> $out && echo -e \"{}\n\" >> $out"
+vim $out

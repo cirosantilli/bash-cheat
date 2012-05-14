@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# what should be done every time you start a repository
+git init
+git remote add github git@github.com:cirosantilli/python.git
+find . -name '*.py' -exec git add {} +
+git commit -a -m 'first commit'
+git push github

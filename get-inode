@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# returns the inode of the given file.
+
+return ls -i $1 | grep ^[0-9]* -o

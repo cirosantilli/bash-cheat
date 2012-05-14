@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# finds isbn inside pdfs and prints them to screen
+find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c 'pdftotext -l 20 "{}" /tmp/out && grep -i isbn /tmp/out'
+
+find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c 'pdftotext -q -l 20 "{}" /tmp/out && grep -i isbn /tmp/out'
