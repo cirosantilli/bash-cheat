@@ -1,8 +1,22 @@
 #!/usr/bin/env bash
 
-# what should be done every time you start a repository
+# start a repository here and add all files with given extension to it. 
+# does not look inside hidden folders
+
+if [ ! $# -eq 1  ] 
+then
+	echo "Usage: command-name extension-to-git-add"
+fi
+
 git init
-git remote add github git@github.com:cirosantilli/python.git
-find . -name '*.py' -exec git add {} +
+
+if [ $1 != "sh" && $1 != "bash" ]
+then
+	find . -path "./.*" -prune -o -name '*.$1' -exec git add {} +
+else # for bash scripts
+	find-bash-scripts | xargs -0 git add
+fi
+
 git commit -a -m 'first commit'
+git remote add github git@github.com:cirosantilli/bash.git
 git push github

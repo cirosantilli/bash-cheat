@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
-# find all bash files under current path
-find path "./.*" -prune -o -type f -print0 | xargs -0 -I {} sh -c 'head -qn1 "{}" | grep -q 'bash' && echo "{}" '
+# find all bash files under current path, and return the paths separated by null characters.
+# do not look under hidden folders
+# ignore backup files (terminated by '~')
+
+line1regex='#!/usr/bin/env bash'\
+'|#!/usr/bin/env sh'\
+'|#!/bin/sh'\
+'|#!/bin/bash'
+
+find . -path './.*' -prune -o -type f -regex '.*[^~]' -print0 | xargs -0 -I {} sh -c "head -qn1 '{}' | grep -qE '$line1regex' && echo -n '{}\0'"
 
