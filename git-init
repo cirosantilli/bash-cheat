@@ -12,7 +12,7 @@ git init
 
 if [ $1 != "sh" && $1 != "bash" ]
 then
-	find . -path "./.*" -prune -o -name '*.$1' -exec git add {} +
+	find . -path "./.*" -prune -o -name '*.$1' -exec git add "{}" +
 else # for bash scripts
 	find-bash-scripts | xargs -0 git add
 fi

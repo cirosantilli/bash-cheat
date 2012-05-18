@@ -2,6 +2,7 @@
 
 # find all bash files under current path, and return the paths separated by null characters.
 # do not look under hidden folders
+# do not include hidden files
 # ignore backup files (terminated by '~')
 
 line1regex='#!/usr/bin/env bash'\

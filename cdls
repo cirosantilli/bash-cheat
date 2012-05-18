@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-cd $1
-ls -l

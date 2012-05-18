@@ -9,12 +9,15 @@ git init
 git remote add github git@github.com:cirosantilli/python.git # add 'python' github repo under name github
 
 #- add
-find . -name '*.py' -exec git add {} +
+find . -name '*.py' -exec git add "{}" +
 find . -name '*.py' | xargs git add
 
-#- rename
+#- rename and remove
 git mv -f old.py new.py
-git rm --cached # remove from track, but keep source
+git rm # stop tracking file and permanently delete it on disk. only works if the files has not been modified after last commit. If it has, you must use the -f option.
+git rm --cached # stop tracking file, but keep source
+git rm -f # rm even if the file has been modified after last commit, thus possible resulting is loss of data
+git rm -r # recurse remove into directories
 
 #- commit
 git commit -a

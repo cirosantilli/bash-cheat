@@ -2,7 +2,13 @@
 
 usage()
 {
-	echo "Usage: sed_multifile dotext find replace dosubstitute"
+	echo 'Usage: sed-multifile dotext find replace dosubstitute
+
+Sample calls:
+
+sed-multifile .py oldvarname newvarname 0 # just check, do not replace
+#sed-multifile .py oldvarname newvarname 1 # replace!!!
+'
 }
 
 # argument checking
