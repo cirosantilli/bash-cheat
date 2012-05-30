@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+#------------------------------------------------------------
+
+# install package
+sudo apt-get install <PKG>
+
+# remove package but leave program data (preferences, etc)
+sudo apg-get remove <PKG>
+
+# remove package and program data (preferences, etc)
+sudo apg-get purge <PKG>
+
+# proxy
+# Add the following line to your /etc/apt/apt.conf to enable apt-get through a proxy-server.
+Acquire::http::Proxy "http://proxy.server.here ort/";
+
+# sources list
+cat /etc/apt/sources.list
+
+# find build dependencies
+apt-get build-dep <PKG>

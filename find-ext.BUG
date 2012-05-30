@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Recursivelly finds files with one of the given extensions.
+# Retruns result null separated.
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: find-ext ext...
+
+EXAMPLE
+
+find-ext mp3 flac ogg
+'
+}
+
+# fixed nargs checking
+if [ $# -eq 0 ]
+then
+  usage
+  exit 1
+else
+  EXTS="$@"
+  NAME_EXT_OR="-name $EXTS0" #BUG HERE
+  shift EXTS
+  for EXT in EXTS:
+  do
+    NAME_EXT_OR="$NAME_EXT_OR -o -name $EXT"
+  done
+  find . -type f \( $NAME_EXT_OR \) -print0
+  exit 0
+fi
+
+

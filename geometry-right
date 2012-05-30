@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Arguments given to X server geometry to maximize window to the
+# left half of the screen
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+	echo 'Usage: terminator -geometry=$(geometry-right)' 1>&2
+}
+
+# fixed nargs checking
+if [ $# -ne 0 ]
+then
+  usage
+  exit 1
+else
+  H=$(get-screen-height)
+  W=$(get-screen-width)
+  HALF_W=$((W/2))
+  echo ${HALF_W}x${H}-0+0
+  exit 0
+fi

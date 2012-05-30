@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# 
+#
+#------------------------------------------------------------
+
+# immediate:
+echo TEST
+
+# fixed nargs checking:
+if [ ! $# -eq 2 ]
+then
+echo "Usage:    "
+else
+  echo ACTUAL CODE
+fi
+
+# more complex argument checking and usage:
+# TODO
+
+#1 flow control
+
+#2 if with variable
+var=true
+if $var
+then
+  echo "var is true"
+fi
+
+#1 user input
+
+#2 while read case method
+# ask for user input, break into cases
+# if none of the cases is met, print error message and ask again.
+while true; do
+    read -p "Which case do you want? case a [a], case b [b], case c [c])" yn
+    case $yn in
+      "a" ) echo "Action for case a"; break;;
+      "b" ) echo "Action for case b"; break;;
+      "c" ) echo "Action for case c"; break;;
+      * ) echo "Does not match any of the possible cases. Try again."
+    esac
+done
+
+#2 same as above, but for the ultra common case of yes [Y] no [n] case 
+while true; do
+    read -p "Yes or no? [Y/n]" yn
+    case $yn in
+        Y ) ; break;;
+        n ) ; break;;
+        * ) echo "Please enter either 'Y' or 'n'.";;
+    esac
+done
+
+#2 select case methos
+# ask for user input from a list.
+# user inputs digits 1, 2, 3, to choose between the possibilities in the list.
+echo "Which case do you want?"
+select cid in "c1" "c2" "c3"; do
+  case $yn in
+    "c1" ) echo "Action for case 1"; break;;
+    "c2" ) echo "Action for case 2"; break;;
+    "c3" ) echo "Action for case 3"; break;;
+  esac
+done

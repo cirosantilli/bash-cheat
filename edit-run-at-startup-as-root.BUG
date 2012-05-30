@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+gksudo vim /etc/rc.local

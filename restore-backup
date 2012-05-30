@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+DEFAULT_EXT=".backup"
+
+if [ $# -gt 0 ]
+then
+	original=$1
+
+	# decide backup extension
+	if [ $# -gt 1 ] 
+	then
+		ext=$2
+	else
+		ext=$DEFAULT_EXT
+	fi
+	backup=$original$ext
+
+	if [ -d $backup ] # directory
+	then
+		if [ -d $original ]
+		then
+		  rm -r $original
+		fi
+		cp -r $backup $original
+	elif [ -f $backup ] # file
+		cp -f $backup $original
+	else
+		echo "Backup file $backup does not exist. Nothing will be done."
+	fi
+
+else
+	echo "Usage: restore_backup.sh backup-name [backup-dotext]" 
+fi

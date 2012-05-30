@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Apt-get installs all the dependencies that did not come
+# with my Ubuntu 12.04 and which are necessary to run this library.
+#
+#------------------------------------------------------------
+
+sudo apt-get install realpath

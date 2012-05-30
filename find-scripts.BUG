@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# finds scripts based on extension and shebangs
+# and returns their paths null separated
+#
+# shebangs can be either of type #!/bin/XXX or #!/bin/env/
+#
+# currently supported script types types:
+#
+#   bash : 'sh', 'bash'
+#   python : 'py'
+#   
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: '
+}
+
+# fixed nargs checking
+if [ $# -ne 1 ]
+then
+  usage
+  exit 1
+else
+  EXT="$1"
+  if [ "$EXT" == "sh" && "$EXT" == "bash" ]
+  then
+    RESULT="$(find . -name "*.sh" -o -name "*.bash" -print0)"
+    RESULT="${RESULT}\0$( find-first-line   )"
+  else # other scripts, no shebang support
+    find-bash-scripts | xargs -0 git add
+  fi
+  echo $RESULT
+  exit 0
+fi

@@ -1,0 +1,37 @@
+# Dependencies
+
+Before you use this collection, run
+
+    install-depencies-apt-get
+
+if you have apt-get on your distro so that you have all the necessary dependencies.
+
+# Intro
+
+This is my collection of simple bash scripts and related languages ( only awk for the moment ).
+
+I use this to
+
+- learn bash
+- automate simple repetitive tasks
+
+For more complex tasks, I tend to use python scripts instead.
+
+# File naming convention
+
+## Extensions
+
+- no extension : runnable scripts
+- .bashsrc : sourceable files (to be used in scripts with '.' (dot) operator instead of run directly )
+- .cheatsheet : a cheatsheet ( collection of related commands with simple examples and explanaitions, whole script not to be run directly)
+- .BUG : scripts that contain a known bug. the bug should be indicated in the header.
+- .NOTEST : scripts that have not been tested
+
+## Word separation
+
+'-' (hyphen) as seem to be the most standard for bash scripts
+
+# Abbreviations
+
+- ext : extension
+- opt-ext : optional extension

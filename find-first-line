@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# finds files whose first line match the given extended grep regular expression $1
+
+if [ ! $# -eq 1 ]
+then
+	echo "Usage: find-first-line extended-grep-regexp"
+else # for bash scripts
+	find . -path './.*' -prune -o -type f -regex '.*[^~]' -print0 | xargs -0 -I {} sh -c "head -qn1 '{}' | grep -qE '$line1regex' && echo -n '{}\0'"
+fi

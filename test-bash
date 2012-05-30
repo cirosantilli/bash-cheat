@@ -9,4 +9,22 @@
 #------------------------------------------------------------
 
 # immediate:
-echo TEST
+echo -e '\ntest-bash'
+
+echo -e '\n$1:'
+echo $1
+
+echo -e '\n$2:'
+echo $2
+
+echo -e '\n$#:'
+echo $#
+
+echo -e '\n$@:'
+echo $@
+
+echo -e '\n$*'
+echo $*
+
+echo '\ntest-bash2 $1'
+test-bash2 $1

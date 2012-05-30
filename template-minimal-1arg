@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# 
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: ' 1>&2
+}
+
+# check input
+if [ $# -ne 1 ]
+then
+  usage
+  exit 1
+fi
+
+="$1"
+
+exit 0

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Appends to a file as root.
+#
+# sudo echo 'asdf' >> file does not work
+# because sudo only goes for the echo, and
+# not for the '>>' here.
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+# fixed nargs checking
+if [ $# -ne 2 ]
+then
+  echo "Usage: sudo-echo-to echo-what to-where"
+  exit 1
+else
+  echo "$1" | sudo tee "$2" >> /dev/null
+  exit 0
+fi

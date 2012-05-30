@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Compile latex > pdf and open it in Okular.
+#
+# All output and auxiliary files are created on the same dir as the tex file.
+# If an Okular instance is already open, the pdf file is reloaded. 
+#
+# Synctex and bibtex are used. 
+#
+# This is a rather simple command, and should be overseeded by proper synctex syncing in pdf editors.
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command returns error
+
+if [ ! $# -eq 1 ]
+then
+  echo "Usage: latex-pdf-okular tex-path-or-relpath-opt-ext" 1>&2
+  exit 1
+fi
+
+# make pdf with bibtex and synctex
+INPUT_PATH="$( opt-ext "$1" tex )"
+latex "$INPUT_PATH"
+bibtex "$INPUT_PATH"
+latex "$INPUT_PATH"
+pdflatex -synctex=1 -interaction=nonstopmode "$INPUT_PATH"
+
+# view
+okular --unique "$OUTPUT_PATH" &
+exit 0

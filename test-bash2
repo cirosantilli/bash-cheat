@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Used to check if this folder is in the path or not. 
+#
+#------------------------------------------------------------
+
+echo -e '\ntest-bash2'
+
+echo -e '\n$1:'
+echo $1
+
+echo -e '\n$2:'
+echo $2
+
+echo -e '\n$#:'
+echo $#
+
+echo -e '\n$@:'
+echo $@
+
+echo -e '\n$*'
+echo $*

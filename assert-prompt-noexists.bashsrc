@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Checks if a path exists.
+# If it does, prompts the user if he wants to remove it.
+# If the user decides to remove, exit the program.
+# 
+# This is used in interactive mode when you would like to prompt
+# the user if he wants to overwrite a file/directory which has the
+# same path as the output of the current program should have.
+#
+# When this script is sourced, make sure you have the output which you
+# would like to save ready, because if that fails the user will simply loose
+# a file and nothing will be overwritten. 
+#
+# If the output is too big for RAM memory, first write it to a temporary file and
+# only move this temporary file after this file is sourced.
+#
+#------------------------------------------------------------
+
+# fixed nargs checking:
+if [ ! $# -eq 1 ]
+then
+
+  echo "Usage: . assert-prompt-noexists.bashscr file"
+
+else
+
+  exists=false
+  if [ -f "$1" ]
+  then
+    echo "Output path \"$1\" already exists and is a file."
+    exists=true
+  elif [ -d "$1" ]
+  then
+    echo "Output path \"$1\" already exists and is a directory." 
+    exists=true
+  fi
+  
+  if $exists
+  then
+    while true; do
+    read -p "In order to continue with the operation, you must first delete it. Delete? [Y/n]: " yn
+      case $yn in
+          Y ) rm -rf $1; break;;
+          n ) echo "Operation aborted by user."; exit 1;;
+          * ) echo "Please enter either 'Y' or 'n'.";;
+      esac
+    done
+  fi
+  
+fi

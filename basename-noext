@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# 
+# Extracts the basename of file $1. If it is file, does not include
+# extension.
+#
+# BUG: if no extension does not return '', but the basename
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+echo "Usage: basename-noext file
+
+Sample calls:
+basename-noext /path/to/file.pdf # outputs file"
+}
+
+if [ $# -ne 1 ]
+then
+  usage
+  exit 1
+else
+  BASENAME="$(basename "$1")"
+  BASENAME_NOEXT="${BASENAME%.*}"
+  echo "$BASENAME_NOEXT"
+  exit 0
+fi
+
+
+
+

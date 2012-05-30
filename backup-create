@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+DEFAULT_EXT=".backup"
+
+cp -r $1 ${1}$DEFAULT_EXT

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Prints the '/' terminated full path of the parent directory of the given file or directory.
+#
+# If the path does not exists, return 1 and exit.
+# 
+# If the path does not start by '/', it is assumed to be a relative path to the current directory. '.', '..' and '~' are also resolved as in the terminal.
+#
+# Terminating with '/' is useful beacause it allows to treat '/' as a regular case in other scripts.
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: parent-dir-path "$PATH_OR_RELPATH"
+
+EXAMPLE
+
+cd ~
+parent-dir-path /asdf/qwer # /asdf/
+parent-dir-path /asdf/qwer.asdf # qwer/
+parent-dir-path ./.vim # /home/YOUR_NAME
+parent-dir-path ../ # /
+parent-dir-path ~/.vim # /home/YOUR_NAME/
+parent-dir-path / # /
+parent-dir-path /non-existing # error
+' 1>&2
+}
+
+# check input
+if [ $# -ne 1 ]
+then
+  usage
+  exit 1
+fi
+
+# root. has no parent
+if [ "$PATH" == '/' ]
+then
+  echo "'/' has no parent" 1>&2
+  exit 1
+fi
+
+# absolute path
+PARENT_NO_SLASH="$( dirname "$( realpath "$1" )" )"
+
+# always add '/', which is not done by dirname.
+if [ "$PARENT_NO_SLASH" == '/' ]
+then
+  echo "$PARENT_NO_SLASH"
+else
+  echo "$PARENT_NO_SLASH"/
+fi
+
+exit 0

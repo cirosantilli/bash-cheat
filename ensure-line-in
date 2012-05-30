@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+# If file $2 has a line that matches exactly $1, do nothing. 
+# Else, append \nline $1 to file $2.
+#------------------------------------------------------------
+
+if [ ! $# -eq 2 ]
+then
+  echo "Usage: ensure-line-in line file"
+else
+  if [ $(grep -c "$1" "$2") -eq 0 ]
+  then
+    echo -e "\n$1" >> "$2"
+  fi
+fi

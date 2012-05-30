@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# 95% markdown usage cases: convert asdf.md and save as asdf.html
+# if it does't exist already.
+#
+# DEPENDENCY: sudo apt-get install markdown
+# 
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+if [ ! $# -eq 1 ]
+then
+
+  echo "Usage: markdown-samename name-w-or-wo-md-ext"
+
+else
+  
+  md_path="$1.md"
+  . assert-exists.bashsrc "$md_path"
+
+  if [ ! -f "$md_path" ]
+
+  then
+    echo "The file \"$md_path\" does not exist."
+    exit
+  fi
+  
+  md_path=$(. optional-extension-nomatch-exit.bashsrc "$1" '.md')
+  html_output=$(markdown "$md_path")
+  
+  html_path="$1.html"
+  if $interactive
+  then
+    . assert-prompt-noexists.bashsrc "$html_path"
+  fi
+  echo "$html_output" > "$html_path"
+  
+fi

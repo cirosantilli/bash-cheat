@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+#--------------------------------------------------------
+#
+# WEB DESIGN LAMP Ubuntu 12.04 (Linux Apache + Mysqp + PHP)
+#
+# What I needed to do to get my LAMP working, all automated.
+#
+# This was originally taken from:
+# http://community.linuxmint.com/tutorial/view/486
+# but I have skipped steps that I didn't need to do, and
+# automated all the file editing.
+# 
+# If ever one part of the process does not return sucessful,
+# stop immediately.
+# 
+#--------------------------------------------------------
+
+# apache
+sudo apt-get install apache2 && \
+
+# php
+sudo apt-get install php5 libapache2-mod-php5 && \
+sudo /etc/init.d/apache2 restart && \
+# create a file to test php:
+echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null && \ 
+
+# mysql
+sudo apt-get install mysql-server
+# he will ask you for the password, fill it in
+# mysql -u root # the tutorial said do that, but I didn't need to. This would be for the password.
+
+# phpmyadmin
+sudo apt-get install libapache2-mod-auth-mysql php5-mysql phpmyadmin && \
+# gksudo gedit /etc/php5/apache2/php.ini # according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
+
+# make sure 'Include /etc/phpmyadmin/apache.conf' is in the apache config file
+apacheconf='/etc/apache2/apache2.conf'
+ensureline='Include /etc/phpmyadmin/apache.conf'
+grep $ensureline apacheconf && ( echo $ensureline | sudo tee -a $apacheconf > /dev/null ) && \
+
+# TEST TIME:
+firefox http://localhost/ # to test apache
+firefox http://localhost/testphp.php # to test php
+firefox http://localhost/phpmyadmin # login: 'root'. password: what you entered at installation.

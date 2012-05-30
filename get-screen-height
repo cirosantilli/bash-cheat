@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# 
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+	echo 'Usage: SCREEN_HEIGHT="$(get-screen-height)"' 1>&2
+}
+
+# fixed nargs checking
+if [ $# -ne 0 ]
+then
+  usage
+  exit 1
+else
+  echo "$( xdpyinfo | sed -n 's/^\s*dimensions:\s*[0-9]*\x\([0-9]*\).*/\1/p' )"
+  exit 0
+fi

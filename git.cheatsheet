@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+#1 config
+
+git config --global user.name "Ciro Duran Santilli"
+git config --global user.email "ciro.santilli@gmail.com"
+
+#1 init
+
+git init
+# starts a repository here
+
+GITHUB_ID=cirosantilli
+REPO_NAME=python
+git remote add github "git@github.com:$GITHUB_ID/$REPO_NAME.git"
+# allows to push and pull current repo git@github.com:cirosantilli/python.git repo.
+# this repo gets an alias github. see #1 push for details
+
+#1 add
+
+find . -name '.git' -prune -o -type f -name '*.py' -exec git add "{}" +
+find . -name '.git' -prune -o -type f -name '*.py' -print0 | xargs -0 git add
+# adds all python files to git. ignores the .git folder itself
+# useful if you have files in subfolder (such as python modules). if all files are in the root folder, consider a simpler -maxdepth
+
+#1 move and rename: mv
+
+git mv "$OLD_PATH" "$NEW_PATH"
+# move OLD_PATH to NEW_PATH. if the new path already exists, nothing is done.
+# use -f to force overwrite
+
+git mv -f "$OLD_PATH" "$NEW_PATH"
+# if the new path exists, it is overwritten
+
+#1 remove rm
+
+git rm "$PATH"
+# stop tracking file and permanently delete it on disk.
+# only works if the files has not been modified after last commit. If it has, you must use the -f option.
+# if the file exist but is not being tracked, nothing is done
+
+git rm --cached "$PATH"
+# stop tracking file, but keep source
+
+git rm -f "$PATH"
+# rm even if the file has been modified after last commit, thus possible resulting is loss of data
+# if the file is not being tracked, nothing is done
+
+git rm -r "$PATH"
+# recurse remove into directories
+
+git ls-files --deleted -z | xargs -0 git rm
+# removes only tracked files that were mannualy deleted.
+# this might be useful since if you try to remove an untracked file with git, nothing happens
+
+#1 commit
+
+git commit -a
+git commit -a -v # commit all and view differences and view log
+git commit -m 'commit message'
+
+git status
+# see uncommited file changes and untracked files
+
+#1 time travel
+
+git log	# see hashes of versions
+git reset -hard	# go back to last commit and lose all
+git reset -hard [START OF HASH]	# go back to hashe's commit and lose all that comes after it
+git checkout master # go back to last  commit and lose uncommited changes
+git checkout [START OF HASH] # go back to given Hash and KEEP changes. new commits will start branches
+
+#1 pull
+
+git pull github master
+# pulls from github repository with alias github to here
+# you might need to merge to do this
+
+#1 push
+
+git push github master
+# pushes to github repository with alias github from here
+# you must pull before you push!
+
+#- tags
+git tag "v1.3"
+git push --tags

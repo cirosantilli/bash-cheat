@@ -16,7 +16,7 @@ then
 else # for bash scripts
 	find-bash-scripts | xargs -0 git add
 fi
-
+fin
 git commit -a -m 'first commit'
 git remote add github git@github.com:cirosantilli/bash.git
 git push github

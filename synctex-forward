@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Returns pdf page for a given tex file line number
+#
+# Assumes that all files are in the same folder.
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command returns error
+
+usage()
+{
+	echo 'Usage: $PDF_PAGE="$( synctex-forward "$BASENAME_OPTEXT" )"' 1>&2
+}
+
+if [ $# -ne 2 ]
+then
+  usage
+  exit 1
+fi
+
+BASENAME_OPTEXT="$1"
+TEX_LINE="$2"
+
+# make pdf with bibtex and synctex
+BASENAME_NOEXT="$( basename-noext "$BASENAME_OPTEXT" )"
+TEX_BASENAME="$BASENAME_NOEXT".tex
+PDF_BASENAME="$BASENAME_NOEXT".pdf
+PARENT_DIR="$( parent-path "$TEX_BASENAME" )"
+
+# get synctex pdf position
+SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$PARENT_DIR./$TEX_BASENAME" -o "$PDF_BASENAME" )"
+
+echo "$SYNCTEX_OUT"
+
+# parse synctex output
+#PDF_PAGE="$( synctex-view-extract-page "$SYNCTEX_OUT" )"
+PDF_PAGE="$( echo "$SYNCTEX_OUT" | awk -F: '$1 ~/Page/ { PAGE=$2 } END { print PAGE }' )"
+
+echo "$PDF_PAGE"
+exit 0

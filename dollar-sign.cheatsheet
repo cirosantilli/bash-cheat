@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+#1 acess the value of a variable
+$VAR_NAME
+${VAR_NAME}
+${VAR1}${VAR2} # this is how you concatenate two variables
+
+# some string operations
+${variable#pattern}
+
+#Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
+${variable##pattern}
+#Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+${variable%pattern}
+#Delete the shortest part of pattern that matches the end of variable 's value.Return the rest.
+${variable%%pattern}
+
+# $() evaluate an expression
+# this is how you return values from a function and put them into varibales
+VAR=$(find . -iname 'asdf')
+
+# $((  )) evaluate an arithmetic expression
+$(( 1+1 ))
+
+# (( )) arithmetic test
+(( 1>2 ))
+
+# [ ] test
+
+
+# [[ ]] extended test

@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+
+firefoxdownloadfolder="~/nobackup/download"
+
+# update
+sudo apt-get update && sudo apt-get upgrade
+
+#1 interface tweaking
+
+# ubuntu tweak
+sudo add-apt-repository ppa:tualatrix/ppa
+sudo apt-get update 
+sudo apt-get install ubuntu-tweak
+
+sudo apt-get install myunity
+
+#1 proprietary
+sudo -E wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list && sudo apt-get --quiet update && sudo apt-get --yes --quiet --allow-unauthenticated install medibuntu-keyring && sudo apt-get --quiet update
+sudo apt-get install app-install-data-medibuntu apport-hooks-medibuntu
+
+# codecs # ERROR: mpg123libjpeg-progs cannot locate
+# use TAB to navigate msfonts
+sudo apt-get install non-free-codecs libxine1-ffmpeg gxine mencoder totem-mozilla icedax tagtool easytag id3tool lame nautilus-script-audio-convert libmad0 mpg321 mpg123libjpeg-progs
+
+# skype
+firefox http://www.skype.com/intl/en-us/get-skype/on-your-computer/linux/downloading.ubuntu32
+nautilus $firefoxdownloadfolder
+# Win > startup applications > bash -c "sleep 10 && skype" # must sleep, or interface broken
+
+sudo apt-get install pidgin
+
+# media
+sudo apt-get install vlc
+
+#1 document viewing and converting
+
+# okular
+sudo apt-get install okular
+
+# calibre
+sudo apt-get install calibre
+cd ~ && mkdir nobackup/calibre
+# set library there: Cntr p > ...
+
+# djvu
+# good djvu reader
+sudo apt-get install djview4
+# for djvu conversion
+sudo apt-get install djvulibre-bin libdjvulibre21 okular-extra-backends evince libevdocument1 libevview1 libtiff-tools
+# to convert djvu pdf, to ddjvu -format=pdf in out
+
+#1 file sharing
+
+# torrent deluge
+sudo add-apt-repository ppa:deluge-team/ppa
+sudo apt-get update
+sudo apt-get install deluge
+
+# soulseek client nicotine+ 
+sudo apt-get install nicotine+
+
+sudo apt-get install fdupes # fine command line tool for eliminating duplicates by content
+
+# archieve formats
+sudo apt-get install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack lha arj cabextract file-roller
+
+# dropbox
+noaptget=~/nobackup/noaptget/
+if [ ! -d $noaptget ]; then
+	mkdir $noaptget
+fi
+cd $noaptget && \
+wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf - && \
+./.dropbox-dist/dropboxd &
+
+# gimp DONE
+sudo add-apt-repository ppa:matthaeus123/mrw-gimp-svn
+sudo apt-get update
+sudo apt-get install gimp gimp-data gimp-plugin-registry gimp-data-extras
+
+# inkscape
+sudo apt-get install inkscape
+
+#1 Programming tools
+
+#2 eclipse
+sudo apt-get install eclipse # ERROR cdt tools not good
+#3 MANUAL: install plugins
+# Help > Install new software > Availabe software sources > Check every single case there!
+# Help > Install new software > New sources
+# python: http://pydev.org/updates
+# c and c++: http://download.eclipse.org/tools/cdt/releases/indigo # ERROR
+# webtools: http://download.eclipse.org/webtools/repository/indigo/ # ERROR
+# vim like editing: http://vrapper.sourceforge.net/update-site/stable
+# texclipse: http://texlipse.sourceforge.net
+# color themes: http://eclipse-color-theme.github.com/update
+# 	suggestion: http://www.eclipsecolorthemes.org/?view=theme&id=7915
+# 	how to install: File > Import > Preferences > Select *.epf (Eclipse menus are SO unintuitive...)
+
+#2 git
+sudo apt-get install git
+sudo apt-get install gitk	# a git graphic local branch viewer
+#http://help.github.com/linux-set-up-git/
+
+#2 vim
+sudo apt-get install vim
+sudo apt-get install vim-gtk # gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
+sudo apt-get install exuberant-ctags # to create tags (allows you to jump to definitions for example)
+
+#3 install plugins
+# I prefer to unzip the plugins under .vim, and then add their paths to my .vimrc. This way, if I ever want to remove a plugin, all I need is to remove the folder, and some small code in the vimrc.
+mkdir -p ~./vim
+cd ~/.vim
+
+#4 easytags
+# generates a tags file every seconds to that you can jump to tag definitions
+# (functions, variables, etc.) with Cntl + ]
+wget http://peterodding.com/code/vim/downloads/easytags.zip
+unzip easytags.zip
+rm easytags.zip
+echo ":let g:easytags_file = '~/.vim/easytagstags'" >> ~/.vimrc # save tags in ~/.vim/easytagstags insteaed ot the default ~/
+vim
+
+# latex
+sudo apt-get install vim-addon-manager
+sudo apt-get install vim-latexsuite
+
+vim-addons install latex-suite
+
+#1 Web design lamp (Linux Apache + Mysqp + PHP)
+
+# from tutorial at: http://community.linuxmint.com/tutorial/view/486
+# apache
+sudo apt-get install apache2 && \
+
+# php
+sudo apt-get install php5 libapache2-mod-php5 && \
+sudo /etc/init.d/apache2 restart && \
+# create a file to test php:
+echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null && \ 
+
+# mysql
+sudo apt-get install mysql-server
+# he will ask you for the password, fill it in
+# mysql -u root # the tutorial said do that, but I didn't need to. This would be for the password.
+
+# phpmyadmin
+sudo apt-get install libapache2-mod-auth-mysql php5-mysql phpmyadmin
+# gksudo gedit /etc/php5/apache2/php.ini # according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
+
+# make sure 'Include /etc/phpmyadmin/apache.conf' is in the apache config file
+apacheconf='/etc/apache2/apache2.conf'
+ensureline='Include /etc/phpmyadmin/apache.conf'
+grep $ensureline apacheconf && ( echo $ensureline | sudo tee -a $apacheconf > /dev/null )
+
+# tests:
+# firefox http://localhost/ # to test apache
+# firefox http://localhost/testphp.php # to test php
+# firefox http://localhost/phpmyadmin # login: 'root'. password: what you entered at installation.
+
+# krusader
+sudo apt-get install krusader
+sudo apt-get install konqueror # needs for manage bookmarks. (otherwise, button does nothing)
+sudo apt-get install konsole   # needs for terminal emulator. (otherwise, button does nothing)
+
+# filezilla
+sudo apt-get install deluge
+
+sudo apt-get install texmaker
+
+#1 automation 
+
+# autokey
+sudo apt-add-repository ppa:cdekter/ppa && \
+sudo apt-get install autokey-gtk
+
+# xdotool. can send clicks and manage window properties.
+sudo apt-get install xdotool
+
+sudo apt-get install gparted
+
+# nautilus customize
+sudo add-apt-repository ppa:nae-team/ppa
+sudo apt-get update
+sudo apt-get install nautilus-actions
+sudo apt-get install nautilus-actions-extra
+nautilus -q
+## now you need at least your executable script inside to see it working
+scriptdir="~/.gnome2/nautilus-scripts"
+echo "gnome-terminal" > $scriptdir/test && \
+chmod +x $scriptdir/test
+
+#1 command line utilities that didn't fit anywhere else
+sudo apt-get install realpath # resolves relative paths

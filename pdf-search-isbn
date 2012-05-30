@@ -1,10 +1,36 @@
 #!/usr/bin/env bash
 
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Recursivelly searches for ISBN inside pdf files under current dir,
+# and then opens search result with Vim.
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: pdf-search-isbn'
+}
+
+# fixed nargs checking
+if [ $# -ne 0 ]
+then
+  usage
+  exit 1
+else
+  OUT="/tmp/out"
+  TMPOUT="/tmp/tmpout"
+
+  touch "$OUT"
+  find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c "pdftotext -q -l 20 \"{}\" $TMPOUT && grep -i isbn $TMPOUT >> $OUT && echo -e \"{}\n\" >> $OUT"
+  vim "$OUT"
+  
+  exit 0
+fi
+
 #touch /tmp/finalout; find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c 'pdftotext -q -l 20 "{}" /tmp/out && grep -i isbn /tmp/out >> /tmp/finalout && echo -e "{}\n" >> /tmp/finalout'; vim /tmp/finalout
-
-out="/tmp/out"
-tmpout="/tmp/tmpout"
-
-touch $out
-find . -iname '*.pdf' -print0 | xargs -0 -I '{}' sh -c "pdftotext -q -l 20 \"{}\" $tmpout && grep -i isbn $tmpout >> $out && echo -e \"{}\n\" >> $out"
-vim $out

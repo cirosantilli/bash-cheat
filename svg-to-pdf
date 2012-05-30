@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Converts an svg file $1 with or without extension .svg to a 
+# pdf file in the same dir with the same name.
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+# fixed nargs checking:
+if [ ! $# -eq 1 ]
+then
+  echo "Usage: svg-to-pdf svg-opt-ext
+
+dependency:
+
+  sudo apt-get install inkscape
+"
+  exit 1
+else
+  SVG_PATH=$(opt-ext "$1" svg)
+  PDF_PATH=$(basename-noext "$SVG_PATH")
+  inkscape -f "$SVG_PATH" -A "$PDF_PATH"
+  exit 0
+fi

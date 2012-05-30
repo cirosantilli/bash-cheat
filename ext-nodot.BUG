@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Extracts the extension of path $1.
+#
+# If it has no extension, or if it is a direcotry, returns ''
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+echo "Usage: ext-nodot path
+
+Sample calls:
+ext-nodot /path/to/file.pdf # pdf
+
+"
+}
+
+if [ $# -ne 1 ]
+then
+  usage
+  exit 1
+else
+  BASENAME="$(basename "$1")"
+  EXT="${BASENAME##*.}"
+  echo "$EXT"
+  exit 0
+fi
