@@ -2,6 +2,8 @@
 
 #1 intro
 
+# this is probably the most powerful commands in bash.
+
 # there are basically 3 parts to a find:
 # find <where> <what> <do-what-with-finds>
 
@@ -84,10 +86,11 @@ find . '*/.*' -prune -o ! -name '.*'
 
 #2 -samefile
 
-find . -xdev -samefile file1
+find . -samefile file1
 # find all content (HASH) duplicates of file1
 
-#1 multiple criteria
+find . -xdev file1
+# do not go into other devices ( for instance, inode operations! )
 
 # you can concatenate multiple criteria logically.
 
@@ -139,5 +142,24 @@ find . -iname '*.tex' -print0 | xargs -0 -I '{}' sh -c "bibtex '{}'; pdflatex '{
 # execute multiple commands for each argument of xargs. must use sh -c, it is the only way without an explicit loop.
 # use this only for very simple multiple commands, or you are going to go crazy with quoting. for larger commands use an explicit loop as in next example.
 
-while PATH in ( $( find . -iname '*.tex' -print0 | tr '\0' '" "' ) ); do echo "$PATH"; done
-# BUG!! more complex commands inside a find loop
+# NOTE: i don't know why exaclty, but the following fails:
+# find . | xargs echo `basename {}`
+# this is probably because `basename {}` gets evaluated before {} is replaced by the find result
+# basename {} returns {}, and AFTER THAT {} gets expanded to the find result ( not just the basename therefore )
+# if you want to do stuff like that, a better solution is the 
+
+find . -print0 | while read -d '' FILE; do echo "$FILE"; echo asdf; done
+# THIS is THE more flexible stable way of doing lots of operations in bash I could find
+
+#1 useful calls that use the basic things above
+
+#2 good bye Windows... 
+
+find . -name 'Thumbs.db' -delete 
+# remove all Thumbs.db
+
+find . -name 'AlbumArt*Large.jpg' -exec mv -n '{}' Front.jpg +
+find . -name 'AlbumArt*' -delete
+# remove AlbumArt from music.
+# first make a copy of the cover with name 'Front' if you don't have one yet
+# notice the irony, not only you kill Windows, but you first use their good (but somewhat ugly named and spreading two many files) service of downloading covers for you!

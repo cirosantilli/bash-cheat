@@ -18,5 +18,7 @@ else # for bash scripts
 fi
 fin
 git commit -a -m 'first commit'
-git remote add github git@github.com:cirosantilli/bash.git
+git config --global user.name "Ciro Duran Santilli"
+git config --global user.email ciro.santilli@gmail.com
+git remote add github https://github.com/cirosantilli/latex.git
 git push github

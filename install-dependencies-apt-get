@@ -9,4 +9,8 @@
 #
 #------------------------------------------------------------
 
+# expands paths to full paths. like python abspath
 sudo apt-get install realpath
+
+# if you want to do djvu conversion
+sudo apt-get install djvulibre-bin libdjvulibre21 okular-extra-backends evince libevdocument1 libevview1

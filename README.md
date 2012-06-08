@@ -21,11 +21,17 @@ For more complex tasks, I tend to use python scripts instead.
 
 ## Extensions
 
-- no extension : runnable scripts
-- .bashsrc : sourceable files (to be used in scripts with '.' (dot) operator instead of run directly )
-- .cheatsheet : a cheatsheet ( collection of related commands with simple examples and explanaitions, whole script not to be run directly)
-- .BUG : scripts that contain a known bug. the bug should be indicated in the header.
-- .NOTEST : scripts that have not been tested
+* no extension : runnable scripts
+
+* .bashsrc : sourceable files (to be used in scripts with '.' (dot) operator instead of run directly )
+
+* .cheatsheet : a cheatsheet ( collection of related commands with simple examples and explanaitions, whole script not to be run directly)
+
+* . exts : holds a newline separated list of extensions associated to each file type for use with multiple applications
+
+* .BUG : scripts that contain a known bug. the bug should be indicated in the header.
+
+* .NOTEST : scripts that have not been tested
 
 ## Word separation
 

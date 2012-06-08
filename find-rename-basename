@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Find using bash find and Rename baseneme only using perl regex.
+#
+# dependency=["perl"]
+#
+# I'm having some problems with parameter passing, for the moment this will
+# just be a edit here and run command.
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+#usage()
+#{
+  #echo 'Usage: rename-basename find-paths-and-criteria-no-action.. perl-find-replace doreplace' 1>&2
+#}
+
+#if [ $# -lt 3 ]
+#then
+  #usage
+  #exit 1
+#fi
+
+#PARAMS=("$@")
+#FIND_PARAMS="${PARAMS:-3}"
+#PERL_REGEX="${@:-2}"
+
+#DO_RENAME="${@:-1:1}"
+#if [ "$DO_RENAME" == 0 ]
+#then
+    #DO_RENAME=true
+#else
+    #DO_RENAME=false
+#fi
+
+
+#PATHS="$(find . -iname 'cover.jpg' -o -iname 'front.jpg' -o -iname 'folder.jpg')"
+#PERL_REGEX='s/.*/front.jpg/g'
+PERL_REGEX='s/f(\d)/dig $1/g'
+DO_RENAME=false
+
+-iname 'cover.jpg' -o -iname 'front.jpg' -o -iname 'folder.jpg'| while read -d '' FILE
+do 
+    PARENT_PATH="$(dirname "$FILE")"
+    BNAME="$(basename "$FILE")"
+    NEW_BNAME="$(echo "$BNAME" | perl -p -i -e 's/(\d)/digtit $1/g')"
+    NEW_PATH="$PARENT_PATH/$NEW_BNAME"
+    
+    if $DO_RENAME
+    then
+        mv "$FILE" "$NEW_PATH"
+    else
+        echo "$BNAME"
+        echo "$NEW_BNAME"
+        echo
+    fi
+done
+
+exit 0

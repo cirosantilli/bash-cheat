@@ -4,31 +4,142 @@
 #
 # Ciro D. Santilli
 #
-# This regroups many cheatsheets (standard commands) that were 
-# too small to deserve a whole file for them.
+# Major bash commands and standard utilities.
+# This covers commands briefly only, they may have their own cheatsheet.
 #
 #------------------------------------------------------------
 
+#1 dollar sign
+
+# expands values of variables or expressions, including command line arguments
+
+#2 command line arguments
+
+PDF_PATH="$1" # argument 1
+DJVU_PATH="$2" # argument 2
+
+DJVU_PATH="$*"
+# List of all arguments separated by SPACES.
+# Each argument is NOT quoted individually. 
+
+DJVU_PATH="$@"
+# List of all arguments separated by SPACES.
+# Each argument IS quoted individually.
+
+CUR_PROCESS="$$"
+# returns current process name. Useful to create unique temporary files that have a recognizable component.
+TFILE="/tmp/$(basename $0).$$.tmp"
+
+PDF_PATH="$VAR_NAME"
+PDF_PATH="${VAR_NAME}"
+#2 acess the value of a variable
+
+PDF_PATH="${PATH_NOEXT}.pdf"
+# concatenate a variable and a string 
+
+#2 pattern operations on variables
+
+${variable#pattern}
+# some string operations
+
+${variable##pattern}
+# Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
+
+${variable%pattern}
+#Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+
+${variable%%pattern}
+#Delete the shortest part of pattern that matches the end of variable 's value.Return the rest.
+
+#2 $() evaluate an expression and paste output at position of '$'
+
+# this is how you return values from a function and put them into varibales
+
+VAR="$(find . -name '*.pdf')"
+echo "$VAR"
+
+#2 arithmetic expression
+
+TWO=$(( 1+1 ))
+echo $TWO
+# obviously, bash was not made with this in mind, VERY cumbersome.
+# bash is all about strings and files, not numbers. 
+
+#1 operators
+
+(( 1>2 ))
+# (( )) arithmetic test
+
+
+# [[ ]] extended logical test
+
 #1 data structures
 
-# array
-array1=( itm1 itm2 itm3 )
-echo ${array1[1]}
-echo ${array1[2]}
-echo ${array1[3]}
+#2 array
+
+# declare
+array1=( itm1 itm2 itm3 "itm 4")
 
 array2[1]=itm1
 array2[2]=itm2
 array2[3]=itm3
-echo ${array2[1]}
-echo ${array2[2]}
-echo ${array2[3]}
+
+array2+=("itm 4")
+# append
+
+# access
+
+echo ${array1[1]}
+echo ${array1[2]}
+echo ${array1[3]}
+# the {} is obligatory here
+
+for i in ${array1[*]}; do echo $i; done
+for i in ${array1[@]}; do echo $i; done
+# see the same thing 
+
+for i in "${array1[*]}"; do echo $i; done
+# one line. * with quotes "" expands similary to "$*"
+
+for i in "${array1[@]}"; do echo $i; done
+# four lines. @ with quotes "" expands similary to "$@"
+# quotes for each element are actually put on the terminal
+
+echo ${array[@]:1}
+# subarray
+
+echo ${array[@]:1:2}
+# subarray: from 1, select 2
 
 # associative array
 declare -A aa
 aa=([hello]=world [ab]=cd)
 echo ${aa[hello]}
 echo ${aa[cd]}
+
+#1 strings
+STR='asdf'
+
+echo ${#STR}
+# string length
+
+echo ${STR:2}
+# df
+# extract from char 2
+
+echo ${STR:1:2}
+# sd
+# extract 2 chars starting at 1
+
+echo ${STR:1:1}
+# 's'
+# get char at an index
+
+if [[ "$string" == *My* ]]
+then
+  echo "It's there!";
+fi
+# test is a string contains POSIX expr
 
 #1 control flow
 var=true
@@ -42,9 +153,93 @@ dirname /path/to/dir/or/file # /path/to/dir/or
 dirname / # outputs /
 dirname path/to/dir/or/file # path/to/dir/or
 
-#1 user input
+# sedlike multifile rename
+
+rename -n 's/^([0-9]) /0$1 /g' *.mp3 
+# does not make changes to all .mp3 files
+
+rename 's/^([0-9]) /0$1 /g' *.mp3
+# makes changes
+
+#1 standard utils
+
+#2 xargs
+
+find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
+# xargs find print0 combo.
+# prints: 
+# asdf pdf1
+# asdf pdf2
+# ...
+#
+# print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
+#
+# this executes echo asdf 'pdf1', ..., for EACH pdf file found
+
+find . -name '*.pdf' -print0 | xargs -0 echo asdf
+# prints:
+# asdf pdf1 pdf2 pdf3 ...
+#
+# echo is called only once.
+# each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
+
+find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
+# xargs with multiple commands. must use bash.
+# only use this for very simple commands, or you are in for an escaping hell!
+# use the next pattern instead: TODO
+
+while IFS= read -r -u3 -d $'\0' FILE; do
+  echo "$FILE"
+done 3< <(find /tmp -type f -print0)
+# the only thing tha breaks this is having programs that use 3<. godlike
+
+find . -print0 | while read -d '' FILE
+do
+  echo -v "$file"
+done
+
+#2 mktemp
+
+TFILE="$(mktemp)"
+echo "$TFILE"
+# creates a temporary file and returs its name
+
+#2 system date and time settings.
+
+sudo date
+# get system date
+
+sudo date -s "1 JUN 2012 09:30:00"
+# set system date
+
+TIME_STAMP=`date +%Y-%m-%d-%H-%M-%S`
+
+sudo hwclock --show
+# see hardware clock
+
+sudo hwclock --systohc
+# sync hardware clock to system clock
+
+$TIMEZONE_LOCATION=/usr/share/zoneinfo
+cd $TIMEZONE_LOCATION
+ls
+$TIMEZONE_NAME=
+cp $TIMEZONE_LOCATION/$TIMEZONE_NAME /etc/localtime
+# set you time zone
+
+# on dual boot with windows there are conflicts because Windows uses local time, and Linux UTC (more logical...). you must either tell Linux to use local, or better, Windows to use UTC
+
+# id3tool get id3 tags info (for mp3 for example)
+TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
+ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+ALBUM="`id3tool "$1" | grep '^Album:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+YEAR="`id3tool "$1" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
+
+install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
 
 #2 while read case method
+
 # ask for user input, break into cases
 # if none of the cases is met, print error message and ask again.
 while true; do
@@ -67,7 +262,68 @@ while true; do
     esac
 done
 
+#1 files compresssion
+
+# the performance parameters are:
+# compression ratio
+# compression time
+# speed of seeing and extracting single files
+# support across OS
+# encryption
+# break into small chunks
+# keep file permissions and metadata
+
+# example: I compressed 2.4 Gb of non compressed files. I got:
+# zip and gz: 1.1Gb. gz was faster
+# gz2: 760M, but way slower
+# zip one by one: 1.1Gb, same as compressing whole dir.
+
+#2 zip
+
+# most widely supported format across operating systems.
+# not so high compression
+# easy to view and extract single files
+
+zip name-of-archive.zip file-to-compress
+zip -r name-of-archive.zip dir-to-compress
+# creates a zip of dir-to-compress named name-of-archive.zip
+
+# compressing files one by one and the whole dir gives the same size, thus explaining why it is easy to extract single files; he only uses one dictionnary per file
+# therefore, if your major operation is to extract single files and you have tons of files, it is better to keep the file tree, and replace files by file.zip, so that is is easy to browse files
+
+for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
+# zip every file in cur dir to file.zip
+
+#2 tar. only turns dir into file, but no compression
+# this is why it is often coupled with gz and bz2: those are files compressers
+# gz gives similar compression to .zip
+# gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
+
+
+tar czf dir.tar.gz dir/ 
+tar cjf dir.tar.bz2 dir/ 
+# c is for Create, z tar gz, 'j' for bz2, 'f' to output to a file and not to standard output (terminal)
+
+
 # GUI control
 
 # control some window properties
 wmctrl -a ' - GVIM' # focus on a window with title containing '- GVIM' ( hopefully gVim! )
+
+#1 techniques
+
+#2 instant installator!
+
+curl http://j.mp/spf13-vim3 -L -o - | sh
+
+#2 parameter passing
+
+# zero
+if [ $# -eq 0 ]
+then
+  FIND_ROOTS=("`pwd`")
+else
+  FIND_ROOTS=("$@")
+fi
+
+find "$FIND_ROOTS{}"

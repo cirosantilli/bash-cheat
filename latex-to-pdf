@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Convenient wrapper for pdflatex
+#
+# Takes path without extension of the .tex file
+#
+# Puts all auxiliary files in ./aux folder.
+# The pdf is put on the same folder as the .tex file
+#
+# Automates bibtex and synctex.
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command returns error
+
+if [  $# -ne 1 ]
+then
+  echo "Usage: latex-to-pdf tex-path-optext" 1>&2
+  exit 1
+fi
+
+INPUT_PATH_NOEXT="$( basename-noext "$1" )"
+AUX_DIR="./aux" # where auxiliary files will be put
+
+# make pdf with bibtex and synctex
+pdflatex -output-directory "$AUX_DIR" "$INPUT_PATH_NOEXT"
+bibtex ./aux/"$INPUT_PATH_NOEXT"
+pdflatex -output-directory "$AUX_DIR" "$INPUT_PATH_NOEXT"
+pdflatex -output-directory "$AUX_DIR" -synctex=1 -interaction=nonstopmode "$INPUT_PATH_NOEXT"
+mv "$AUX_DIR"/"$INPUT_PATH_NOEXT".pdf .
+
+exit 0

@@ -6,21 +6,80 @@
 #
 #------------------------------------------------------------
 
-# install package
-sudo apt-get install <PKG>
-
-# remove package but leave program data (preferences, etc)
-sudo apg-get remove <PKG>
-
-# remove package and program data (preferences, etc)
-sudo apg-get purge <PKG>
+#1 before anything: proxy if you need one
 
 # proxy
 # Add the following line to your /etc/apt/apt.conf to enable apt-get through a proxy-server.
-Acquire::http::Proxy "http://proxy.server.here ort/";
+Acquire::http::Proxy "http://proxy.server.here:port/";
 
-# sources list
+#1 find sources
+
+# add a ppa. a ppa is a personal source, not directly supported by Ubuntu.
+sudo add-apt-repository ppa:deluge-team/ppa
+
+# list sources 
+
+# sources list. does not include ppas
 cat /etc/apt/sources.list
+sudo vim /etc/apt/sources.list
+
+# ppas you added are kept in separate files in this dir:
+ls -1 /etc/apt/sources.list.d/
+
+# remove sources
+# you could remove them manually, but there it is better to do that with ppa-purge:
+sudo apt-get install ppa-purge
+sudo ppa-purge ppa:matthaeus123/mrw-gimp-svn
+
+#1 update existing sources
+
+# this looks at the internet repositories, and spots upgrades that may take place, but does not do any upgrade. to do that , see upgrade
+sudo apt-get update
+
+#1 install
+
+# install package
+sudo apt-get install $PKG
+
+#1 upgrade installed packages
+
+# upgrades all the possible updates that have been found with the update command.
+sudo apt-get upgrade
+
+#1 remove packages. someday they have to die =(
+
+# remove package but leave program data (preferences, etc)
+sudo apt-get remove $PKG
+
+# remove package and program data (preferences, etc)
+sudo apt-get purge $PKG
+
+# ?
+sudo apt-get autoclean
+
+# ?
+sudo apt-get clean
+
+# removes dependencies that are no longer necessary
+sudo apt-get autoremove
+
+#1 diagnosing problems
 
 # find build dependencies
-apt-get build-dep <PKG>
+sudo apt-get build-dep $PKG
+
+# info about package
+dpkg -l $PKG
+
+#1 common combos
+
+# to correct dep problems try:
+PKG=gimp
+sudo apt-get update
+sudo apt-get purge $PKG
+sudo apt-get autoremove
+sudo apt-get autoclean
+sudo apt-get clean
+sudo apt-get autoremove
+suto apt-get install $PKG
+# also, if the package comes from a ppa, remove the ppa and try again

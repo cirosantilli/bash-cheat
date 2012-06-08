@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+# source: http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
+# on comment by Doctor J
+
+# deals with hidden files and files with no extension
+
+# does not take into account if the path is a directory or a file. therefore, even if the path is a directory, it is also considered to have an extension
+
+# test cases:
+#
+# $ basename-and-extension.sh / /home/me/ /home/me/file /home/me/file.tar /home/me/file.tar.gz /home/me/.hidden /home/me/.hidden.tar /home/me/.. .
+# /:
+#    dir  = "/"
+#    base = ""
+#    ext  = ""
+#/home/me/:
+#    dir  = "/home/me/"
+#    base = ""
+#    ext  = ""
+#/home/me/file:
+#    dir  = "/home/me/"
+#    base = "file"
+#    ext  = ""
+#/home/me/file.tar:
+#    dir  = "/home/me/"
+#    base = "file"
+#    ext  = "tar"
+#/home/me/file.tar.gz:
+#    dir  = "/home/me/"
+#    base = "file.tar"
+#    ext  = "gz"
+#/home/me/.hidden:
+#    dir  = "/home/me/"
+#    base = ".hidden"
+#    ext  = ""
+#/home/me/.hidden.tar:
+#    dir  = "/home/me/"
+#    base = ".hidden"
+#    ext  = "tar"
+#/home/me/..:
+#    dir  = "/home/me/"
+#    base = ".."
+#    ext  = ""
+#.:
+#    dir  = ""
+#    base = "."
+#    ext  = ""
+
+usage()
+{
+  echo 'Usage: ext-nodot path ...' 1>&2
+}
+
+# check input
+if [ $# -eq 0 ]
+then
+  usage
+  exit 1
+fi
+
+for fullpath in "$@"
+do
+    filename="${fullpath##*/}"                      # Strip longest match of */ from start
+    dir="${fullpath:0:${#fullpath} - ${#filename}}" # Substring from 0 thru pos of filename
+    base="${filename%.[^.]*}"                       # Strip shortest match of . plus at least one non-dot char from end
+    ext="${filename:${#base} + 1}"                  # Substring from len of base thru end
+    if [[ -z "$base" && -n "$ext" ]]; then          # If we have an extension and no base, it's really the base
+        base=".$ext"
+        ext=""
+    fi
+
+    #echo -e "$fullpath:\n\tdir  = \"$dir\"\n\tbase = \"$base\"\n\text  = \"$ext\""
+    echo "$ext"
+done
+
+exit 0

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Adds id3 tags metadata to a music file's title.
+#
+# DEPENDENCY:
+#
+#	http://id3-to-unicode.googlecode.com/files/id3_to_unicode_1.1.py
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: id3tag-to-filename [file-with-tag]' 1>&2
+}
+
+# check input
+if [ $# -eq 0 ]
+then
+  usage
+  exit 1
+fi
+
+# try and convert tags to UTF-8 in case they are not already.
+# if they aren't, this won't work
+id3_to_unicode_1.1.py -r -o
+
+for FILE_PATH in "$@"
+do
+	ARTIST="`id3tool "$FILE_PATH" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+	TITLE="`id3tool "$FILE_PATH" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
+	YEAR="`id3tool "$FILE_PATH" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+	EXT=`ext-nodot "$FILE_PATH"`
+	mv -i "$FILE_PATH" "$ARTIST - $TITLE.$EXT"
+done
+
+exit 0

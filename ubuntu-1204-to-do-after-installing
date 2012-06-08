@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+#------------------------------------------------
+#
+# Ciro D. Santilli
+#
+# This script contains all the software that I would 
+# install on a fresh ubuntu to turn it into a powerhouse.
+#
+# I hope this will
+# *serve as a way to quickly reinstall everything if I ever have to reinstall ubuntu again (it does happen, believe me)
+# * constitute useful software collection and installation procedures suggestion for others
+#
+#-------------------------------------------
+
 firefoxdownloadfolder="~/nobackup/download"
 
 # update
@@ -73,39 +86,72 @@ cd $noaptget && \
 wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf - && \
 ./.dropbox-dist/dropboxd &
 
-# gimp DONE
-sudo add-apt-repository ppa:matthaeus123/mrw-gimp-svn
-sudo apt-get update
-sudo apt-get install gimp gimp-data gimp-plugin-registry gimp-data-extras
+#1 image manipulation
+
+# gimp
+sudo apt-get install gimp
 
 # inkscape
 sudo apt-get install inkscape
 
 #1 Programming tools
 
-#2 eclipse
+#2 eclipsett
 sudo apt-get install eclipse # ERROR cdt tools not good
-#3 MANUAL: install plugins
+
+# MANUAL: install plugins.
+
+# must be root for those operations so
+gksudo eclipse
+
 # Help > Install new software > Availabe software sources > Check every single case there!
 # Help > Install new software > New sources
-# python: http://pydev.org/updates
-# c and c++: http://download.eclipse.org/tools/cdt/releases/indigo # ERROR
-# webtools: http://download.eclipse.org/webtools/repository/indigo/ # ERROR
-# vim like editing: http://vrapper.sourceforge.net/update-site/stable
-# texclipse: http://texlipse.sourceforge.net
-# color themes: http://eclipse-color-theme.github.com/update
-# 	suggestion: http://www.eclipsecolorthemes.org/?view=theme&id=7915
-# 	how to install: File > Import > Preferences > Select *.epf (Eclipse menus are SO unintuitive...)
+
+# add vim like editing to eclipse
+# http://vrapper.sourceforge.net/update-site/stable
+
+# add eclipe functionality to vim
+# http://vrapper.sourceforge.net/update-site/stable
+
+# color themes
+
+# http://eclipse-color-theme.github.com/update
+# 	mine: http://www.eclipsecolorthemes.org/?view=theme&id=7915
+# to install: File > Import > Preferences > Select *.epf (Eclipse menus are SO unintuitive...)
+
+# c and c++
+# http://download.eclipse.org/tools/cdt/releases/indigo/
+
+# python
+# http://pydev.org/updates
+
+# html, javascript, php
+# http://download.eclipse.org/webtools/repository/indigo/
+
+# latex
+# http://texlipse.sourceforge.net
+# forward search to okular: 
+#    
+#
+# inverse search from okular: Settings > Configure Okular > Editor
+#   Editor: custom text editor,
+#   Command: gvim --remote +%l %f 
+
 
 #2 git
 sudo apt-get install git
 sudo apt-get install gitk	# a git graphic local branch viewer
-#http://help.github.com/linux-set-up-git/
+# not set it up to follow github
+# http://help.github.com/linux-set-up-git/
 
 #2 vim
+
 sudo apt-get install vim
 sudo apt-get install vim-gtk # gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
 sudo apt-get install exuberant-ctags # to create tags (allows you to jump to definitions for example)
+
+#3 get an overpowered distro (will save hours of plugin management)
+# TODO
 
 #3 install plugins
 # I prefer to unzip the plugins under .vim, and then add their paths to my .vimrc. This way, if I ever want to remove a plugin, all I need is to remove the folder, and some small code in the vimrc.
@@ -127,7 +173,7 @@ sudo apt-get install vim-latexsuite
 
 vim-addons install latex-suite
 
-#1 Web design lamp (Linux Apache + Mysqp + PHP)
+#2 Web design lamp (Linux Apache + Mysqp + PHP)
 
 # from tutorial at: http://community.linuxmint.com/tutorial/view/486
 # apache
@@ -158,17 +204,25 @@ grep $ensureline apacheconf && ( echo $ensureline | sudo tee -a $apacheconf > /d
 # firefox http://localhost/testphp.php # to test php
 # firefox http://localhost/phpmyadmin # login: 'root'. password: what you entered at installation.
 
+#1 publishing
+
+# pandoc. convert to/from extended markdow / latex / html
+sudo apt-get install pandoc
+
+#1 file management
+
 # krusader
 sudo apt-get install krusader
-sudo apt-get install konqueror # needs for manage bookmarks. (otherwise, button does nothing)
-sudo apt-get install konsole   # needs for terminal emulator. (otherwise, button does nothing)
+sudo apt-get install konqueror # needs to manage bookmarks. (otherwise, button does nothing)
+sudo apt-get install konsole   # needs to terminal emulator. (otherwise, button does nothing)
 
 # filezilla
+sudo apt-get install filezilla
 sudo apt-get install deluge
 
 sudo apt-get install texmaker
 
-#1 automation 
+#1 keyboard and mouse automation 
 
 # autokey
 sudo apt-add-repository ppa:cdekter/ppa && \
@@ -177,18 +231,12 @@ sudo apt-get install autokey-gtk
 # xdotool. can send clicks and manage window properties.
 sudo apt-get install xdotool
 
-sudo apt-get install gparted
+sudo apt-get install gparte
 
-# nautilus customize
-sudo add-apt-repository ppa:nae-team/ppa
-sudo apt-get update
-sudo apt-get install nautilus-actions
-sudo apt-get install nautilus-actions-extra
-nautilus -q
-## now you need at least your executable script inside to see it working
-scriptdir="~/.gnome2/nautilus-scripts"
-echo "gnome-terminal" > $scriptdir/test && \
-chmod +x $scriptdir/test
+#1 command line utilities
 
-#1 command line utilities that didn't fit anywhere else
-sudo apt-get install realpath # resolves relative paths
+sudo apt-get install realpath
+# resolves relative paths
+
+sudo apt-get install ack-grep
+# overpowered grepping

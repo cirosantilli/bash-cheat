@@ -16,7 +16,21 @@ git remote add github "git@github.com:$GITHUB_ID/$REPO_NAME.git"
 # allows to push and pull current repo git@github.com:cirosantilli/python.git repo.
 # this repo gets an alias github. see #1 push for details
 
-#1 add
+#1 remote
+
+git remote add github https://github.com/cirosantilli/latex.git
+# create a remote branch at github called github
+
+git remote show
+# view all names of remote branches
+
+git remote rm github
+# remove the branch github (if you for isntance entered the bad url, you will have to first remove the old one before you can add the correct url)
+
+#1 adding files
+
+find . -maxdepth 1 -type f -exec git add "{}" +
+# add all directly in current dir to git 
 
 find . -name '.git' -prune -o -type f -name '*.py' -exec git add "{}" +
 find . -name '.git' -prune -o -type f -name '*.py' -print0 | xargs -0 git add
@@ -55,9 +69,14 @@ git ls-files --deleted -z | xargs -0 git rm
 
 #1 commit
 
-git commit -a
-git commit -a -v # commit all and view differences and view log
-git commit -m 'commit message'
+# after you commit, you can push you modifications to somewhere else, and you can also come back in time to this commit.
+
+git commit -a -v
+# -a: commits all files that have been modified or deleted (if deleted they will stop being tracked for the future)
+# -v: opens vim in a commit diff log. you can either enter a commit message on the first line, or leave it blank and cancel comit. action is taken after you save ans quit :wq
+
+git commit -a -m 'commit message'
+# same as above, but commits directly with message commit message
 
 git status
 # see uncommited file changes and untracked files

@@ -15,7 +15,7 @@ set -e # stop execution if one command returns error
 
 usage()
 {
-	echo 'Usage: $PDF_PAGE="$( synctex-forward "$BASENAME_OPTEXT" )"' 1>&2
+	echo 'Usage: synctex-forward basename-optext' 1>&2
 }
 
 if [ $# -ne 2 ]

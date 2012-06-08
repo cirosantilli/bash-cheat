@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# makes rename output readable
+
+# rename -n 's/original/renamed/g' | rename-readable
+# will print as: (much more readable, unless you input contains a string ' renamed as ', then just cry)
+#
+# original 1
+# renamed 1
+#
+# original 2
+# renamed 2
+
+awk -F ' renamed as ' '{ print a$1"\n"$2"\n"  }' 
+

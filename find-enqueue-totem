@@ -1,3 +1,44 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-find . -type f \( -iname "*.mp3" -o -iname "*.flac" -o -iname "*.m4a"  -o -iname "*.ogg" -o -iname "*.wav" -o -iname "*.wma" \) -print0 | xargs -0 totem
+# dependencies=["./find-music-make-m3u"]
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# finds music under current dir and enqueues it in totem
+#
+# arguments are the same as for find-music.
+#
+# no point in using this with Krusader user actions of course... =)
+#
+# sample use:
+#
+#	find . -name '*rec=igor*' -print0 | xargs -0 find-enqueue-totem
+# 	# opens music under folders with name rec=igor
+#
+#
+# TODO:
+#
+#   I would have liked to make a m3u with relative paths,
+#   beacause otherwise totem enqueues with an ugly full path before seeing the actual name (id3 name I guess)
+#   I couldn't do this because it would either creating and removing a temp file in current dir, which is a problem
+#   since if I remove it immediatelly totem won't have the time to see it, or if totem had an option to choose current
+#   dir even if m3u is outside...
+
+#   passing them one by one is not an option in general because of limits to the amount of data that can be passed in a shell
+# 
+#------------------------------------------------------------
+
+# must make a temporary file on the fly, or there could be two many arguments for xargs.
+TFILE="$(mktemp --suffix .m3u)"
+
+find-music-make-m3u -a -o "$TFILE" "$@"
+
+# sort it to follow music order
+sort "$TFILE" -o "$TFILE"
+ 
+#cat $TFILE # oh, I have done many tests... you fellow programmer knows how much lifetime each of this lines cost ~~
+totem "$TFILE" &
+
+exit 0

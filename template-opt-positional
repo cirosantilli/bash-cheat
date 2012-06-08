@@ -4,9 +4,7 @@
 #
 # Ciro D. Santilli 
 #
-# Extracts the extension of path $1.
-#
-# If it has no extension, or if it is a direcotry, returns ''
+# Template for positional arguments
 #
 #------------------------------------------------------------
 
@@ -15,21 +13,27 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-echo "Usage: ext-nodot path
-
-Sample calls:
-ext-nodot /path/to/file.pdf # pdf
-
-"
+  echo 'Usage: ' 1>&2
 }
 
-if [ $# -ne 1 ]
+if [ $# -eq 0 ]
 then
   usage
   exit 1
-else
-  BASENAME="$(basename "$1")"
-  EXT="${BASENAME##*.}"
-  echo "$EXT"
-  exit 0
 fi
+="$1"
+
+if [ $# -gt 1 ]
+then
+  ="$2"
+else
+  =""
+fi
+
+if [ $# -gt 2 ]
+then
+  usage
+  exit 1
+fi
+
+exit 0

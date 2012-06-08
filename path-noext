@@ -4,7 +4,7 @@
 #
 # Ciro D. Santilli 
 #
-# 
+# Removes extension (as gotten by ext-nodot) from given path.
 #
 #------------------------------------------------------------
 
@@ -13,18 +13,18 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-  echo 'Usage: latex-pdf-view tex-file-opt-ext'
-}
+echo "Usage: path-noext path}
 
-# fixed nargs checking
 if [ $# -ne 1 ]
 then
   usage
   exit 1
 else
-  echo here
-  TEX_PATH="$( opt-ext "$1" tex )"
-  echo here
-  pdflatex -synctex=1 $TEX_PATH
-  exit 0
+  INPUT_PATH=$1
+  EXT_NODOT="$(ext-nodot "$INPUT_PATH")"
+
+  # extract the extension from the end
+  echo "${INPUT_PATH%%."$EXT_NODOT"}"
 fi
+
+exit 0

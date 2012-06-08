@@ -7,7 +7,6 @@
 # Converts djvu file $1 to a pdf file.
 #
 # The pdf is generated in the same directory and name as the pdf, but with extension pdf instead of djvu.
-# The extension .djvu is optional, as specified by opt-ext
 #
 # DEPENDENCIES
 #
@@ -20,11 +19,10 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-  echo 'Usage: djvu-to-pdf djvupath-opt-ext
-
+  echo 'Usage: djvu-to-pdf djvupath
+  
 EXAMPLE
 
-djvu-to-pdf asdf
 djvu-to-pdf asdf.djvu
 ' 1>&2
 }
@@ -36,9 +34,9 @@ then
   exit 1
 fi
 
-DJVU_RELPATH="$( opt-ext "$1" djvu )"
-PDF_RELPATH="$(basename-noext "$DJVU_PATH").pdf"
-ddjvu -format=pdf "$DJVU_PATH" "$PDF_RELPATH"
+DJVU_PATH="$1"
+PDF_PATH="$(basename-noext "$DJVU_PATH").pdf"
+ddjvu -format=pdf "$DJVU_PATH" "$PDF_PATH"
 
 exit 0
 

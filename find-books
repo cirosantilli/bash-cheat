@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# prints null char (\0) separated list of book files
+#
+# YOU MUST USE AT LEAST ONE FIND ROOT JUST LIKE FOR find (find-books . ) for instance
+#
+# where to look follows the same interface as find: for current
+# dir you must put the '.', and you can just add as many locations as you want
+#
+# book files are recognized from their extension 
+# 
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: find find-root ...' 1>&2
+}
+
+# check input
+if [ $# -eq 0 ]
+then
+  usage
+  exit 1
+fi
+
+find "$@" -type f \( -iname "*.pdf" -o -iname "*.djvu" \) -print0
+
+exit 0

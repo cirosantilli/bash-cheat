@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------
+#
+# Ciro D. Santilli
+#
+# This script contains programs that I installed, but for which I believe there is a better alternative.
+# 
+# I am keeping them here just in case I ever want to reinstall, but I do not 
+#
+#--------------------------------------------
+
+#1 nautilus customize
+
+# deprecated because Krusader is simply too destructive...
+
+# actions extra. custom actions with files
+
+sudo add-apt-repository ppa:nae-team/ppa
+sudo apt-get update
+sudo apt-get install nautilus-actions
+sudo apt-get install nautilus-actions-extra
+nautilus -q
+# now you need at least your executable script inside to see it working
+scriptdir="~/.gnome2/nautilus-scripts"
+echo "gnome-terminal" > $scriptdir/test && \
+chmod +x $scriptdir/test

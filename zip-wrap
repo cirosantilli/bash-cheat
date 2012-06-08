@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# Wrapper for zip.
+#
+# Takes a list of paths and gives it to zip, and zips them on the same
+# directory as the original file, simply adding a .zip extension.
+#   asdf.pdf --> asdf.pdf.zip
+#
+# Paths can be either directories of files.
+#
+# Options:
+#
+#   e: if given, removes the original extension and replaces it with .zip
+#     asdf.pdf --> asdf.zip
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: zip-wrap [options] file-or-dir-to-zip ...' 1>&2
+}
+
+CHANGE_EXT=false
+
+# Parse command line options.
+while getopts he OPT; do
+  case "$OPT" in
+    h)
+      usage
+      exit 0
+      ;;
+    e)
+      CHANGE_EXT=true
+      ;;
+    \?)
+      # getopts issues an error message
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+shift `expr $OPTIND - 1`
+if [ $# -eq 0 ]
+then
+  usage
+  exit 1
+fi
+
+for INPUT_PATH in "$@"
+do
+  if $CHANGE_EXT
+  then
+    OUTPUT_PATH="$(path-noext "$INPUT_PATH")".zip
+  else
+    OUTPUT_PATH="$INPUT_PATH".zip
+  fi
+
+  if [ -f "$INPUT_PATH" ]
+  then
+    zip "$OUTPUT_PATH" "$INPUT_PATH"
+  elif [ -d "$INPUT_PATH" ]
+  then
+    zip -r "$OUTPUT_PATH" "$INPUT_PATH"
+  fi
+done
+
+exit 0

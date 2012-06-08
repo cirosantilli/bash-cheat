@@ -17,19 +17,42 @@
 set -u # error on undefined variable
 set -e # stop execution if one command returns error
 
-if [ ! $# -eq 1 ]
+usage()
+{
+  echo "Usage: latex-pdf-okular tex-path [tex-line]" 1>&2
+}
+
+if [ $# -eq 0 ]
 then
-  echo "Usage: latex-pdf-okular tex-path-or-relpath-opt-ext" 1>&2
+  usage
+  exit 1
+fi
+INPUT_PATH_NOEXT="$( basename-noext "$1" )"
+
+if [ $# -gt 1 ]
+then
+  TEX_LINE="$2"
+else
+  TEX_LINE=""
+fi
+
+if [ $# -gt 2 ]
+then
+  usage
   exit 1
 fi
 
 # make pdf with bibtex and synctex
-INPUT_PATH="$( opt-ext "$1" tex )"
-latex "$INPUT_PATH"
-bibtex "$INPUT_PATH"
-latex "$INPUT_PATH"
-pdflatex -synctex=1 -interaction=nonstopmode "$INPUT_PATH"
+latex-to-pdf "$INPUT_PATH_NOEXT"
 
 # view
-okular --unique "$OUTPUT_PATH" &
+OUTPUT_PATH="$INPUT_PATH_NOEXT".pdf
+if [ -z "$TEX_LINE" ]
+then
+  okular --unique "$OUTPUT_PATH" &
+else
+  PDF_PAGE="( synctex-forward "$TEX_LINE" )"
+  okular --unique -p "$PDF_PAGE" "$OUTPUT_PATH" &
+fi
+
 exit 0

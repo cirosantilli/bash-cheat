@@ -4,27 +4,40 @@
 #
 # Ciro D. Santilli 
 #
-# Used to check if this folder is in the path or not. 
+# Used to test how bash works, and to see if this folder is
+# bash PATH.
 #
 #------------------------------------------------------------
 
 # immediate:
 echo -e '\ntest-bash'
 
-echo -e '\n$1:'
+echo -e '\necho $1:'
 echo $1
 
-echo -e '\n$2:'
+echo -e '\necho $2:'
 echo $2
 
-echo -e '\n$#:'
+echo -e '\necho $#:'
 echo $#
 
-echo -e '\n$@:'
+echo -e '\necho $@:'
 echo $@
 
-echo -e '\n$*'
+echo -e '\necho $*'
 echo $*
 
-echo '\ntest-bash2 $1'
-test-bash2 $1
+echo -e '\necho test-bash2 "$1" "$2"'
+test-bash2 "$1" "$2"
+
+echo -e '\necho test-bash2 $*'
+test-bash2 $*
+
+echo -e '\necho test-bash2 "$*"'
+test-bash2 "$*"
+
+echo -e '\necho test-bash2 $@'
+test-bash2 $@
+
+echo -e '\necho test-bash2 $@'
+test-bash2 "$@"

@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# xargs with multiple commands per line: use bash.
-# note: use this only for simple commands or you will go crazy with escaping and absense of syntax coloring
-find . -iname '*.pdf' -print0 | xargs -0 -I '{}' bash -c 'pdftotext -l 20 "{}" /tmp/out && grep isbn /tmp/out'
