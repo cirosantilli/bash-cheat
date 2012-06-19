@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------
+#
+# Ciro D. Santilli 
+#
+# 
+#
+#------------------------------------------------------------
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'Usage: decrypt-append-encrypt tar-gpg paths-to-append [...]
+  
+Decrypts tar-gpg, appends given files to tar, and reencrypts tar.
+
+This is not practical very large files.
+' 1>&2
+}
+
+# argument parsing
+
+# obligatory arguments
+if [ $# -gt 0 ]; then
+  TARGPG="$1"
+  shift
+else
+  usage
+  exit 1
+fi
+
+# assert at least one left
+if [ $# = 0 ]; then
+  usage
+  exit 1
+fi
+
+# create temp file
+TTAR="$(mktemp)"
+
+# decrypt tar
+#echo gpg -o "$TTAR" -d "$TARGPG"
+
+gpg -o "$TTAR" -d "$TARGPG"
+
+# append all to tar
+tar --append --file "$TTAR" "$@"
+
+# reencrypt
+gpg -o "$TARGPG" -c "$TTAR"
+
+# remove the temporary file
+rm -r "$TTAR"
+
+exit 0

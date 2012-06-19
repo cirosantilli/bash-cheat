@@ -4,7 +4,7 @@
 #
 # Ciro D. Santilli 
 #
-#
+# 
 #
 #------------------------------------------------------------
 
@@ -35,26 +35,6 @@ else
   exit 1
 fi
 
-# optional positional arguments
 
-# default values
-A=""
-B=""
-
-if [ $# -gt 0 ]; then
-  A="$1"
-  shift
-fi
-
-if [ $# -gt 0 ]; then
-  B="$1"
-  shift
-fi
-
-# too many args
-if [ $# -gt 0 ]; then
-  usage
-  shift
-fi
 
 exit 0

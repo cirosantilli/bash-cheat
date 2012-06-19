@@ -9,6 +9,8 @@
 # finds music under given input dir based on file extension,
 # makes an m3u list out of them.
 #
+# If no music files are found, no m3u is created.
+#
 # OPTIONS
 #
 # * -a: Absolute. If given paths on m3u are absolute, otherwise
@@ -27,6 +29,8 @@
 # is not given, then the music lists are saved to default name
 # 'all.m3u'. The output is always put inside a files, never to
 # standard output.
+#
+# Limitations: no newlines in names!
 #
 # 
 #------------------------------------------------------------
@@ -51,7 +55,8 @@ find-music-make-m3u -r -o all.m3u .
 # default vals
 RECURSE=false
 FILE_OUTPUT=false
-OUTPUT_PATH="all.mp3"
+OUTPUT_PATH="all.m3u"
+ABSOLUTE=false
 
 while getopts ao:r OPT; do
   case "$OPT" in
@@ -106,14 +111,20 @@ else
     OUTPUT="$(find-music "$@" | xargs -0 -I '{}' echo "{}")"
   fi
 
-  # sort
-  OUTPUT="$( echo "$OUTPUT" | sort )"
+  # don't make empty m3u
+  if [ ! -z "$OUTPUT" ]; then
 
-  if $FILE_OUTPUT; then
-    echo "$OUTPUT" > "$OUTPUT_PATH"
-  else
-    echo "$OUTPUT"
+    # sort
+    OUTPUT="$( echo "$OUTPUT" | sort )"
+
+    if $FILE_OUTPUT; then
+      echo "$OUTPUT" > "$OUTPUT_PATH"
+    else
+      echo "$OUTPUT"
+    fi
+
   fi
+
 fi
 
 exit 0

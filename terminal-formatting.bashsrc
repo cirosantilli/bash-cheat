@@ -1,0 +1,32 @@
+# taken from http://linuxtidbits.wordpress.com/2008/08/11/output-color-on-bash-scripts/
+# comment by Grim
+
+# usage: source this, then
+# echo 
+
+escape()
+{
+echo “\[33[$1\]”
+}
+
+# shell.names:
+# Names for simplicity
+# Attributes
+c_reset=`escape 0m` ;
+c_bold_on=`escape 1m` ; c_bold_off=`escape 22m`
+c_blink_on=`escape 5m` ; c_blink_off=`escape 25m`
+c_reverse_on=`escape 7m`; c_reverse_off=`escape 27m`
+# Foreground colors
+cf_default=`escape 39m` ;
+cf_black=`escape 30m` ; cf_red=`escape 31m`
+cf_green=`escape 32m` ; cf_brown=`escape 33m`
+cf_blue=`escape 34m` ; cf_magenta=`escape 35m`
+cf_cyan=`escape 36m` ; cf_white=`escape 37m`
+# Background colors
+cb_default=`escape 49m`
+cb_black=`escape 40m` ; cb_red=`escape 41m`
+cb_green=`escape 42m` ; cb_brown=`escape 43m`
+cb_blue=`escape 44m` ; cb_magenta=`escape 45m`
+cb_cyan=`escape 46m` ; cb_white=`escape 47m`
+# Artefacts
+dollar=”${c_bold_on}\\$”

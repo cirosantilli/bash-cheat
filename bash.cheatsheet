@@ -9,54 +9,86 @@
 #
 #------------------------------------------------------------
 
-#1 dollar sign
+#1 logical operations
+  if 0 -a 0; then
+    echo true
+  fi
+  # logical 'and'. DO NOT PUT IT INSIDE [], or it becmoses file exists
 
-# expands values of variables or expressions, including command line arguments
 
-#2 command line arguments
-
+# command line arguments
 PDF_PATH="$1" # argument 1
 DJVU_PATH="$2" # argument 2
 
-DJVU_PATH="$*"
-# List of all arguments separated by SPACES.
-# Each argument is NOT quoted individually. 
+  DJVU_PATH="$*"
+  # List of all arguments separated by SPACES.
+  # Each argument is NOT quoted individually. 
 
-DJVU_PATH="$@"
-# List of all arguments separated by SPACES.
-# Each argument IS quoted individually.
+  DJVU_PATH="$@"
+  # List of all arguments separated by SPACES.
+  # Each argument IS quoted individually.
 
-CUR_PROCESS="$$"
+  CUR_PROCESS="$$"
+
 # returns current process name. Useful to create unique temporary files that have a recognizable component.
 TFILE="/tmp/$(basename $0).$$.tmp"
 
-PDF_PATH="$VAR_NAME"
-PDF_PATH="${VAR_NAME}"
-#2 acess the value of a variable
+# variables
+  PDF_PATH="$VAR_NAME"
+  PDF_PATH="${VAR_NAME}"
+  # acess the value of a variable
 
-PDF_PATH="${PATH_NOEXT}.pdf"
-# concatenate a variable and a string 
+  PDF_PATH="${PATH_NOEXT}.pdf"
+  # concatenate a variable and a string 
 
-#2 pattern operations on variables
+# strings
+  STR='asdf'
 
-${variable#pattern}
-# some string operations
+  VAR=$'\n'
+  # newline to var
 
-${variable##pattern}
-# Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
+  VAR=$'\0'
+  # null to var
 
-${variable%pattern}
-#Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+  echo ${#STR}
+  # string length
 
-${variable%%pattern}
-#Delete the shortest part of pattern that matches the end of variable 's value.Return the rest.
+  echo ${STR:2}
+  # df
+  # extract from char 2
 
-#2 $() evaluate an expression and paste output at position of '$'
+  echo ${STR:1:2}
+  # sd
+  # extract 2 chars starting at 1
 
-# this is how you return values from a function and put them into varibales
+  echo ${STR:1:1}
+  # 's'
+  # get char at an index
 
-VAR="$(find . -name '*.pdf')"
-echo "$VAR"
+  if [[ "$string" == *My* ]]
+  then
+    echo "It's there!";
+  fi
+  # test is a string contains POSIX expr
+
+  ${variable#pattern}
+  # Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+
+  ${variable##pattern}
+  # Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
+
+  ${variable%pattern}
+  #Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+
+  ${variable%%pattern}
+  #Delete the shortest part of pattern that matches the end of variable 's value.Return the rest.
+
+# $() evaluate an expression and paste output at position of '$'
+
+  # this is how you return values from a function and put them into varibales
+
+  VAR="$(find . -name '*.pdf')"
+  echo "$VAR"
 
 #2 arithmetic expression
 
@@ -65,88 +97,63 @@ echo $TWO
 # obviously, bash was not made with this in mind, VERY cumbersome.
 # bash is all about strings and files, not numbers. 
 
-#1 operators
+# operators
+  (( 1>2 ))
+  # (( )) arithmetic test
 
-(( 1>2 ))
-# (( )) arithmetic test
 
+  # [[ ]] extended logical test
 
-# [[ ]] extended logical test
+  #1 data structures
 
-#1 data structures
+  #2 array
 
-#2 array
+  # declare
+  array1=( itm1 itm2 itm3 "itm 4")
 
-# declare
-array1=( itm1 itm2 itm3 "itm 4")
+  array2[1]=itm1
+  array2[2]=itm2
+  array2[3]=itm3
 
-array2[1]=itm1
-array2[2]=itm2
-array2[3]=itm3
+  array2+=("itm 4")
+  # append
 
-array2+=("itm 4")
-# append
+  # access
 
-# access
+  echo ${array1[1]}
+  echo ${array1[2]}
+  echo ${array1[3]}
+  # the {} is obligatory here
 
-echo ${array1[1]}
-echo ${array1[2]}
-echo ${array1[3]}
-# the {} is obligatory here
+  for i in ${array1[*]}; do echo $i; done
+  for i in ${array1[@]}; do echo $i; done
+  # see the same thing 
 
-for i in ${array1[*]}; do echo $i; done
-for i in ${array1[@]}; do echo $i; done
-# see the same thing 
+  for i in "${array1[*]}"; do echo $i; done
+  # one line. * with quotes "" expands similary to "$*"
 
-for i in "${array1[*]}"; do echo $i; done
-# one line. * with quotes "" expands similary to "$*"
+  for i in "${array1[@]}"; do echo $i; done
+  # four lines. @ with quotes "" expands similary to "$@"
+  # quotes for each element are actually put on the terminal
 
-for i in "${array1[@]}"; do echo $i; done
-# four lines. @ with quotes "" expands similary to "$@"
-# quotes for each element are actually put on the terminal
+  echo ${array[@]:1}
+  # subarray
 
-echo ${array[@]:1}
-# subarray
+  echo ${array[@]:1:2}
+  # subarray: from 1, select 2
 
-echo ${array[@]:1:2}
-# subarray: from 1, select 2
+  # associative array
+  declare -A aa
+  aa=([hello]=world [ab]=cd)
+  echo ${aa[hello]}
+  echo ${aa[cd]}
 
-# associative array
-declare -A aa
-aa=([hello]=world [ab]=cd)
-echo ${aa[hello]}
-echo ${aa[cd]}
-
-#1 strings
-STR='asdf'
-
-echo ${#STR}
-# string length
-
-echo ${STR:2}
-# df
-# extract from char 2
-
-echo ${STR:1:2}
-# sd
-# extract 2 chars starting at 1
-
-echo ${STR:1:1}
-# 's'
-# get char at an index
-
-if [[ "$string" == *My* ]]
-then
-  echo "It's there!";
-fi
-# test is a string contains POSIX expr
-
-#1 control flow
-var=true
-if $var
-then
-  echo "var is true"
-fi
+# control flow
+  var=true
+  if $var
+  then
+    echo "var is true"
+  fi
 
 # get the parent dir of a path, not / terminated except for /, no error checking
 dirname /path/to/dir/or/file # /path/to/dir/or
@@ -162,6 +169,9 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 # makes changes
 
 #1 standard utils
+
+gnome-open "$FILE"
+# opens with the deafult application. works in Ubuntu Unity 12.04
 
 #2 xargs
 
@@ -193,10 +203,11 @@ while IFS= read -r -u3 -d $'\0' FILE; do
 done 3< <(find /tmp -type f -print0)
 # the only thing tha breaks this is having programs that use 3<. godlike
 
-find . -print0 | while read -d '' FILE
-do
-  echo -v "$file"
-done
+while IFS= read -r -u3 -d $'\0' FILE; do
+  echo "$FILE"
+done 3< <(find /tmp -type f -print0 | sort -rz)
+# this reverses find order of the find output, allowing you to rename directories also (with this, directories)
+# will come last and be renamed last. -r is for 'reverse, and -z is for null terminated
 
 #2 mktemp
 
@@ -238,7 +249,13 @@ TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
 
 install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
 
-#2 while read case method
+#1 perl replace
+
+perl -pie 's/old-word/new-word/g'
+
+#1 prompt user
+
+# while read case method
 
 # ask for user input, break into cases
 # if none of the cases is met, print error message and ask again.
@@ -252,7 +269,7 @@ while true; do
     esac
 done
 
-#2 same as above, but for the ultra common case of yes [Y] no [n] case 
+# same as above, but for the ultra common case of yes [Y] no [n] case 
 while true; do
     read -p "Yes or no? [Y/n]" yn
     case "$yn" in
@@ -262,7 +279,7 @@ while true; do
     esac
 done
 
-#1 files compresssion
+#2 files compresssion
 
 # the performance parameters are:
 # compression ratio
@@ -303,6 +320,12 @@ for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
 tar czf dir.tar.gz dir/ 
 tar cjf dir.tar.bz2 dir/ 
 # c is for Create, z tar gz, 'j' for bz2, 'f' to output to a file and not to standard output (terminal)
+
+# encryption
+
+gpg -c in
+# will create a in.gpg encrypted file. can only be decrypted and then opened with password
+# good combo with tar.gz
 
 
 # GUI control

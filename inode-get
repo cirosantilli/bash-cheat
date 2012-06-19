@@ -5,7 +5,7 @@
 # Ciro D. Santilli 
 #
 # 
-# Returns the inode of the given file.
+# Returns the inodes of the input files newline separated.
 #
 #------------------------------------------------------------
 
@@ -17,22 +17,14 @@ usage()
   echo 'Usage: get-inode path' 1>&2
 }
 
-# fixed nargs checking
-if [ $# -ne 1 ]
+if [ $# -eq 0 ]
 then
   usage
   exit 1
 fi
 
-IN_PATH="$1"
+for F in "$@"; do
+  echo "$( ls -i "$F" | awk -F ' ' '{ print $1 }' )"
+done
 
-# make shure it is a file and not a directory
-if [ ! -f "$IN_PATH" ]
-then
-  echo -e "The input path must exist and be a file. Found:\n$IN_PATH" 1>&2
-  exit 1
-fi
-
-INODE="$(ls -i "$IN_PATH" | grep -o ^[0-9]*)"
-echo "$INODE"
 exit 0

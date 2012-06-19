@@ -12,7 +12,8 @@ git init
 
 GITHUB_ID=cirosantilli
 REPO_NAME=python
-git remote add github "git@github.com:$GITHUB_ID/$REPO_NAME.git"
+git remote add github "git@github.com:cirosantilli/python.git"
+git remote add bitbucket "https://cirosantilli@bitbucket.org/cirosantilli/testrepo0.git"
 # allows to push and pull current repo git@github.com:cirosantilli/python.git repo.
 # this repo gets an alias github. see #1 push for details
 

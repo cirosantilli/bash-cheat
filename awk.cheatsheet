@@ -1,0 +1,11 @@
+
+
+
+# parse field-value pairs
+
+# returns first occurence of Page fields, ':' separated from values (field:value, return the value and exit immediately)
+PDF_PAGE="$( echo "$SYNCTEX_OUT" | awk -F: '$1 ~/Page/ { print $2; exit }' )"
+
+# return last occurence of Page fields, ':' separated, return the value and exit immediately
+PDF_PAGE="$( echo "$SYNCTEX_OUT" | awk -F: '$1 ~/Page/ { PAGE=$2 } END { print PAGE }' )"
+

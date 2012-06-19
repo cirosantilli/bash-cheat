@@ -4,9 +4,7 @@
 #
 # Ciro D. Santilli 
 #
-# Returns pdf page for a given tex file line number
-#
-# Assumes that all files are in the same folder.
+# Wrapper for synctex
 #
 #------------------------------------------------------------
 
@@ -15,32 +13,90 @@ set -e # stop execution if one command returns error
 
 usage()
 {
-	echo 'Usage: synctex-forward basename-optext' 1>&2
+	echo 'Usage: synctex-forward [options] basename-noext tex-line
+
+Example: $(synctex-forward mytexfile 77)
+
+will get you the pdf page corresponding to line 77 in your tex file.
+
+A typical usage of this function would be for calls from inside an editor, where you
+would replace mytexfile and 77 by their actual values.
+
+Returns corresponding pdf page for a given tex file line number.
+
+Assumes that all files have the same basename. This cannot be
+overwriden as of this version.
+
+By default, assumes that all files are in the current dir.
+This could be changed by options, but I cant get synctex -d
+option to work!!! so for the time being you are forced to
+put all files in the same dir.
+' 1>&2
 }
 
-if [ $# -ne 2 ]
-then
+TEX_DIR="./"
+PDF_DIR="./"
+SYN_DIR="./"
+
+while getopts ht:p:s: OPT; do
+  case "$OPT" in
+    h)
+      usage
+      exit 0
+      ;;
+    t)
+      TEX_DIR=$OPTARG
+      ;;
+    p)
+      PDF_DIR=$OPTARG
+      ;;
+    s)
+      SYN_DIR=$OPTARG
+      ;;
+    \?)
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+shift `expr $OPTIND - 1`
+
+# obligartory params;
+if [ $# -gt 0 ]; then
+  BNAME="$1"
+  shift
+else
   usage
   exit 1
 fi
 
-BASENAME_OPTEXT="$1"
-TEX_LINE="$2"
+if [ $# -gt 0 ]; then
+  TEX_LINE="$1"
+  shift
+else
+  usage
+  exit 1
+fi
 
-# make pdf with bibtex and synctex
-BASENAME_NOEXT="$( basename-noext "$BASENAME_OPTEXT" )"
-TEX_BASENAME="$BASENAME_NOEXT".tex
-PDF_BASENAME="$BASENAME_NOEXT".pdf
-PARENT_DIR="$( parent-path "$TEX_BASENAME" )"
+BNAME_NOEXT="$( basename-noext "$BNAME" )"
+TEX_PATH="$TEX_DIR"/"$BNAME_NOEXT".tex
+PDF_PATH="$PDF_DIR"/"$BNAME_NOEXT".pdf
+SYN_PATH="$SYN_DIR"/"$BNAME_NOEXT".synctex.gz
+PARENT_DIR="$( parent-path "$TEX_PATH" )"
 
 # get synctex pdf position
-SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$PARENT_DIR./$TEX_BASENAME" -o "$PDF_BASENAME" )"
+SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$PARENT_DIR./$TEX_PATH" -o "$PDF_PATH"  )"
 
-echo "$SYNCTEX_OUT"
+# can't make the syntex command line interface work!!!
+#SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$PARENT_DIR./$TEX_PATH" -o "$PDF_PATH" -d "$SYN_DIR" )"
+
+#echo "$SYNCTEX_OUT"
 
 # parse synctex output
 #PDF_PAGE="$( synctex-view-extract-page "$SYNCTEX_OUT" )"
-PDF_PAGE="$( echo "$SYNCTEX_OUT" | awk -F: '$1 ~/Page/ { PAGE=$2 } END { print PAGE }' )"
+#PDF_PAGE="$( echo "$SYNCTEX_OUT" | awk -F: '$1 ~/Page/ { PAGE=$2 } END { print PAGE }' )"
+PDF_PAGE="$( echo "$SYNCTEX_OUT" | awk -F: '$1 ~/Page/ { print $2; exit }' )"
 
 echo "$PDF_PAGE"
 exit 0

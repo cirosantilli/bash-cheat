@@ -1,12 +1,12 @@
-# Dependencies
+# Note to myself
 
-Before you use this collection, run
+Bash is evil, has evil quoting, evil to get values out of functions, evil to do list operations and does not cross operating systems.
 
-    install-depencies-apt-get
+Bash has 2 good things: find and pipes.
 
-if you have apt-get on your distro so that you have all the necessary dependencies.
+Now that I warned myself, to the bash!
 
-# Intro
+# About
 
 This is my collection of simple bash scripts and related languages ( only awk for the moment ).
 
@@ -16,6 +16,14 @@ I use this to
 - automate simple repetitive tasks
 
 For more complex tasks, I tend to use python scripts instead.
+
+# Dependencies
+
+Before you use this collection, run
+
+    install-depencies-apt-get
+
+if you have apt-get on your distro so that you have all the necessary dependencies.
 
 # File naming convention
 
@@ -39,5 +47,10 @@ For more complex tasks, I tend to use python scripts instead.
 
 # Abbreviations
 
-- ext : extension
-- opt-ext : optional extension
+* ext : extension
+* IPATH : INPUT_PATH
+* IPUT : INPUT
+* opt-ext : optional extension
+* OPUT : OUTPUT
+* OPATH : OUTPUT_PATH
+* wrap : wrapper. on filenames, indicates a convenient simplified interface for a function.

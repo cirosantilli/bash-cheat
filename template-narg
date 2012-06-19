@@ -4,7 +4,7 @@
 #
 # Ciro D. Santilli 
 #
-#
+# 
 #
 #------------------------------------------------------------
 
@@ -18,7 +18,7 @@ usage()
 
 # argument parsing
 
-# obligatory arguments
+# get first arg
 if [ $# -gt 0 ]; then
   ="$1"
   shift
@@ -27,6 +27,7 @@ else
   exit 1
 fi
 
+# get second arg
 if [ $# -gt 0 ]; then
   ="$1"
   shift
@@ -35,26 +36,15 @@ else
   exit 1
 fi
 
-# optional positional arguments
-
-# default values
-A=""
-B=""
-
-if [ $# -gt 0 ]; then
-  A="$1"
-  shift
-fi
-
-if [ $# -gt 0 ]; then
-  B="$1"
-  shift
-fi
-
-# too many args
-if [ $# -gt 0 ]; then
+# assert at least one left
+if [ $# = 0 ]; then
   usage
-  shift
+  exit 1
 fi
+
+# main part
+for in "$@"; do
+
+done
 
 exit 0

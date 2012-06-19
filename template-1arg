@@ -16,14 +16,12 @@ usage()
   echo 'Usage: ' 1>&2
 }
 
-# check input
-if [ $# -ne 2 ]
-then
+if [ $# -gt 0 ]; then
+  ="$1"
+  shift
+else
   usage
   exit 1
 fi
-
-="$1"
-="$2"
 
 exit 0

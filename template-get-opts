@@ -17,21 +17,20 @@ usage()
 
 # default vals
 FLAG=false
+IPATH="./"
+OPATH="./"
 
-while getopts hvfi:o: OPT; do
+while getopts hi:o: OPT; do
   case "$OPT" in
     h)
       usage
       exit 0
       ;;
-    f)
-      FLAG=true
-      ;;
     i)
-      INPUT_PATH=$OPTARG
+      IPATH=$OPTARG
       ;;
     o)
-      OUTPUT_PATH=$OPTARG
+      OPATH=$OPTARG
       ;;
     \?)
       usage

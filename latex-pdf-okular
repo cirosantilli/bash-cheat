@@ -22,36 +22,47 @@ usage()
   echo "Usage: latex-pdf-okular tex-path [tex-line]" 1>&2
 }
 
-if [ $# -eq 0 ]
-then
-  usage
-  exit 1
-fi
-INPUT_PATH_NOEXT="$( basename-noext "$1" )"
+# parameter parsing
 
-if [ $# -gt 1 ]
-then
-  TEX_LINE="$2"
+# obligartory params;
+if [ $# -gt 0 ]; then
+  INPUT_PATH_NOEXT="$( basename-noext "$1" )"
+  shift
 else
-  TEX_LINE=""
-fi
-
-if [ $# -gt 2 ]
-then
   usage
   exit 1
 fi
+
+# optional params
+
+TEX_LINE=""
+
+if [ $# -gt 0 ]; then
+  TEX_LINE="$1"
+  shift
+fi
+
+# too many params
+if [ $# -gt 0 ]; then
+  usage
+  exit 1
+fi
+
+# main
+AUX_DIR="./tmp/"
+PDF_DIR="./"
+TEX_DIR="./"
 
 # make pdf with bibtex and synctex
-latex-to-pdf "$INPUT_PATH_NOEXT"
+latex-to-pdf "$INPUT_PATH_NOEXT" "$AUX_DIR" "$PDF_DIR"
 
 # view
 OUTPUT_PATH="$INPUT_PATH_NOEXT".pdf
-if [ -z "$TEX_LINE" ]
-then
+if [ -z "$TEX_LINE" ]; then
   okular --unique "$OUTPUT_PATH" &
 else
-  PDF_PAGE="( synctex-forward "$TEX_LINE" )"
+  PDF_PAGE="( synctex-forward -t "$TEX_DIR" -p "$PDF_DIR" "$TEX_LINE" )"
+  #PDF_PAGE="( synctex-forward -t "$TEX_DIR" -s "$AUX_DIR" -p "$PDF_DIR" "$TEX_LINE" )"
   okular --unique -p "$PDF_PAGE" "$OUTPUT_PATH" &
 fi
 

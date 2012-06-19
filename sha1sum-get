@@ -4,7 +4,10 @@
 #
 # Ciro D. Santilli 
 #
-# 
+# Convenient wrapper for sha1sum.
+#
+# Does multiple files and outputs the sums only,
+# newline separated
 #
 #------------------------------------------------------------
 
@@ -13,16 +16,18 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-  echo 'Usage: ' 1>&2
+  echo 'Usage: sha1sum-get path ...' 1>&2
 }
 
 # check input
-if [ $# -ne 1 ]
+if [ $# -eq 0 ]
 then
   usage
   exit 1
 fi
 
-="$1"
+for F in "$@"; do
+  echo "$( sha1sum "$F" | awk -F ' ' '{ print $1 }' )"
+done
 
 exit 0
