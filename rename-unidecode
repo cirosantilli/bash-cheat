@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+#! deps = [PYTHON/unidecode_wrap.py]
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo "Usage: rename-unidecode do-rename
+
+find . -print0 | rename-unidecode  0
+# dry run, only prints changes that would happen
+
+find . -print0 | rename-unidecode  1
+# actual command. prints changes and makes them
+
+" 1>&2
+}
+
+if [ $# -eq 1 ]; then
+  DO_RENAME=$1
+else
+  usage
+  exit 1
+fi
+
+rename-basename-func unidecode_wrap.py $DO_RENAME

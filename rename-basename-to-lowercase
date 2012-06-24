@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo "Usage: rename-basename-to-lowercase do-rename
+
+find . -print0 | rename-basename-to-lowercase 0
+# dry run, only prints changes that would happen
+
+find . -print0 | rename-basename-to-lowercase 1
+# actual command. prints changes and makes them
+
+" 1>&2
+}
+
+if [ $# -eq 1 ]; then
+  DO_RENAME=$1
+else
+  usage
+  exit 1
+fi
+
+rename-basename 'y/A-Z/a-z/' $DO_RENAME

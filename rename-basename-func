@@ -20,7 +20,7 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-  echo "Usage: rename-basename find-replace do-rename
+  echo "Usage: rename-basename-func rename-func do-rename
 
 EXAMPLES:
 
@@ -34,7 +34,8 @@ find . -print0 | rename-basename 's/a/b/g' 1
 
 POSITIONAL PARAMETERS
 
-  find-replace : perl regex find replace
+  rename-func : a command that will take the old basename as a parameter
+  and return the new one to starndard output
 
   do-rename : 0 or 1. if 0, do not rename, prints old/new/newline
     if 1, rename, and print errors only
@@ -63,7 +64,6 @@ ALTERNATIVES
 }
 
 EXTENSION=true
-DELIM=' '
 
 while getopts Eh OPT; do
   case "$OPT" in
@@ -89,7 +89,7 @@ then
   exit 1
 fi
 
-FIND_REPLACE="$1"
+RENAME_FUNC="$1"
 DO_RENAME="$2"
 
 if [ "$DO_RENAME" = "1" ]; then
@@ -103,19 +103,6 @@ else
 fi
 
 # main
-
-old_new_print()
-{
-  echo "$FILE" 1>&2
-  echo "$NEW_FILE" 1>&2
-}
-
-error_change_dir()
-{
-  HAS_ERROR=true
-  echo "The new parent directory is not the same as the old one. rename-basename cannot change directories." 1>&2
-}
-
 HAS_ERROR=false
 while IFS= read -r -u3 -d $'\0' FILE; do
 
@@ -126,10 +113,10 @@ while IFS= read -r -u3 -d $'\0' FILE; do
   OLD_BNAME="$( basename "$FILE" )"
 
   if $EXTENSION; then
-    NEW_BNAME="$( echo "$OLD_BNAME" | perl -pe "$FIND_REPLACE" )"
+    NEW_BNAME="$( "$RENAME_FUNC" "$OLD_BNAME" )"
   else
     EXT="$( ext-nodot "$OLD_BNAME" )"
-    NEW_BNAME="$( echo "$( basename-noext "$OLD_BNAME" )" | perl -pe "$FIND_REPLACE" )"
+    NEW_BNAME="$( "$RENAME_FUNC" "$( basename-noext "$OLD_BNAME" )" )"
     NEW_BNAME="$NEW_BNAME"."$EXT"
   fi
 

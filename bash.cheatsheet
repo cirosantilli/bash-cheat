@@ -15,7 +15,6 @@
   fi
   # logical 'and'. DO NOT PUT IT INSIDE [], or it becmoses file exists
 
-
 # command line arguments
 PDF_PATH="$1" # argument 1
 DJVU_PATH="$2" # argument 2
@@ -168,170 +167,190 @@ rename -n 's/^([0-9]) /0$1 /g' *.mp3
 rename 's/^([0-9]) /0$1 /g' *.mp3
 # makes changes
 
-#1 standard utils
+# standard utils
 
-gnome-open "$FILE"
-# opens with the deafult application. works in Ubuntu Unity 12.04
+  # cpio
 
-#2 xargs
+  find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
+  # copy selected files to destination, building and keeping their relative directory structure
 
-find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
-# xargs find print0 combo.
-# prints: 
-# asdf pdf1
-# asdf pdf2
-# ...
-#
-# print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
-#
-# this executes echo asdf 'pdf1', ..., for EACH pdf file found
+  gnome-open "$FILE"
+  # opens with the deafult application. works in Ubuntu Unity 12.04
 
-find . -name '*.pdf' -print0 | xargs -0 echo asdf
-# prints:
-# asdf pdf1 pdf2 pdf3 ...
-#
-# echo is called only once.
-# each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
+  # xargs
 
-find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
-# xargs with multiple commands. must use bash.
-# only use this for very simple commands, or you are in for an escaping hell!
-# use the next pattern instead: TODO
+  find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
+  # xargs find print0 combo.
+  # prints: 
+  # asdf pdf1
+  # asdf pdf2
+  # ...
+  #
+  # print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
+  #
+  # this executes echo asdf 'pdf1', ..., for EACH pdf file found
 
-while IFS= read -r -u3 -d $'\0' FILE; do
-  echo "$FILE"
-done 3< <(find /tmp -type f -print0)
-# the only thing tha breaks this is having programs that use 3<. godlike
+  find . -name '*.pdf' -print0 | xargs -0 echo asdf
+  # prints:
+  # asdf pdf1 pdf2 pdf3 ...
+  #
+  # echo is called only once.
+  # each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
 
-while IFS= read -r -u3 -d $'\0' FILE; do
-  echo "$FILE"
-done 3< <(find /tmp -type f -print0 | sort -rz)
-# this reverses find order of the find output, allowing you to rename directories also (with this, directories)
-# will come last and be renamed last. -r is for 'reverse, and -z is for null terminated
+  find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
+  # xargs with multiple commands. must use bash.
+  # only use this for very simple commands, or you are in for an escaping hell!
+  # use the next pattern instead: TODO
 
-#2 mktemp
+  # find
 
-TFILE="$(mktemp)"
-echo "$TFILE"
-# creates a temporary file and returs its name
+  while IFS= read -r -u3 -d $'\0' FILE; do
+    echo "$FILE"
+  done 3< <(find /tmp -type f -print0)
+  # the only thing tha breaks this is having programs that use 3<. godlike
 
-#2 system date and time settings.
+  while IFS= read -r -u3 -d $'\0' FILE; do
+    echo "$FILE"
+  done 3< <(find /tmp -type f -print0 | sort -rz)
+  # this reverses find order of the find output, allowing you to rename directories also (with this, directories)
+  # will come last and be renamed last. -r is for 'reverse, and -z is for null terminated
 
-sudo date
-# get system date
+  find . -printf '%f'
 
-sudo date -s "1 JUN 2012 09:30:00"
-# set system date
+  #%p	filename, including name(s) of directory the file is in
+  #%m	permissions of file, displayed in octal.
+  #%f	displays the filename, no directory names are included
+  #%g	name of the group the file belongs to.
+  #%h	display name of directory file is in, filename isn't included.
+  #%u	username of the owner of the file
 
-TIME_STAMP=`date +%Y-%m-%d-%H-%M-%S`
+# mktemp
 
-sudo hwclock --show
-# see hardware clock
+  TFILE="$(mktemp)"
+  echo "$TFILE"
+  # creates a temporary file and returs its name
 
-sudo hwclock --systohc
-# sync hardware clock to system clock
+# system date and time settings.
 
-$TIMEZONE_LOCATION=/usr/share/zoneinfo
-cd $TIMEZONE_LOCATION
-ls
-$TIMEZONE_NAME=
-cp $TIMEZONE_LOCATION/$TIMEZONE_NAME /etc/localtime
-# set you time zone
+  sudo date
+  # get system date
 
-# on dual boot with windows there are conflicts because Windows uses local time, and Linux UTC (more logical...). you must either tell Linux to use local, or better, Windows to use UTC
+  sudo date -s "1 JUN 2012 09:30:00"
+  # set system date
 
-# id3tool get id3 tags info (for mp3 for example)
-TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
-ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-ALBUM="`id3tool "$1" | grep '^Album:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-YEAR="`id3tool "$1" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
+  TIME_STAMP=`date +%Y-%m-%d-%H-%M-%S`
 
-install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
+  sudo hwclock --show
+  # see hardware clock
 
-#1 perl replace
+  sudo hwclock --systohc
+  # sync hardware clock to system clock
 
-perl -pie 's/old-word/new-word/g'
+  $TIMEZONE_LOCATION=/usr/share/zoneinfo
+  cd $TIMEZONE_LOCATION
+  ls
+  $TIMEZONE_NAME=
+  cp $TIMEZONE_LOCATION/$TIMEZONE_NAME /etc/localtime
+  # set you time zone
 
-#1 prompt user
+  # on dual boot with windows there are conflicts because Windows uses local time, and Linux UTC (more logical...). you must either tell Linux to use local, or better, Windows to use UTC
 
-# while read case method
+  # id3tool get id3 tags info (for mp3 for example)
+  TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
+  ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+  ALBUM="`id3tool "$1" | grep '^Album:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+  YEAR="`id3tool "$1" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+  TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
 
-# ask for user input, break into cases
-# if none of the cases is met, print error message and ask again.
-while true; do
-    read -p "Which case do you want? case a [a], case b [b], case c [c])" c 
-    case "$c" in
-      "a" ) echo "Action for case a"; break;;
-      "b" ) echo "Action for case b"; break;;
-      "c" ) echo "Action for case c"; break;;
-      * ) echo "Does not match any of the possible cases. Try again."
-    esac
-done
+  install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
 
-# same as above, but for the ultra common case of yes [Y] no [n] case 
-while true; do
-    read -p "Yes or no? [Y/n]" yn
-    case "$yn" in
-        Y ) ; break;;
-        n ) ; break;;
-        * ) echo "Please enter either 'Y' or 'n'.";;
-    esac
-done
+# perl replace
 
-#2 files compresssion
+  perl -pie 's/old-word/new-word/g'
 
-# the performance parameters are:
-# compression ratio
-# compression time
-# speed of seeing and extracting single files
-# support across OS
+# prompt user
+
+  # while read case method
+
+  # ask for user input, break into cases
+  # if none of the cases is met, print error message and ask again.
+  while true; do
+      read -p "Which case do you want? case a [a], case b [b], case c [c])" c 
+      case "$c" in
+        "a" ) echo "Action for case a"; break;;
+        "b" ) echo "Action for case b"; break;;
+        "c" ) echo "Action for case c"; break;;
+        * ) echo "Does not match any of the possible cases. Try again."
+      esac
+  done
+
+  # same as above, but for the ultra common case of yes [Y] no [n] case 
+  while true; do
+      read -p "Yes or no? [Y/n]" yn
+      case "$yn" in
+          Y ) ; break;;
+          n ) ; break;;
+          * ) echo "Please enter either 'Y' or 'n'.";;
+      esac
+  done
+
+# file compresssion
+
+  # the performance parameters are:
+  # compression ratio
+  # compression time
+  # speed of seeing and extracting single files
+  # support across OS
+  # encryption
+  # break into small chunks
+  # keep file permissions and metadata
+
+  # example: I compressed 2.4 Gb of non compressed files. I got:
+  # zip and gz: 1.1Gb. gz was faster
+  # gz2: 760M, but way slower
+  # zip one by one: 1.1Gb, same as compressing whole dir.
+
+  # zip
+
+    # most widely supported format across operating systems.
+    # not so high compression
+    # easy to view and extract single files
+
+    zip name-of-archive.zip file-to-compress
+    zip -r name-of-archive.zip dir-to-compress
+    # creates a zip of dir-to-compress named name-of-archive.zip
+
+    # compressing files one by one and the whole dir gives the same size, thus explaining why it is easy to extract single files; he only uses one dictionnary per file
+    # therefore, if your major operation is to extract single files and you have tons of files, it is better to keep the file tree, and replace files by file.zip, so that is is easy to browse files
+
+    for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
+    # zip every file in cur dir to file.zip
+
+  # tar
+
+    # only turns dir into file, but no compression
+    # this is why it is often coupled with gz and bz2: those are files compressers
+    # gz gives similar compression to .zip
+    # gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
+
+
+    tar czf dir.tar.gz dir/ 
+    tar cjf dir.tar.bz2 dir/ 
+    # c is for Create, z tar gz, 'j' for bz2, 'f' to output to a file and not to standard output (terminal)
+
+    tar 
+
 # encryption
-# break into small chunks
-# keep file permissions and metadata
 
-# example: I compressed 2.4 Gb of non compressed files. I got:
-# zip and gz: 1.1Gb. gz was faster
-# gz2: 760M, but way slower
-# zip one by one: 1.1Gb, same as compressing whole dir.
-
-#2 zip
-
-# most widely supported format across operating systems.
-# not so high compression
-# easy to view and extract single files
-
-zip name-of-archive.zip file-to-compress
-zip -r name-of-archive.zip dir-to-compress
-# creates a zip of dir-to-compress named name-of-archive.zip
-
-# compressing files one by one and the whole dir gives the same size, thus explaining why it is easy to extract single files; he only uses one dictionnary per file
-# therefore, if your major operation is to extract single files and you have tons of files, it is better to keep the file tree, and replace files by file.zip, so that is is easy to browse files
-
-for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
-# zip every file in cur dir to file.zip
-
-#2 tar. only turns dir into file, but no compression
-# this is why it is often coupled with gz and bz2: those are files compressers
-# gz gives similar compression to .zip
-# gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
-
-
-tar czf dir.tar.gz dir/ 
-tar cjf dir.tar.bz2 dir/ 
-# c is for Create, z tar gz, 'j' for bz2, 'f' to output to a file and not to standard output (terminal)
-
-# encryption
-
-gpg -c in
-# will create a in.gpg encrypted file. can only be decrypted and then opened with password
-# good combo with tar.gz
+  gpg -c in
+  # will create a in.gpg encrypted file. can only be decrypted and then opened with password
+  # good combo with tar.gz
 
 
 # GUI control
 
-# control some window properties
-wmctrl -a ' - GVIM' # focus on a window with title containing '- GVIM' ( hopefully gVim! )
+  # control some window properties
+  wmctrl -a ' - GVIM' # focus on a window with title containing '- GVIM' ( hopefully gVim! )
 
 #1 techniques
 
