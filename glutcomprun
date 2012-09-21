@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+#compiles and runs a simple standard opengl/glut c++ program
+
+OUT="${1%.*}" #path without extension
+
+gcc -o "$OUT"  "$1" -lglut -lGLU
+
+if [ "$1" -eq 1 ]
+  ./"$OUT"
+fi
