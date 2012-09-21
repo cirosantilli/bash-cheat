@@ -1,39 +1,7 @@
 #!/usr/bin/env bash
 
-# dependencies=["./find-music"]
-
-#------------------------------------------------------------
-#
-# Ciro D. Santilli 
-#
-# finds music under given input dir based on file extension,
-# makes an m3u list out of them.
-#
-# If no music files are found, no m3u is created.
-#
-# OPTIONS
-#
-# * -a: Absolute. If given paths on m3u are absolute, otherwise
-# paths are relative by default. Obviously, if you plan on moving
-# your m3u around YOUR system, you have to give it absolute paths.
-# but if you plan on giving them to someone else, relative paths 
-# are the way to go.
-#
-# * -o: Specify output relative or absolute. If ommited in non
-# recursive mode, the output is put on standard output. If in re
-# cursive mode, the output always goes to a file, and 
-# this allows to change the default filename all.m3u.
-#
-# * -r: Recursive. If specified, for each directory makes an
-# m3u of all the music under that directory. If the output name
-# is not given, then the music lists are saved to default name
-# 'all.m3u'. The output is always put inside a files, never to
-# standard output.
-#
-# Limitations: no newlines in names!
-#
-# 
-#------------------------------------------------------------
+#!install_requires="sudo apt-get install realpath"
+#!install_requires="cd \"$SOMEWHERE_IN_YOUR_PATH\"; wget https://github.com/cirosantilli/bash/blob/48dd9d10f7d094291b246b02a6b08fc650e81e2d/find-music"
 
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong
@@ -42,15 +10,62 @@ usage()
 {
   echo 'Usage: find-music-make-m3u [options] find-root...
 
-Sample calls:
+DEPENDENCIES
 
-find-music-make-m3u .
-find-music-make-m3u /tmp /bin
-find-music-make-m3u -o out.m3u .
-find-music-make-m3u -a .
-find-music-make-m3u -r -o all.m3u .
+  sudo apt-get install realpath
+  wget https://github.com/cirosantilli/bash/blob/48dd9d10f7d094291b246b02a6b08fc650e81e2d/find-music
+
+SAMPLE CALLS
+
+  find-music-make-m3u .
+  find-music-make-m3u /tmp /bin
+  find-music-make-m3u -o out.m3u .
+  find-music-make-m3u -a .
+  find-music-make-m3u -r -o all.m3u .
+
+  finds music under given input dir based on file extension,
+  makes an m3u list out of them.
+
+  If no music files are found, no m3u is created.
+
+OPTIONS
+
+  * -a: Absolute. If given paths on m3u are absolute, otherwise
+  paths are relative by default. Obviously, if you plan on moving
+  your m3u around YOUR system, you have to give it absolute paths.
+  but if you plan on giving them to someone else, relative paths 
+  are the way to go.
+
+  * -o: Specify output relative or absolute. If ommited in non
+  recursive mode, the output is put on standard output. If in re
+  cursive mode, the output always goes to a file, and 
+  this allows to change the default filename all.m3u.
+
+  * -r: Recursive. If specified, for each directory makes an
+  m3u of all the music under that directory. If the output name
+  is not given, then the music lists are saved to default name
+  'all.m3u'. The output is always put inside a files, never to
+  standard output.
+
+LIMITATIONS
+
+  No newlines in names!
 ' 1>&2
+
 }
+
+#check dependencies
+if -n which realpath &> /dev/null; then
+    echo "realpath not found. To install on Ubuntu use:" 1>&2
+    echo "sudo apt-get install realpath" 1>&2
+    exit 1
+fi
+
+if -n which find-music &> /dev/null; then
+    echo "find-music not found. To install:" 1>&2
+    echo "wget -P ~/bin https://github.com/cirosantilli/bash/raw/48dd9d10f7d094291b246b02a6b08fc650e81e2d/find-music" 1>&2
+    exit 1
+fi
 
 # default vals
 RECURSE=false

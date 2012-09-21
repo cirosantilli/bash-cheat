@@ -1,11 +1,48 @@
 #!/usr/bin/env bash
 
-#compiles and runs a simple standard opengl/glut c++ program
+usage()
+{
+  echo 'USAGE 
 
-OUT="${1%.*}" #path without extension
+  glutcomprun cppfile do_run
 
-gcc -o "$OUT"  "$1" -lglut -lGLU
+SUMMARY
 
-if [ "$1" -eq 1 ]
+  Compiles and runs opengl/glut file
+
+SAMPLE CALLS
+
+  glutcomprun test.cpp 0 # compiles test.cpp, creates output on same dir named test
+  glutcomprun test.cpp 1 # compiles test.cpp, creates output on same dir named test and runs it
+
+AUTHORS
+
+  Ciro D. Santilli
+' 1>&2
+}
+
+
+#obligatory arguments
+if [ $# -gt 0 ]; then
+  CPP="$1"
+  shift
+else
+  usage
+  exit 1
+fi
+
+if [ $# -gt 0 ]; then
+  DO_RUN="$1"
+  shift
+else
+  usage
+  exit 1
+fi
+
+OUT="${CPP%.*}" #path without extension
+
+gcc -o "$OUT" "$CPP" -lglut -lGLU
+
+if [ "$DO_RUN" -eq 1 ]; then
   ./"$OUT"
 fi

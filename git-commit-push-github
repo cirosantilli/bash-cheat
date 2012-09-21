@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 1 ]; then
+  git commit -am "$1"
+else
+  git commit -a --allow-empty-message -m ''
+fi
+
+git push github master #one step commit push
+
+exit 0

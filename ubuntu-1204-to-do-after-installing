@@ -156,7 +156,7 @@ firefoxdownloadfolder="~/nobackup/download"
     #   Editor: custom text editor,
     #   Command: gvim --remote +%l %f 
 
-    # version control
+  # version control
 
     # git
     sudo apt-get install git

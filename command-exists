@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'USAGE 
+
+  command-exists command
+
+RETURN VALUES
+
+  * 0 if the command exists
+  * 1 if the command in $1 does not exist
+  * 2 if the arguments supplied are not ok.
+
+AUTHORS
+
+  Ciro D. Santilli
+' 1>&2
+}
+
+if [ $# -gt 0 ]; then
+  COMMAND="$1"
+else
+  usage
+  exit 2
+fi
+
+if which "$1" &> /dev/null; then
+  exit 0
+else
+  exit 1
+fi

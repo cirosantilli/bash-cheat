@@ -22,6 +22,12 @@
   git remote add github https://github.com/cirosantilli/latex.git
   # create a remote branch at github called github
 
+  git remote 
+  # shows remote repo aliases without their real addresses
+
+  git remote -v
+  # shows remote repo aliases and their real addresses
+
   git remote show
   # view all names of remote branches
 
