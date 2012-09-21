@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#if one arg, uses it as message, if no args commists without message
+
 if [ $# -eq 1 ]; then
   git commit -am "$1"
 else

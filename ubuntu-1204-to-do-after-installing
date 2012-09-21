@@ -262,6 +262,11 @@ firefoxdownloadfolder="~/nobackup/download"
   # xdotool. can send clicks and manage window properties.
   sudo apt-get install xdotool
 
+# games
+
+  sudo apt-get install nethack-console #nethack rpg
+  sudo apt-get install netrek-client-cow #netrek
+
 
 # command line utilities
 

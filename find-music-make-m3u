@@ -63,6 +63,8 @@ fi
 
 if -n which find-music &> /dev/null; then
     echo "find-music not found. To install:" 1>&2
+    DIR_IN_PATH=~/bin
+    chmod +x "$DIR_IN_PATH"/comprunglut
     echo "wget -P ~/bin https://github.com/cirosantilli/bash/raw/48dd9d10f7d094291b246b02a6b08fc650e81e2d/find-music" 1>&2
     exit 1
 fi

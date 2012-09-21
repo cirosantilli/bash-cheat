@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
 usage()
 {
   echo 'USAGE 
@@ -39,10 +42,15 @@ else
   exit 1
 fi
 
+if [ $# -gt 0 ]; then
+  usage
+  exit 1
+fi
+
 OUT="${CPP%.*}" #path without extension
 
-gcc -o "$OUT" "$CPP" -lglut -lGLU
+gcc -fpermissive -o "$OUT" "$CPP" -lglut -lGLU
 
 if [ "$DO_RUN" -eq 1 ]; then
-  ./"$OUT"
+  ./"$OUT" &
 fi
