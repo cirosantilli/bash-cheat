@@ -3,7 +3,7 @@
 #!USER CONFIGURATION #modify this as you need
 SEP="__" #separator for the new save name. cannot appear on the prefix you give!!
 NETHACK_SAVE_DIR=/var/games/nethack/save #where saves are originally
-NETHACK_STATE_DIR="$HOME/ciro/bak/share/game/nethack_save" #where you want to save the saves
+NETHACK_STATE_DIR="$HOME/.nethack_save" #where you want to save the saves
 #!/USER CONFIGURATION
 
 set -u # error on undefined variable
@@ -20,10 +20,13 @@ SUMMARY
 DESCRIPTION
 
   You must save before in nethack for this to work.
+  
+  You cannot use this script while nethack is running: nethack must be off for saving and loading!!!
 
   Output save dir is made automatically each time the script is run.
 
   Save state cannot contain the sapartor $SEP, specified in the script.
+
  
 INSTALLATION
 
@@ -35,8 +38,14 @@ INSTALLATION
 
 SAMPLE CALLS
 
+  #first save nethack with S command.
+
+  #while quitting use:
+
   nethack-state s 1 #saves state 1
   nethack-state s "hard part" #saves state "hard part"
+
+  #before starting the game
 
   nethack-state l 1 #loads state 1
   nethack-state l "hard part" #loads state "hard part"
