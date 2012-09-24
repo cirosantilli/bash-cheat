@@ -22,14 +22,18 @@ firefoxdownloadfolder="~/nobackup/download"
 # update
   sudo apt-get update && sudo apt-get upgrade
 
-# interface tweaking
+# distro specific
 
-  # ubuntu tweak
-  sudo add-apt-repository ppa:tualatrix/ppa
-  sudo apt-get update 
-  sudo apt-get install ubuntu-tweak
+  # ubuntu
+    sudo add-apt-repository ppa:tualatrix/ppa
+    sudo apt-get update 
+    sudo apt-get install ubuntu-tweak
 
-  sudo apt-get install myunity
+    sudo apt-get install myunity
+
+  sudo apt-get install gconf-editor
+
+  sudo apt-get install compiz compizconfig-settings-manager
 
 # proprietary
   sudo -E wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list

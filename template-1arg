@@ -13,7 +13,15 @@ SUMMARY
 
 
 
-SAMPLE CALLS
+DESCRIPTION
+
+
+
+INSTALLATION
+
+
+
+CAVEATS
 
 
 
@@ -25,9 +33,17 @@ SIDE EFFECTS
 
 
 
+TODO
+
+
+
+SAMPLE CALLS
+
+
+
 AUTHORS
 
-  Ciro D. Santilli
+  Ciro Duran Santilli
 ' 1>&2
 }
 

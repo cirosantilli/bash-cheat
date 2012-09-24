@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+#!USER CONFIGURATION #modify this as you need
+SEP="__" #separator for the new save name. cannot appear on the prefix you give!!
+NETHACK_SAVE_DIR=/var/games/nethack/save #where saves are originally
+NETHACK_STATE_DIR="$HOME/ciro/bak/share/game/nethack_save" #where you want to save the saves
+#!/USER CONFIGURATION
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+usage()
+{
+  echo 'USAGE nethack-state sl pref
+
+SUMMARY
+
+  Saves or loads nethack save state.
+
+DESCRIPTION
+
+  You must save before in nethack for this to work.
+
+  Output save dir is made automatically each time the script is run.
+
+  Save state cannot contain the sapartor $SEP, specified in the script.
+ 
+INSTALLATION
+
+  Nethack dir, output save dir must and save separtor must be specified by
+  modifying the variables SEP, NETHACK_SAVE_DIR and NETHACK_STATE_DIR at the beginning
+  of the source code of this script.
+
+  If you do this after saving, old saves will be lost.
+
+SAMPLE CALLS
+
+  nethack-state s 1 #saves state 1
+  nethack-state s "hard part" #saves state "hard part"
+
+  nethack-state l 1 #loads state 1
+  nethack-state l "hard part" #loads state "hard part"
+
+AUTHORS
+
+  Ciro D. Santilli
+' 1>&2
+}
+
+if [ $# -ne 2 ]; then
+  usage
+fi
+
+SL="$1"
+PREF="$2"
+
+#check no separator SEP in prefix
+if [[ "$PREF" == *"$SEP"* ]]; then
+  echo "State name contains separator \"$SEP\". Change state name."
+fi
+
+mkdir -p "$NETHACK_STATE_DIR"
+
+if [ "$SL" == s ]; then
+  for F in "$NETHACK_SAVE_DIR"/*; do
+      BNAME="$(basename "$F")"
+      cp -f "$F" "$NETHACK_STATE_DIR/${PREF}${SEP}${BNAME}"
+      break
+  done
+elif [ "$SL" == l ]; then
+  for F in "$NETHACK_STATE_DIR/$PREF"*; do
+    BNAME="$(basename "$F")"
+    BNAME_OLD="${BNAME##*${SEP}}"
+    cp -f "$F" "$NETHACK_SAVE_DIR/$BNAME_OLD"
+    break
+  done
+fi
+
+exit 0
