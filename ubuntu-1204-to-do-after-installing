@@ -22,7 +22,12 @@ firefoxdownloadfolder="~/nobackup/download"
 # update
   sudo apt-get update && sudo apt-get upgrade
 
-# distro specific
+
+sudo apt-get install apt-file
+# lets you search packages by files it contains
+# see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
+
+# configuration editing
 
   # ubuntu
     sudo add-apt-repository ppa:tualatrix/ppa
@@ -58,8 +63,8 @@ firefoxdownloadfolder="~/nobackup/download"
 
 # document viewing and converting
 
-  # okular
-  sudo apt-get install okular
+  # okular + djvu in extra backends
+  sudo apt-get install okular okular-extra-backends
 
   # calibre
   sudo apt-get install calibre
@@ -230,17 +235,15 @@ firefoxdownloadfolder="~/nobackup/download"
 
    # test mysql
    firefox http://localhost/phpmyadmin & # login: 'root'. password: what you entered at installation.
-    
 
   # publishing
 
-    # pandoc. convert to/from extended markdow / latex / html
+    # pandoc. convert to/from extended markdown / latex / html
     sudo apt-get install pandoc
-    sudo apt-get install texlive-fonts-recommended
+    sudo apt-get install texlive-full texlive-fonts-recommended
     # you need this for certain latex fonts such as Continuous functions C
 
     sudo apt-get install texmaker
-
 
 # file management
 
@@ -256,6 +259,9 @@ firefoxdownloadfolder="~/nobackup/download"
   sudo apt-get install gparted
   # gparted. create/delete/change partition size. In order to reduce you windows partition
   # you need first to reduce it in windows, and then use this.
+
+#sudo add-apt-repository ppa:libreoffice/pp #already comes with Ubuntu 11.10
+sudo apt-get install libreoffice-base
 
 # keyboard and mouse automation 
 

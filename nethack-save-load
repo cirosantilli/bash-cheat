@@ -39,14 +39,14 @@ INSTALLATION
 SAMPLE CALLS
 
   #first save nethack with S command.
-
   #while the game is quit use:
 
   nethack-save-load s 1; nethack    #saves state 1, and comes back to the game
   nethack-save-load s "hard part"; nethack   #saves state "hard part"
   nethack-save-load s "as__df";  # forbidden because name contains magic sequence "__"
 
-  #before starting the game use:
+  #to load a state, quit with #quit
+  #while the game is quit do:
 
   nethack-save-load l 1; nethack    # loads state 1, and comes back to the game
   nethack-save-load l "hard part"; nethack    # loads state "hard part"

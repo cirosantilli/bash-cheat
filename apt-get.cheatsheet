@@ -2,84 +2,121 @@
 
 #------------------------------------------------------------
 #
-# Ciro D. Santilli 
+#Ciro D. Santilli 
+#
+#  THANKS TO
+#
+#    http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
 #
 #------------------------------------------------------------
 
-#1 before anything: proxy if you need one
+#download packages
 
-# proxy
-# Add the following line to your /etc/apt/apt.conf to enable apt-get through a proxy-server.
-Acquire::http::Proxy "http://proxy.server.here:port/";
+#proxy
 
-#1 find sources
+  #Add the following line to your /etc/apt/apt.conf to enable apt-get through a proxy-server.
+  Acquire::http::Proxy "http://proxy.server.here:port/";
 
-# add a ppa. a ppa is a personal source, not directly supported by Ubuntu.
-sudo add-apt-repository ppa:deluge-team/ppa
+#sources
 
-# list sources 
+  #add sources
 
-# sources list. does not include ppas
-cat /etc/apt/sources.list
-sudo vim /etc/apt/sources.list
+    #add a ppa. a ppa is a personal source, not directly supported by Ubuntu.
+    sudo add-apt-repository ppa:deluge-team/ppa
 
-# ppas you added are kept in separate files in this dir:
-ls -1 /etc/apt/sources.list.d/
+  #list sources 
 
-# remove sources
-# you could remove them manually, but there it is better to do that with ppa-purge:
-sudo apt-get install ppa-purge
-sudo ppa-purge ppa:matthaeus123/mrw-gimp-svn
+    #sources list. does not include ppas
+    cat /etc/apt/sources.list
+    sudo vim /etc/apt/sources.list
 
-#1 update existing sources
+    #ppas you added are kept in separate files in this dir:
+    ls -1 /etc/apt/sources.list.d/
 
-# this looks at the internet repositories, and spots upgrades that may take place, but does not do any upgrade. to do that , see upgrade
-sudo apt-get update
+  #remove sources
 
-#1 install
+    #you could remove them manually, but there it is better to do that with ppa-purge:
+    sudo apt-get install ppa-purge
+    sudo ppa-purge ppa:matthaeus123/mrw-gimp-svn
 
-# install package
-sudo apt-get install $PKG
+  #update existing sources
 
-#1 upgrade installed packages
+    #this looks at the internet repositories, and spots upgrades that may take place, but does not do any upgrade. to do that , see upgrade
+    sudo apt-get update
 
-# upgrades all the possible updates that have been found with the update command.
-sudo apt-get upgrade
+#find
 
-#1 remove packages. someday they have to die =(
+  sudo apt-cache search "Apache Server"
+  #searches package name and descriptions on the web
 
-# remove package but leave program data (preferences, etc)
-sudo apt-get remove $PKG
 
-# remove package and program data (preferences, etc)
-sudo apt-get purge $PKG
+  sudo apt-get install apt-file
+  #searches packages by files they contain
 
-# ?
-sudo apt-get autoclean
 
-# ?
-sudo apt-get clean
+#install
 
-# removes dependencies that are no longer necessary
-sudo apt-get autoremove
+  #install package
+  sudo apt-get install $PKG
 
-#1 diagnosing problems
+  dpkg -l | grep $PKG
+  #verify if the packages is correctly installed: if it is it will appear in the list.
 
-# find build dependencies
-sudo apt-get build-dep $PKG
+#package info
 
-# info about package
-dpkg -l $PKG
+  sudo apt-cache depends $PKG
+  #list package dependencies
 
-#1 common combos
+  sudo apt-cache show $PKG
+  #basic information about a package
 
-# to correct dep problems try:
-PKG=gimp
-sudo apt-get update
-sudo apt-get purge $PKG
-sudo apt-get autoremove
-sudo apt-get autoclean
-sudo apt-get clean
-sudo apt-get autoremove
-suto apt-get install $PKG
-# also, if the package comes from a ppa, remove the ppa and try again
+  sudo apt-cache showpkg $PKG
+  #detailed information about a package
+
+#upgrade installed packages
+
+  #upgrade a single package
+  sudo apt-get -u install $PKG
+
+  #upgrades all packages
+  sudo apt-get -u upgrade
+
+#remove packages. someday they have to die =(
+
+  #remove package but leave configuration files
+  sudo apt-get remove $PKG
+
+  #remove package and configuration files
+  sudo apt-get purge $PKG
+
+  #?
+  sudo apt-get autoclean
+
+  #?
+  sudo apt-get clean
+
+  #removes dependencies that are no longer necessary
+  sudo apt-get autoremove
+
+#diagnosing problems
+
+  #find build dependencies
+  sudo apt-get build-dep $PKG
+
+  #info about package
+  dpkg -l $PKG
+
+#common combos
+
+  #to correct dep problems try:
+  PKG=gimp
+  sudo apt-get update
+  sudo apt-get purge $PKG
+  sudo apt-get autoremove
+  sudo apt-get autoclean
+  sudo apt-get clean
+  sudo apt-get autoremove
+  suto apt-get install $PKG
+  #also, if the package comes from a ppa, remove the ppa and try again
+
+
