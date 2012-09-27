@@ -10,12 +10,44 @@
 #
 #------------------------------------------------------------
 
-#download packages
+#imporant info
+
+  #USE APTITUDE INSTEAD OF APT-GET!!!
+
+  #apt-get vs aptitude vs synaptic
+
+    #*it seems that* apt-get aptitude, and synaptic are front-ends for dpkg.therefore they should be compatible.
+
+    #synaptic has a gui interface, but less options..
+
+    #aptitude seems to be more powerful than apt-get
+
+  #metapackages
+
+    #metapackages are packages that contain no source code of their own, but have several dependencies
+
+    #they serve as a collection of software that is useful when installed together.
+
+    #examples: texlive-full (*lots* ot latex packages), several desktop environments, etc.
+
+    #it seems that dpkg without additional info has no way to tell the
+    #difference between packages installed as deps of a metadata
+    #and packages explicitly installed: it is as if you had written if all by yourself on the command line
+
+    #it seems that aptitude can store this information, and desinstall metapackages in one go:
+    #*major* reason for using aptitude!!!
+
+    #there seems to be no way of telling
 
 #proxy
 
-  #Add the following line to your /etc/apt/apt.conf to enable apt-get through a proxy-server.
+  sudo vim /etc/apt/apt.conf
   Acquire::http::Proxy "http://proxy.server.here:port/";
+  #add the last line to your /etc/apt/apt.conf to enable apt-get through a proxy-server.
+
+#making packages
+
+  #TODO! =) someday ill get to the point of having something useful to package too myself...
 
 #sources
 
@@ -50,9 +82,22 @@
   #searches package name and descriptions on the web
 
 
-  sudo apt-get install apt-file
+  #sudo apt-get install <pkg>
+  sudo aptitude install <pkg>
   #searches packages by files they contain
 
+  sudo apt-get install -o APT::Install-Recommends="true" <pkg>
+  #also installs recommended packages
+  #-o option changes things which could be in the config files.
+
+  sudo apt-get install -o APT::Install-Suggests="true" <pkg>
+  #also installs suggested packages
+
+  dpkg -l | grep foo
+  #lists all installed packages.and greps for foo.
+  #the first two letters mean:
+  # ii: installed
+  # rc: configuration files only (rc means config such as in bashRC)
 
 #install
 
@@ -64,13 +109,19 @@
 
 #package info
 
-  sudo apt-cache depends $PKG
+  apt-cache depends $PKG
   #list package dependencies
 
-  sudo apt-cache show $PKG
+  sudo apt-get build-dep $PKG
+  #? what is the difference between this and depends
+
+  sudo apt-rdepends -r $PKG
+  #who depends on $PKG: reverse dependencies
+
+  apt-cache show $PKG
   #basic information about a package
 
-  sudo apt-cache showpkg $PKG
+  apt-cache showpkg $PKG
   #detailed information about a package
 
 #upgrade installed packages
@@ -78,33 +129,35 @@
   #upgrade a single package
   sudo apt-get -u install $PKG
 
-  #upgrades all packages
+  #upgrades all packages for which upgrade does not involve installing more packages
   sudo apt-get -u upgrade
+
+  #upgrades all packages, even if upgrade requires installation of new packages 
+  sudo apt-get dist-upgrade
 
 #remove packages. someday they have to die =(
 
+  #sudo apt-get remove $PKG
+  sudo aptitude remove $PKG
   #remove package but leave configuration files
-  sudo apt-get remove $PKG
 
+  #sudo apt-get purge $PKG
+  sudo aptitude purge $PKG
   #remove package and configuration files
-  sudo apt-get purge $PKG
 
-  #?
-  sudo apt-get autoclean
-
-  #?
-  sudo apt-get clean
-
-  #removes dependencies that are no longer necessary
   sudo apt-get autoremove
+  #removes dependencies which you did not install explicitly (didn't write on the command line yourself)
+  #and that are no longer necessary. always follows remove or purge
+  #dpkg then must contain information about what you installed yourself or not.
 
-#diagnosing problems
+  #does nothing for packages that come from metapackages, which are treated as if you had
+  #manually installed them. This is where aptitude comes in!
 
-  #find build dependencies
-  sudo apt-get build-dep $PKG
+  sudo apt-get autoclean
+  #?
 
-  #info about package
-  dpkg -l $PKG
+  sudo apt-get clean
+  #?
 
 #common combos
 
@@ -118,5 +171,3 @@
   sudo apt-get autoremove
   suto apt-get install $PKG
   #also, if the package comes from a ppa, remove the ppa and try again
-
-

@@ -19,13 +19,15 @@ set -e # stop execution if one command goes wrong
 
 firefoxdownloadfolder="~/nobackup/download"
 
-# update
+# before anyting, update
   sudo apt-get update && sudo apt-get upgrade
 
 
 sudo apt-get install apt-file
 # lets you search packages by files it contains
 # see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
+
+sudo apt-get install apt-rdepends
 
 # configuration editing
 
@@ -240,7 +242,8 @@ sudo apt-get install apt-file
 
     # pandoc. convert to/from extended markdown / latex / html
     sudo apt-get install pandoc
-    sudo apt-get install texlive-full texlive-fonts-recommended
+    sudo apt-get install texlive
+    #sudo apt-get install texlive-full #enormous size and amount of packages
     # you need this for certain latex fonts such as Continuous functions C
 
     sudo apt-get install texmaker
