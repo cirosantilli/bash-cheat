@@ -2,79 +2,79 @@
 
 #------------------------------------------------------------
 #
-# Ciro D. Santilli
+#Ciro D. Santilli
 #
-# Major bash commands and standard utilities.
-# This covers commands briefly only, they may have their own cheatsheet.
+#Major bash commands and standard utilities.
+#This covers commands briefly only, they may have their own cheatsheet.
 #
 #------------------------------------------------------------
 
-#1 logical operations
+#logical operations
   if 0 -a 0; then
     echo true
   fi
-  # logical 'and'. DO NOT PUT IT INSIDE [], or it becmoses file exists
+  #logical 'and'. DO NOT PUT IT INSIDE [], or it becmoses file exists
 
-# command line arguments
-PDF_PATH="$1" # argument 1
-DJVU_PATH="$2" # argument 2
+#command line arguments
+PDF_PATH="$1" #argument 1
+DJVU_PATH="$2" #argument 2
 
   DJVU_PATH="$*"
-  # List of all arguments separated by SPACES.
-  # Each argument is NOT quoted individually. 
+  #List of all arguments separated by SPACES.
+  #Each argument is NOT quoted individually. 
 
   DJVU_PATH="$@"
-  # List of all arguments separated by SPACES.
-  # Each argument IS quoted individually.
+  #List of all arguments separated by SPACES.
+  #Each argument IS quoted individually.
 
   CUR_PROCESS="$$"
 
-# returns current process name. Useful to create unique temporary files that have a recognizable component.
+#returns current process name. Useful to create unique temporary files that have a recognizable component.
 TFILE="/tmp/$(basename $0).$$.tmp"
 
-# variables
+#variables
   PDF_PATH="$VAR_NAME"
   PDF_PATH="${VAR_NAME}"
-  # acess the value of a variable
+  #acess the value of a variable
 
   PDF_PATH="${PATH_NOEXT}.pdf"
-  # concatenate a variable and a string 
+  #concatenate a variable and a string 
 
-# strings
+#strings
   STR='asdf'
 
   VAR=$'\n'
-  # newline to var
+  #newline to var
 
   VAR=$'\0'
-  # null to var
+  #null to var
 
   echo ${#STR}
-  # string length
+  #string length
 
   echo ${STR:2}
-  # df
-  # extract from char 2
+  #df
+  #extract from char 2
 
   echo ${STR:1:2}
-  # sd
-  # extract 2 chars starting at 1
+  #sd
+  #extract 2 chars starting at 1
 
   echo ${STR:1:1}
-  # 's'
-  # get char at an index
+  #'s'
+  #get char at an index
 
   if [[ "$string" == *My* ]]
   then
     echo "It's there!";
   fi
-  # test is a string contains POSIX expr
+  #test is a string contains POSIX expr
 
   ${variable#pattern}
-  # Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+  #Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
 
   ${variable##pattern}
-  # Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
+  #Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
 
   ${variable%pattern}
   #Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
@@ -84,363 +84,72 @@ TFILE="/tmp/$(basename $0).$$.tmp"
 
   #pattern is a POSIX regex, such as "*.?.*"
 
-# $() evaluate an expression and paste output at position of '$'
+#$() evaluate an expression and paste output at position of '$'
 
-  # this is how you return values from a function and put them into varibales
+  #this is how you return values from a function and put them into varibales
 
   VAR="$(find . -name '*.pdf')"
   echo "$VAR"
 
-#2 arithmetic expression
+#arithmetic expression
 
-TWO=$(( 1+1 ))
-echo $TWO
-# obviously, bash was not made with this in mind, VERY cumbersome.
-# bash is all about strings and files, not numbers. 
+  TWO=$(( 1+1 ))
+  echo $TWO
+  #obviously, bash was not made with this in mind, VERY cumbersome.
+  #bash is all about strings and files, not numbers. 
 
-# operators
+#operators
   (( 1>2 ))
-  # (( )) arithmetic test
+  #(( )) arithmetic test
 
 
-  # [[ ]] extended logical test
+  #[[ ]] extended logical test
 
-  #1 data structures
+  #data structures
 
-  #2 array
+  #array
 
-  # declare
-  array1=( itm1 itm2 itm3 "itm 4")
+    #declare
+    array1=( itm1 itm2 itm3 "itm 4")
 
-  array2[1]=itm1
-  array2[2]=itm2
-  array2[3]=itm3
+    array2[1]=itm1
+    array2[2]=itm2
+    array2[3]=itm3
 
-  array2+=("itm 4")
-  # append
+    array2+=("itm 4")
+    #append
 
-  # access
+    #access
 
-  echo ${array1[1]}
-  echo ${array1[2]}
-  echo ${array1[3]}
-  # the {} is obligatory here
+    echo ${array1[1]}
+    echo ${array1[2]}
+    echo ${array1[3]}
+    #the {} is obligatory here
 
-  for i in ${array1[*]}; do echo $i; done
-  for i in ${array1[@]}; do echo $i; done
-  # see the same thing 
+    for i in ${array1[*]}; do echo $i; done
+    for i in ${array1[@]}; do echo $i; done
+    for i in "${array1[*]}"; do echo $i; done
+    #one line. * with quotes "" expands similary to "$*"
 
-  for i in "${array1[*]}"; do echo $i; done
-  # one line. * with quotes "" expands similary to "$*"
+    for i in "${array1[@]}"; do echo $i; done
+    #four lines. @ with quotes "" expands similary to "$@"
+    #quotes for each element are actually put on the terminal
 
-  for i in "${array1[@]}"; do echo $i; done
-  # four lines. @ with quotes "" expands similary to "$@"
-  # quotes for each element are actually put on the terminal
+    echo ${array[@]:1}
+    #subarray
 
-  echo ${array[@]:1}
-  # subarray
+    echo ${array[@]:1:2}
+    #subarray: from 1, select 2
 
-  echo ${array[@]:1:2}
-  # subarray: from 1, select 2
+    #associative array
+    declare -A aa
+    aa=([hello]=world [ab]=cd)
+    echo ${aa[hello]}
+    echo ${aa[cd]}
 
-  # associative array
-  declare -A aa
-  aa=([hello]=world [ab]=cd)
-  echo ${aa[hello]}
-  echo ${aa[cd]}
-
-# control flow
+#flow control
   var=true
   if $var
   then
     echo "var is true"
   fi
-
-# get the parent dir of a path, not / terminated except for /, no error checking
-dirname /path/to/dir/or/file # /path/to/dir/or
-dirname / # outputs /
-dirname path/to/dir/or/file # path/to/dir/or
-
-# sedlike multifile rename
-
-rename -n 's/^([0-9]) /0$1 /g' *.mp3 
-# does not make changes to all .mp3 files
-
-rename 's/^([0-9]) /0$1 /g' *.mp3
-# makes changes
-
-# standard utils
-
-  # cpio
-
-  find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
-  # copy selected files to destination, building and keeping their relative directory structure
-
-  gnome-open "$FILE"
-  # opens with the deafult application. works in Ubuntu Unity 12.04
-
-  # xargs
-
-  find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
-  # xargs find print0 combo.
-  # prints: 
-  # asdf pdf1
-  # asdf pdf2
-  # ...
-  #
-  # print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
-  #
-  # this executes echo asdf 'pdf1', ..., for EACH pdf file found
-
-  find . -name '*.pdf' -print0 | xargs -0 echo asdf
-  # prints:
-  # asdf pdf1 pdf2 pdf3 ...
-  #
-  # echo is called only once.
-  # each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
-
-  find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
-  # xargs with multiple commands. must use bash.
-  # only use this for very simple commands, or you are in for an escaping hell!
-  # use the next pattern instead: TODO
-
-  # find
-
-  while IFS= read -r -u3 -d $'\0' FILE; do
-    echo "$FILE"
-  done 3< <(find /tmp -type f -print0)
-  # the only thing tha breaks this is having programs that use 3<. godlike
-
-  while IFS= read -r -u3 -d $'\0' FILE; do
-    echo "$FILE"
-  done 3< <(find /tmp -type f -print0 | sort -rz)
-  # this reverses find order of the find output, allowing you to rename directories also (with this, directories)
-  # will come last and be renamed last. -r is for 'reverse, and -z is for null terminated
-
-  find . -printf '%f'
-
-  #%p	filename, including name(s) of directory the file is in
-  #%m	permissions of file, displayed in octal.
-  #%f	displays the filename, no directory names are included
-  #%g	name of the group the file belongs to.
-  #%h	display name of directory file is in, filename isn't included.
-  #%u	username of the owner of the file
-
-  #tput modify terminal output
-
-    #multiple commands single tput
-    #tput -S
-    #clear
-    #cup 2 4
-
-    #colors
-      CLEAR_TERMINAL=`tput clear`
-
-      SET_CURSOR_POSITION=`tput cup 2 3`
-      tput sc #saves current position
-      tput rc #restore previously saved cursor position
-
-      NCOLS=`tput cols`
-      NLINES=`tput lines`
-
-      CLEAR_FORMAT=`tput sgr0`
-
-      HIDE_CURSOR=`tput civis`
-      SHOW_CURSOR=`tput cnorm`
-
-      BOLD=`tput bold`
-
-      UNDERLINE_ON=`tput smul`
-      UNDERLINE_OFF=`tput rmul`
-
-      LINE_WRAP_OFF=`tput rmam`
-      LINE_WRAP_ON=`tput smam`
-
-      Black="$(tput setaf 0)"
-      BlackBG="$(tput setab 0)"
-
-      Red="$(tput setaf 1)"
-      RedBG="$(tput setab 1)"
-
-      Green="$(tput setaf 2)"
-      GreenBG="$(tput setab 2)"
-
-      Brown="$(tput setaf 3)"
-      BrownBG="$(tput setab 3)"
-
-      Blue="$(tput setaf 4)"
-      BlueBG="$(tput setab 4)"
-
-      Purple="$(tput setaf 5)"
-      PurpleBG="$(tput setab 5)"
-
-      Cyan="$(tput setaf 6)"
-      CyanBG="$(tput setab 6)"
-
-      White="$(tput setaf 7)"
-      WhiteBG="$(tput setab 7)"
-
-      echo "${GreyBG}${Red}gray on red${CLEAR_FORMAT}no format"
-      tput bold; tput setaf 7; tput setab 1; echo "gray on red"; tput sgr0; echo "no format"
-
-      #colors
-      #Set background color 	tput setab color
-      #Set foreground color 	tput setaf color
-      #Set bold mode 	tput bold
-      #Set half-bright mode 	tput dim
-      #Set underline mode 	tput smul
-      #Exit underline mode 	tput rmul
-      #Reverse mode 	tput rev
-      #Set standout mode 	tput smso
-      #Exit standout mode 	tput rmso
-      #Reset all attributes 	tput sgr0
-      #Color 	Code
-      #black 	0
-      #red 	1
-      #green 	2
-      #yellow 	3
-      #blue 	4
-      #purple 	5
-      #cyan 	6
-      #white 	7o
-
-  #PS1 variable: controls the format of the terminal prompt
-  #PS2: second line. default '>'
-
-
-
-# mktemp
-
-  TFILE="$(mktemp)"
-  echo "$TFILE"
-  # creates a temporary file and returs its name
-
-# system date and time settings.
-
-  sudo date
-  # get system date
-
-  sudo date -s "1 JUN 2012 09:30:00"
-  # set system date
-
-  TIME_STAMP=`date +%Y-%m-%d-%H-%M-%S`
-
-  sudo hwclock --show
-  # see hardware clock
-
-  sudo hwclock --systohc
-  # sync hardware clock to system clock
-
-  $TIMEZONE_LOCATION=/usr/share/zoneinfo
-  cd $TIMEZONE_LOCATION
-  ls
-  $TIMEZONE_NAME=
-  cp $TIMEZONE_LOCATION/$TIMEZONE_NAME /etc/localtime
-  # set you time zone
-
-  # on dual boot with windows there are conflicts because Windows uses local time, and Linux UTC (more logical...). you must either tell Linux to use local, or better, Windows to use UTC
-
-  # id3tool get id3 tags info (for mp3 for example)
-  TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
-  ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-  ALBUM="`id3tool "$1" | grep '^Album:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-  YEAR="`id3tool "$1" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-  TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
-
-  install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
-
-# perl replace
-
-  perl -pie 's/old-word/new-word/g'
-
-  perl -lape 's/r1/r2/g' file # replace in file linewise
-  cat file | perl -lape 's/r1/r2/g' # same
-
-  perl -0777 -lape 's/r1/r2/g' file # replace in entire file (not linewise)
-
-# prompt user
-
-  # while read case method
-
-  # ask for user input, break into cases
-  # if none of the cases is met, print error message and ask again.
-  while true; do
-      read -p "Which case do you want? case a [a], case b [b], case c [c])" c 
-      case "$c" in
-        "a" ) echo "Action for case a"; break;;
-        "b" ) echo "Action for case b"; break;;
-        "c" ) echo "Action for case c"; break;;
-        * ) echo "Does not match any of the possible cases. Try again."
-      esac
-  done
-
-  # same as above, but for the ultra common case of yes [Y] no [n] case 
-  while true; do
-      read -p "Yes or no? [Y/n]" yn
-      case "$yn" in
-          Y ) ; break;;
-          n ) ; break;;
-          * ) echo "Please enter either 'Y' or 'n'.";;
-      esac
-  done
-
-# file compresssion
-
-  # the performance parameters are:
-  # compression ratio
-  # compression time
-  # speed of seeing and extracting single files
-  # support across OS
-  # encryption
-  # break into small chunks
-  # keep file permissions and metadata
-
-  # example: I compressed 2.4 Gb of non compressed files. I got:
-  # zip and gz: 1.1Gb. gz was faster
-  # gz2: 760M, but way slower
-  # zip one by one: 1.1Gb, same as compressing whole dir.
-
-  # zip
-
-    # most widely supported format across operating systems.
-    # not so high compression
-    # easy to view and extract single files
-
-    zip name-of-archive.zip file-to-compress
-    zip -r name-of-archive.zip dir-to-compress
-    # creates a zip of dir-to-compress named name-of-archive.zip
-
-    # compressing files one by one and the whole dir gives the same size, thus explaining why it is easy to extract single files; he only uses one dictionnary per file
-    # therefore, if your major operation is to extract single files and you have tons of files, it is better to keep the file tree, and replace files by file.zip, so that is is easy to browse files
-
-    for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
-    # zip every file in cur dir to file.zip
-
-  # tar
-
-    # only turns dir into file, but no compression
-    # this is why it is often coupled with gz and bz2: those are files compressers
-    # gz gives similar compression to .zip
-    # gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
-
-
-    tar czf dir.tar.gz dir/ 
-    tar cjf dir.tar.bz2 dir/ 
-    # c is for Create, z tar gz, 'j' for bz2, 'f' to output to a file and not to standard output (terminal)
-
-    tar 
-
-# encryption
-
-  gpg -c in
-  # will create a in.gpg encrypted file. can only be decrypted and then opened with password
-  # good combo with tar.gz
-
-
-# GUI control
-
-  # control some window properties
-  wmctrl -a ' - GVIM' # focus on a window with title containing '- GVIM' ( hopefully gVim! )
-
-sudo service lightdm restart #restart lightdm display manager used for Unity, more drastic and possibly effective
-unity --restart #restarts the unity shell only. less effective and drastic than restarting lightdm
