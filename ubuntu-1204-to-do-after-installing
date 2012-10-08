@@ -2,20 +2,20 @@
 
 #------------------------------------------------
 #
-# Ciro D. Santilli
+#Ciro D. Santilli
 #
-# This script contains all the software that I would 
-# install on a fresh ubuntu to turn it into a powerhouse.
+#This script contains all the software that I would 
+#install on a fresh ubuntu to turn it into a powerhouse.
 #
-# I hope this will:
+#I hope this will:
 #
-# * serve as a way to quickly reinstall everything if I ever have to reinstall ubuntu again (it does happen, believe me)
-# * constitute useful software collection and installation procedures suggestion for others
+#* serve as a way to quickly reinstall everything if I ever have to reinstall ubuntu again (it does happen, believe me)
+#* constitute useful software collection and installation procedures suggestion for others
 #
 #-------------------------------------------
 
-set -u # error on undefined variable
-set -e # stop execution if one command goes wrong
+set -u #error on undefined variable
+set -e #stop execution if one command goes wrong
 
 firefoxdownloadfolder="~/nobackup/download"
 
@@ -26,18 +26,18 @@ firefoxdownloadfolder="~/nobackup/download"
   sudo apt-get update && sudo apt-get upgrade
 
 
-# before anyting, update
+#before anyting, update
   sudo apt-get update && sudo apt-get upgrade
 
 sudo aptitude install apt-file
-# lets you search packages by files it contains
-# see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
+#lets you search packages by files it contains
+#see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
 
 sudo aptitude install apt-rdepends
 
-# configuration editing
+#configuration editing
 
-  # ubuntu
+  #ubuntu
     sudo add-apt-repository ppa:tualatrix/ppa
     sudo apt-get update 
     sudo aptitude install ubuntu-tweak
@@ -48,61 +48,61 @@ sudo aptitude install apt-rdepends
 
   sudo aptitude install compiz compizconfig-settings-manager
 
-# proprietary
+#proprietary
   sudo -E wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list
   sudo apt-get --quiet update
   sudo apt-get --yes --quiet --allow-unauthenticated install medibuntu-keyring
   sudo apt-get --quiet update
   sudo aptitude install app-install-data-medibuntu apport-hooks-medibuntu
 
-  # codecs # ERROR: mpg123libjpeg-progs cannot locate
-  # use TAB to navigate msfonts
+  #codecs #ERROR: mpg123libjpeg-progs cannot locate
+  #use TAB to navigate msfonts
   sudo aptitude install non-free-codecs libxine1-ffmpeg gxine mencoder totem-mozilla icedax tagtool easytag id3tool lame nautilus-script-audio-convert libmad0 mpg321 mpg123libjpeg-progs
 
-  # skype
+  #skype
   firefox http://www.skype.com/intl/en-us/get-skype/on-your-computer/linux/downloading.ubuntu32
   nautilus $firefoxdownloadfolder
-  # Win > startup applications > bash -c "sleep 10 && skype" # must sleep, or interface broken
+  #Win > startup applications > bash -c "sleep 10 && skype" #must sleep, or interface broken
 
   sudo aptitude install pidgin
 
-  # media
+  #media
   sudo aptitude install vlc
 
-# document viewing and converting
+#document viewing and converting
 
-  # okular + djvu in extra backends
+  #okular + djvu in extra backends
   sudo aptitude install okular okular-extra-backends
 
-  # calibre
+  #calibre
     sudo aptitude install calibre
     cd ~
     mkdir kab/calibre
-    # set library there: Cntr p > ...
+    #set library there: Cntr p > ...
 
-  # djvu
+  #djvu
       #sudo aptitude install djview4 #now using okular only.
 
-      # for djvu conversion
+      #for djvu conversion
       sudo aptitude install djvulibre-bin libdjvulibre21 okular-extra-backends evince libevdocument1 libevview1 libtiff-tools
-      # to convert djvu pdf, to ddjvu -format=pdf in out
+      #to convert djvu pdf, to ddjvu -format=pdf in out
 
-# file sharing
+#file sharing
 
-  # torrent deluge
+  #torrent deluge
   sudo add-apt-repository ppa:deluge-team/ppa
   sudo apt-get update
   sudo aptitude install deluge
 
-  # soulseek client nicotine+ 
+  #soulseek client nicotine+ 
   sudo aptitude install nicotine+
 
-  sudo aptitude install fdupes # fine command line tool for eliminating duplicates by content
+  sudo aptitude install fdupes #fine command line tool for eliminating duplicates by content
 
-  # archieve formats
+  #archieve formats
   sudo aptitude install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack lha arj cabextract file-roller
 
-  # dropbox
+  #dropbox
   noaptget=~/nobackup/noaptget/
   if [ ! -d $noaptget ]; then
     mkdir $noaptget
@@ -111,122 +111,122 @@ sudo aptitude install apt-rdepends
   wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
   ./.dropbox-dist/dropboxd &
 
-# image manipulation
+#image manipulation
 
-  # gimp
+  #gimp
   sudo aptitude install gimp
 
-  # inkscape
+  #inkscape
   sudo aptitude install inkscape
 
-# programming tools
+#programming tools
 
-  # opengl glut
+  #opengl glut
     sudo aptitude install build-essential
     sudo aptitude install freeglut3-dev
 
-  # eclipse
-    sudo aptitude install eclipse # ERROR cdt tools not good
+  #eclipse
+    sudo aptitude install eclipse #ERROR cdt tools not good
 
-    # MANUAL: install plugins.
+    #MANUAL: install plugins.
 
-    # must be root for those operations so
+    #must be root for those operations so
     gksudo eclipse
 
-    # Help > Install new software > Availabe software sources > Check every single case there!
-    # Help > Install new software > New sources
+    #Help > Install new software > Availabe software sources > Check every single case there!
+    #Help > Install new software > New sources
 
-    # add vim like editing to eclipse
-    # http://vrapper.sourceforge.net/update-site/stable
+    #add vim like editing to eclipse
+    #http://vrapper.sourceforge.net/update-site/stable
 
-    # add eclipe functionality to vim
-    # http://vrapper.sourceforge.net/update-site/stable
+    #add eclipe functionality to vim
+    #http://vrapper.sourceforge.net/update-site/stable
 
-    # color themes
+    #color themes
 
-    # http://eclipse-color-theme.github.com/update
-    # 	mine: http://www.eclipsecolorthemes.org/?view=theme&id=7915
-    # to install: File > Import > Preferences > Select *.epf (Eclipse menus are SO unintuitive...)
+    #http://eclipse-color-theme.github.com/update
+    #	mine: http://www.eclipsecolorthemes.org/?view=theme&id=7915
+    #to install: File > Import > Preferences > Select *.epf (Eclipse menus are SO unintuitive...)
 
-    # c and c++
-    # http://download.eclipse.org/tools/cdt/releases/indigo/
+    #c and c++
+    #http://download.eclipse.org/tools/cdt/releases/indigo/
 
-    # python
-    # http://pydev.org/updates
+    #python
+    #http://pydev.org/updates
 
-    # html, javascript, php
-    # http://download.eclipse.org/webtools/repository/indigo/
+    #html, javascript, php
+    #http://download.eclipse.org/webtools/repository/indigo/
 
-    # latex
-    # http://texlipse.sourceforge.net
-    # forward search to okular: 
-    #    
+    #latex
+    #http://texlipse.sourceforge.net
+    #forward search to okular: 
+    #   
     #
-    # inverse search from okular: Settings > Configure Okular > Editor
-    #   Editor: custom text editor,
-    #   Command: gvim --remote +%l %f 
+    #inverse search from okular: Settings > Configure Okular > Editor
+    #  Editor: custom text editor,
+    #  Command: gvim --remote +%l %f 
 
-  # version control
+  #version control
 
-    # git
+    #git
     sudo aptitude install git
-    sudo aptitude install gitk	# a git graphic local branch viewer
-    # not set it up to follow github
-    # http://help.github.com/linux-set-up-git/
+    sudo aptitude install gitk	#a git graphic local branch viewer
+    #not set it up to follow github
+    #http://help.github.com/linux-set-up-git/
 
-    # svn subversion
+    #svn subversion
     sudo aptitude install subversion
 
-  # vim
+  #vim
 
     sudo aptitude install vim
-    sudo aptitude install vim-gtk # gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
-    sudo aptitude install exuberant-ctags # to create tags (allows you to jump to definitions for example)
+    sudo aptitude install vim-gtk #gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
+    sudo aptitude install exuberant-ctags #to create tags (allows you to jump to definitions for example)
 
-    # get an overpowered distro (will save hours of plugin management)
+    #get an overpowered distro (will save hours of plugin management)
 
-    # install plugins
-    # I prefer to unzip the plugins under .vim, and then add their paths to my .vimrc. This way, if I ever want to remove a plugin, all I need is to remove the folder, and some small code in the vimrc.
+    #install plugins
+    #I prefer to unzip the plugins under .vim, and then add their paths to my .vimrc. This way, if I ever want to remove a plugin, all I need is to remove the folder, and some small code in the vimrc.
     mkdir -p ~./vim
     cd ~/.vim
 
-    # easytags
-    # generates a tags file every seconds to that you can jump to tag definitions
-    # (functions, variables, etc.) with Cntl + ]
+    #easytags
+    #generates a tags file every seconds to that you can jump to tag definitions
+    #(functions, variables, etc.) with Cntl + ]
     wget http://peterodding.com/code/vim/downloads/easytags.zip
     unzip easytags.zip
     rm easytags.zip
-    echo ":let g:easytags_file = '~/.vim/easytagstags'" >> ~/.vimrc # save tags in ~/.vim/easytagstags insteaed ot the default ~/
+    echo ":let g:easytags_file = '~/.vim/easytagstags'" >> ~/.vimrc #save tags in ~/.vim/easytagstags insteaed ot the default ~/
     vim
 
     vim-addons install latex-suite
 
-  # Web design lamp (Linux Apache + Mysqp + PHP)
+  #Web design lamp (Linux Apache + Mysqp + PHP)
 
     #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
 
-    # from tutorial at: http://community.linuxmint.com/tutorial/view/486
-    # apache
+    #from tutorial at: http://community.linuxmint.com/tutorial/view/486
+    #apache
     sudo aptitude install apache2
-    firefox http://localhost/ & # test apache
+    firefox http://localhost/ & #test apache
 
-    # php
+    #php
     sudo aptitude install php5 libapache2-mod-php5
     sudo /etc/init.d/apache2 restart
-    # test php
+    #test php
     echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null
     firefox http://localhost/testphp.php &
 
-    # mysql
+    #mysql
     sudo aptitude install mysql-server
-    # he will ask you for the password, fill it in
-    # mysql -u root # the tutorial said do that, but I didn't need to. This would be for the password.
+    #he will ask you for the password, fill it in
+    #mysql -u root #the tutorial said do that, but I didn't need to. This would be for the password.
 
-    # phpmyadmin
+    #phpmyadmin
     sudo aptitude install libapache2-mod-auth-mysql php5-mysql phpmyadmin
-    # gksudo gedit /etc/php5/apache2/php.ini # according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
+    #gksudo gedit /etc/php5/apache2/php.ini #according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
 
-    # make sure 'Include /etc/phpmyadmin/apache.conf' is in the apache config file
+    #make sure 'Include /etc/phpmyadmin/apache.conf' is in the apache config file
     gksudo gedit /etc/apache2/apache2.conf &
     #apacheconf='/etc/apache2/apache2.conf'
     #ensureline='Include /etc/phpmyadmin/apache.conf'
@@ -234,49 +234,68 @@ sudo aptitude install apt-rdepends
 
     sudo /etc/init.d/apache2 restart
 
-   # test mysql
-   firefox http://localhost/phpmyadmin & # login: 'root'. password: what you entered at installation.
+    #test mysql
+    firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
 
-   #web plataforms and libraries
+    #web plataforms and libraries
 
-  # publishing
+  sudo aptitude install ack-grep #ack package was already taken by a kanji converter!
+  #finds and greps, nice filename/line/match highlight output, ignores .git .svn, backup, swap files
+  #can detect and filter by filetype via shebangs
+  #
+  #ack-grep --py perl_regex
+  ##recursive find grep for perl_regex in python files only
+  #
+  #ack-grep -f --py --print0 | xargs -0 -I '{}' git add '{}'
+  ##adds all python files git. shebang aware.
+  #
+  #ack --cc '#include\s+<(.*)>' --output '$1'
+  ##prints only include names in cpp files
+  #
+  ##--sh for bash
 
-    # pandoc. convert to/from extended markdown / latex / html
+  sudo aptitude install kdiff3
+  #kde diff tool
+  #kiff
+
+  #publishing
+
+    #pandoc. convert to/from extended markdown / latex / html
     sudo aptitude install pandoc
     sudo aptitude install texlive
     #sudo aptitude install texlive-full #enormous size and amount of packages
-    # you need this for certain latex fonts such as Continuous functions C
+    #you need this for certain latex fonts such as Continuous functions C
 
     sudo aptitude install texmaker
 
-# file management
+#file management
 
-  # krusader
+  #krusader
   sudo aptitude install krusader
-  sudo aptitude install konqueror # needs to manage bookmarks. (otherwise, button does nothing)
-  sudo aptitude install konsole   # needs to terminal emulator. (otherwise, button does nothing)
+  sudo aptitude install konqueror #needs to manage bookmarks. (otherwise, button does nothing)
+  sudo aptitude install konsole   #needs to terminal emulator. (otherwise, button does nothing)
 
-  # filezilla
+  #filezilla
   sudo aptitude install filezilla
   sudo aptitude install deluge
 
   sudo aptitude install gparted
-  # gparted. create/delete/change partition size. In order to reduce you windows partition
-  # you need first to reduce it in windows, and then use this.
+  #gparted. create/delete/change partition size. In order to reduce you windows partition
+  #you need first to reduce it in windows, and then use this.
 
 #sudo add-apt-repository ppa:libreoffice/pp #already comes with Ubuntu 11.10
 sudo aptitude install libreoffice-base
 
-# keyboard and mouse automation 
+#keyboard and mouse automation 
 
-  # autokey
+  #autokey
   sudo apt-add-repository ppa:cdekter/ppa
   sudo aptitude install autokey-gtk
 
-  # xdotool. can send clicks and manage window properties.
+  #xdotool. can send clicks and manage window properties.
   sudo aptitude install xdotool
 
-# games
+#games
 
   sudo add-apt-repository "deb http://archive.ubuntugames.org ubuntugames main"
 
@@ -292,25 +311,10 @@ sudo aptitude install libreoffice-base
   sudo aptitude install urban-terror
   #counter strike fps clone 
 
-# command line utilities
+#command line utilities
 
   sudo aptitude install realpath
   #transforms relative paths into absolute paths
-
-  sudo aptitude install ack-grep #ack package was already taken by a kanji converter!
-  #finds and greps, nice filename/line/match highlight output, ignores .git .svn, backup, swap files
-  # can detect and filter by filetype via shebangs
-  #
-  #ack-grep --py perl_regex
-  ##recursive find grep for perl_regex in python files only
-  #
-  #ack-grep -f --py --print0 | xargs -0 -I '{}' git add '{}'
-  ##adds all python files git. shebang aware.
-  #
-  #ack --cc '#include\s+<(.*)>' --output '$1'
-  ##prints only include names in cpp files
-  #
-  ##--sh for bash
 
   sudo aptitude install wmctrl
   #maximize and minimize windows by grepping title or class
@@ -335,5 +339,3 @@ sudo aptitude install libreoffice-base
   #nmap google.com
   #shows open ports at google.com
   #you are gonna get 80 probably for their http server
-
-
