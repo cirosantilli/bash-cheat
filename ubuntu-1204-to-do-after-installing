@@ -41,8 +41,8 @@ sudo aptitude install apt-rdepends
     sudo add-apt-repository ppa:tualatrix/ppa
     sudo apt-get update 
     sudo aptitude install ubuntu-tweak
-
     sudo aptitude install myunity
+    sudo aptitude install dconf-tools
 
   sudo aptitude install gconf-editor
 
@@ -325,9 +325,6 @@ sudo aptitude install libreoffice-base
 
   sudo aptitude install netrek-client-cow
   #netrek space ship click and shoot
-
-  sudo aptitude install urban-terror
-  #counter strike fps clone 
 
   sudo aptitude install urban-terror
   #counter strike fps clone 
