@@ -23,7 +23,6 @@ firefoxdownloadfolder="~/nobackup/download"
   sudo do-release-upgrade 
   sudo apt-get update && sudo apt-get upgrade
 
-
 #before anyting, update
   sudo apt-get update && sudo apt-get upgrade
 
