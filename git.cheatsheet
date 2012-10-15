@@ -148,14 +148,30 @@
   #commands outside of the submodule (log, diff, etc) don't see what goes on inside it
   #commands inside it do!
 
-git submodule add git://github.com/chneukirchen/rack.git rack
-#add an external submodule to dir named rack
+  #add new submodule to project
+    git submodule add git://github.com/chneukirchen/rack.git rack
+    #add an external submodule to dir named rack
 
-#clone project with submodule:
-  git clone git://github.com/schacon/myproject.git #submodule is empty
-  git submodule init #create .gitmodule
-  git submodule update #get module from server
+  #clone project with submodule:
+    git clone git://github.com/schacon/myproject.git #submodule is empty
+    git submodule init #create .gitmodule
+    git submodule update #get module from server
 
+  #remove
+
+      vim .submodules
+      #Delete the relevant section from the .gitmodules file.
+
+      vim .git/config
+      #Delete the relevant section from .git/config.
+
+      rm --cached $path_to_submodule #(no trailing slash).
+
+      rm -Rf .git/modules/$path_to_submodule
+
+      git commit -am 'removed submodule'
+
+      rm -rf $path_to_submodule
 
 #svn tutorial: didn't expect this here did you?
 

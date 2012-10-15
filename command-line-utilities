@@ -298,20 +298,154 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 sudo service lightdm restart #restart lightdm display manager used for Unity, more drastic and possibly effective
 unity --restart #restarts the unity shell only. less effective and drastic than restarting lightdm
 
-mysql
-#create, access and modify your databases with interactive section
-#see http://www.pantz.org/software/mysql/mysqlcommands.html 
+#mysql
 
-mysqladmin -u root -p'OLD_PASS_HERE' password 'NEW_PASS_HERE'
-#change passwords
+  mysql -u root -p
+  mysql -u root -p'pass'
+  #create, access and modify your databases with interactive section
+  #commands:
+  #  http://www.pantz.org/software/mysql/mysqlcommands.html 
+  #  
+
+  mysqladmin -u root -p'OLD_PASS_HERE' password 'NEW_PASS_HERE'
+  #change passwords
+
+  #commands
+
+    CREATE TABLE $newtable LIKE $oldtable
+    #creates a new table with same structure as old one
+
+    drop table t1 , t2;
+    #destrois tables
+
+    INSERT INTO $newtable SELECT * FROM $oldtable
+    #copies data from old table to new table
+
+    TRUNCATE TABLE $tablename
+    #removes all data from a table
+
+    LOCK TABLES `$table1` READ; `$table2` WRITE;
+    #cannot read from table1 and write to table2
+    #use before making big db changes
+
+    UNLOCK TABLES
+    #releases all locks
+
+
+  #dump (save to file)
+
+    mysqldump -u root -p"$ROOT_PASS" "$DB_NAME" > bak.sql
+    mysqldump -u root -p"$ROOT_PASS" "$DB_NAME" "$TABLE1" "$TABLE2" > bak.sql
+    #dump to file
+    #no USE
+    #drops existing
+
+    mysqldump -u root -p"$ROOT_PASS" --databases "$DB1" "$DB2" > bak.sql
+    #mutiple dbs
+    #creates dbs with old names, uses them
+
+    mysqldump -u root -p"$ROOT_PASS" --all-databases > bak.sql
+    #all dbs
+    #with USE, old names
+
+
+    # -d : no data
+    # --no-create-info : data only
+
+
+  #restore
+
+    mysql-u root -p"$ROOT_PASS" < bak.sql
+    #make sure the db exists/you want to overwrite it
+
+
+    PASS=
+    NEWDB=
+    mysqldump -u root -p"$PASS" $DB | mysql -u root -p"$PASS"
+    #make sure the db exists/you want to overwrite it
+    #copy db to new name
 
 #sed
   find . -type f -iname '*.py' -print0 | xargs -0 sed -n 's/django_cheatsheet/project0/gp' #replaces, and prints replaced lines only
   find . -type f -iname '*.py' -print0 | xargs -0 sed -i 's/django_cheatsheet/project0/g' #replaces in the file
 
-#telnet
-  #connect to external servers throught the telnet protocol. (no encryption I think)
-  #fun games MUD there!
+#disk space
 
-  telnet google.com 80
-  #connet to google at port 80 (classical HTTP server port)
+  du -sh *
+  #disk usage per file/dir
+  # s: summarize: only for dirs in *
+  # h: human readable: G, M, b
+
+  df -h
+  #show partitions, total and free space of each
+  # h: like for du -h
+
+#chown
+
+  sudo chown $NEW_OWNER $FILES
+
+#web
+
+  ping google.com
+  #sends an recieves data, measuring round trip, several times
+
+  whois 201.81.160.156
+  #check info about ip (country and ISP included)
+
+  netstat -a
+  #TODO understand crazy output
+
+  #curl
+
+    curl ifconfig.me
+    #external ip address of your computer
+
+  ifconfig
+  #shows local network ips
+
+  #apache2 server
+
+    cd /var/www
+    #default root for serving files
+
+    mkdir test
+    #going to a dir on the web browser opens the contained index.html file by default
+
+    echo "<h1>Test subdir!</h1>" > test/index.html
+    firefox http://127.0.0.1/test
+    firefox http://127.0.0.1/test/index.html
+    #same result
+
+    sudo vim /etc/apache2/httpd.conf
+    #file to put apache configuration
+
+      DocumentRoot "/var/www"
+      #sets apache serve root at given dir
+
+      Listen 80
+      Listen 8000
+      #listen those ports on all interfaces?
+
+      Listen 192.0.2.1:80
+      Listen 192.0.2.5:8000
+      #listen those ports on given interfaces
+
+  #telnet
+    #connect to external servers throught the telnet protocol. (no encryption I think)
+    #fun games MUD there!
+
+    telnet google.com 80
+    #type:
+    #  GET / googl.com 80
+    #  Host: www.google.com
+    #  From: me@me.com
+    #  User-Agent: fingers
+    #  <enter>
+    #
+    #connet to google at port 80 (classical HTTP server port)
+    #make a GET request
+    #and GET the google page
+    #Host is the only required field, since there can be multiple hosts per ip
+    #connexion is closed
+
+#/web

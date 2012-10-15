@@ -69,10 +69,20 @@ sudo aptitude install apt-rdepends
   #media
   sudo aptitude install vlc
 
-#document viewing and converting
+  # cut up flac cue into multiple files
+    # via flacon GUI
+    sudo add-apt-repository ppa:flacon
+    sudo apt-get update
+    sudo apt-get install flacon
 
-  #okular + djvu in extra backends
-  sudo aptitude install okular okular-extra-backends
+    #cuetools command line
+    sudo apt-get install cuetools shntool
+    sudo apt-get install flac wavpack
+    #if there is a single ape, you want flac output, and athere is a single cue in dir:
+      #shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
+
+    #okular + djvu in extra backends
+    sudo aptitude install okular okular-extra-backends
 
   #calibre
     sudo aptitude install calibre
@@ -96,8 +106,20 @@ sudo aptitude install apt-rdepends
 
   #soulseek client nicotine+ 
   sudo aptitude install nicotine+
+  #behind a proxy router
+  # go to the router admin panel, port forwarding part
+  #  (http://192.168.0.1/RgForwarding.asp on dlink for example, default login:admin pass:motorola)
+  # open ports 2234 to 2239 on local ip found at
+  #  ifconfig eth0 | grep "inet addr:"
+  #
+  #now either put your files in another partition at the root, or symlink
+  #your share and download dirs to somewhere above user so that people cannot
+  #see your username
 
-  sudo aptitude install fdupes #fine command line tool for eliminating duplicates by content
+  sudo aptitude install fdupes
+  #fine command line tool for eliminating duplicates by content
+  #fdupes -r . # finds and prints dupes
+  #fdupes -rd . # finds dupes, and prompt which to keep for each match
 
   #archieve formats
   sudo aptitude install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack lha arj cabextract file-roller
@@ -121,9 +143,8 @@ sudo aptitude install apt-rdepends
 
 #programming tools
 
-  #opengl glut
-    sudo aptitude install build-essential
-    sudo aptitude install freeglut3-dev
+  sudo apt-get install build-essential
+  # building tools
 
   #eclipse
     sudo aptitude install eclipse #ERROR cdt tools not good
@@ -201,7 +222,7 @@ sudo aptitude install apt-rdepends
 
     vim-addons install latex-suite
 
-  #Web design lamp (Linux Apache + Mysqp + PHP)
+  #web design lamp (Linux Apache + Mysqp + PHP)
 
     #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
 
@@ -338,4 +359,7 @@ sudo aptitude install libreoffice-base
   sudo aptitude install nmap
   #nmap google.com
   #shows open ports at google.com
-  #you are gonna get 80 probably for their http server
+  #you are gonna get at least 80 for their http server
+
+  sudo aptitude install curl
+  #get web docs with many protocols and more
