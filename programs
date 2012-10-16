@@ -142,8 +142,11 @@ sudo aptitude install apt-rdepends
 
 #programming tools
 
+  sudo aptitude install nasm
+  #nasm assembler
+
   sudo apt-get install build-essential
-  # building tools
+  #building tools
 
   #eclipse
     sudo aptitude install eclipse #ERROR cdt tools not good
@@ -747,6 +750,54 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
     curl ifconfig.me
     #external ip address of your computer
+
+    curl "$URL"
+    #make get resquest, stdout server response
+    #
+    #<form method="GET" action="junk.cgi">
+      #<input type=text name="birthyear">
+      #<input type=submit name=press value="OK">
+    #</form>
+
+    curl -d "birthyear=1905&press=%20OK%20" $URL
+    curl --data-urlencode "name=I am Daniel" $URL
+    #post requests. --data-urlencode adds %20 for the spaces!
+    #
+    #<form method="POST" action="junk.cgi">
+      #<input type=text name="birthyear">
+      #<input type=submit name=press value=" OK ">
+    #</form>
+
+    curl -C - -O http://www.gnu.org/software/gettext/manual/gettext.html
+    #resume download from where it stopped
+
+    curl -u ftpuser:ftppass -O ftp://ftp_server/public_html/xss.php
+    #curl downloads tfp
+
+    curl -u ftpuser:ftppass -T myfile.txt ftp://ftp.testserver.com
+    curl -u ftpuser:ftppass -T "{file1,file2}" ftp://ftp.testserver.com
+    #curl uploads ftp
+
+    curl ftp://ftp.uk.debian.org/debian/pool/main/[a-z]/
+    #curl does a-z ranges
+
+    curl --mail-from user@gmail.com --mail-rcpt user@gmail.com smtp://gmail.com
+    #curl does mail
+    #end body with a single dot '.' on a line
+
+    curl dict://dict.org/show:db #dictionnaries
+    curl dict://dict.org/d:bash #general
+    curl dict://dict.org/d:bash:foldoc #computing
+    #curl does dict!
+
+    #-i : show output protocol headers
+    #-v , --trace $FILE, --trace-ascii $FILE: increasing levels of output showing
+    #-L : follows redirects
+    #-u user:pass : basic authentication. --digest and --ntlm exist too
+    # if no :pass, will ask for pass on command line.
+    #-x proxysever.test.com:3128 : proxy
+    #-X DELETE : make a DELETE request. defaults to GET, if no -data nor ftp.
+    #-z 21-Dec-11 : download iff it is modified after given time (sounds like crawlers!)
 
   ifconfig
   #shows local network ips

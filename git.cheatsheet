@@ -10,8 +10,6 @@
   git init
   #starts a repository here
 
-  GITHUB_ID=cirosantilli
-  REPO_NAME=python
   git remote add github "git@github.com:cirosantilli/python.git"
   git remote add bitbucket "https://cirosantilli@bitbucket.org/cirosantilli/testrepo0.git"
   #allows to push and pull current repo git@github.com:cirosantilli/python.git repo.
@@ -173,42 +171,71 @@
 
       rm -rf $path_to_submodule
 
+#github api v3 via curl
+
+  USER=cirosantilli
+  REPO=repo
+  PASS=
+
+  #get repo info (large)
+    curl -i https://api.github.com/users/$USER/repos
+
+  #create remote git repo
+
+    curl -u "$USER" https://api.github.com/user/repos -d '{"name":"'$REPO'"}'
+    git remote add github git@github.com:$USER/$REPO.git
+    git push origin master
+
+    #{
+      #"name": "$REPO",
+      #"description": "This is your first repo",
+      #"homepage": "https://github.com",
+      #"private": false,
+      #"has_issues": true,
+      #"has_wiki": true,
+      #"has_downloads": true
+    #}
+
+  #delete repo
+    curl -u "$USER" -X DELETE https://api.github.com/repos/$USER/$REPO
+    #careful, it works!!!
+
 #svn tutorial: didn't expect this here did you?
 
-svnadmin create project
-#create new svn controlled folder
+  svnadmin create project
+  #create new svn controlled folder
 
-svn checkout https://subversion.assembla.com/svn/cirosantillitest/
-#clone
+  svn checkout https://subversion.assembla.com/svn/cirosantillitest/
+  #clone
 
-svn checkout -r 3 file:///home/user/svn project
-#clone version number 3
-#everything you commit increases this number
+  svn checkout -r 3 file:///home/user/svn project
+  #clone version number 3
+  #everything you commit increases this number
 
-svn import nonsvn svn
-#take a non svn file directory and convert it to svn controlled one
+  svn import nonsvn svn
+  #take a non svn file directory and convert it to svn controlled one
 
-svn commit -m 'commit message'
-#commit. if your ssh is added, this pushes to the original repository!!!
-#this is why in svn everything happens over the network!!
+  svn commit -m 'commit message'
+  #commit. if your ssh is added, this pushes to the original repository!!!
+  #this is why in svn everything happens over the network!!
 
-svn log
-#history of commits
+  svn log
+  #history of commits
 
-svn status
-#what is commited, changed and tracked
+  svn status
+  #what is commited, changed and tracked
 
-svn mkdir foo -m 'commit message'
-#must use to make dirs, -m to commit with message
+  svn mkdir foo -m 'commit message'
+  #must use to make dirs, -m to commit with message
 
-svn rmdir foo -m 'commit message'
-#must use to remove dirs, m to commit with message
+  svn rmdir foo -m 'commit message'
+  #must use to remove dirs, m to commit with message
 
-svn add
-#add to version controll
+  svn add
+  #add to version controll
 
-#get single file from repo, modify it, and up again!
-  svn co https://subversion.assembla.com/svn/cirosantillitest/ . --depth empty
-  svn checkout readme.textile
-  vim readme.textile
-  svn ci -m 'modified readme.textile'
+  #get single file from repo, modify it, and up again!
+    svn co https://subversion.assembla.com/svn/cirosantillitest/ . --depth empty
+    svn checkout readme.textile
+    vim readme.textile
+    svn ci -m 'modified readme.textile'
