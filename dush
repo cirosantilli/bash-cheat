@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+#du -hs
+
+du -sh * | sort -hr 
+
+exit 0

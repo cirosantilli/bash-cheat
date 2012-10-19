@@ -61,6 +61,7 @@
 
     #add a ppa. a ppa is a personal source, not directly supported by Ubuntu.
     sudo add-apt-repository ppa:deluge-team/ppa
+    sudo aptitude update
 
   #list sources 
 

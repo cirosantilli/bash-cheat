@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+#my default timestamp
+
+echo `date +%Y-%m-%d-%H-%M-%S`
+
+exit 0
