@@ -54,3 +54,50 @@ if you have apt-get on your distro so that you have all the necessary dependenci
 * OPUT : OUTPUT
 * OPATH : OUTPUT_PATH
 * wrap : wrapper. on filenames, indicates a convenient simplified interface for a function.
+
+# Featured
+
+This showcases scripts that I find:
+
+* good enough
+* original enough
+* hard enough to make
+
+that I recommend you to check out
+
+## ubuntu-howto
+
+how to do install and use stuff on Ubuntu/Linux.
+
+I put every program I install there, and how to use it:
+
+- so that I won't forget
+- so that it may be useful to you
+
+For programs that are too large, they may get their own files in this repo like git.cheatsheet.
+
+Look for the cheatsheet extension.
+
+## find-music-make-m3u
+  
+check the recursive function which for each directory, makes an m3u all.m3u with all music under that directory.
+
+ex:
+
+* **dir1**
+    * f11.wma
+    * **dir11**
+        * f111.mp3
+        * f112.ogg
+
+becomes:
+
+* **dir1**
+    * all.m3u
+    * f11.wma
+    * **dir11**
+        * all.m3u
+        * f111.mp3
+        * f112.ogg
+
+where the all.m3u contains all music files under its parent dir.

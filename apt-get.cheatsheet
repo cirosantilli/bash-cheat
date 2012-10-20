@@ -40,6 +40,10 @@
 
     #there seems to be no way of telling
 
+  #dev packages
+
+    #are packages that contain libraries to build stuff, typically .so files
+
 #first time
 
   sudo apt-get install aptitude

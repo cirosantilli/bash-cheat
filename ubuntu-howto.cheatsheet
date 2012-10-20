@@ -97,7 +97,7 @@ sudo aptitude install apt-rdepends
       sudo aptitude install djvulibre-bin libdjvulibre21 okular-extra-backends evince libevdocument1 libevview1 libtiff-tools
       #to convert djvu pdf, to ddjvu -format=pdf in out
 
-  #handbreak
+  #handbrake
     #dvd to mkv
 
     sudo add-apt-repository ppa:stebbins/handbrake-releases
@@ -105,12 +105,12 @@ sudo aptitude install apt-rdepends
     #sudo aptitude install handbrake-gtk
     #get command line version of course
 
-    HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/out.mkv -q 24 -s scan,1,2,3
+    HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/out.mkv -q 22 -s 1,2,3
     #1000 Kbps MPEG-4 Visual video and 160 Kbps AAC-LC audio in an MP4 container.
     #-f format (mkv|mp4)
     #-m extract title markers
-    #-e x264 : video encode format x264/ffmpeg4/ffmpeg2/theora
-    #-q 20 : CRF constant quality
+    #-e x264 : video encode format x264/ffmpeg4/ffmpeg2/theora.
+    #-q 20 : CRF constant quality 0 .. 50. with x264: 20 for dvd, 22 for bluray.
     #-B 160 : sound kbps
     #In an MKV, you can store MPEG-4 video created by ffmpeg or x264, or Theora video.
         #It stores audio in the AAC, MP3, or Vorbis formats. It can also pass through the Dolby Digital 5.1 (AC3) and Digital Theater Systems (DTS) surround sound formats used by DVDs.
@@ -131,7 +131,43 @@ sudo aptitude install apt-rdepends
       #OGMRip : srt
       #MEncoder and Transcode : idx + sub
       #mkvextract : can do srt from mkvs
-      
+
+    #my results:
+      #HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/out.mkv -q 20 -s 1,2,3
+      #initial length: 2:16
+      #conversion time: 4 hours
+      #final size: 2Gb
+      #quality: same as original
+
+      #HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/out.mkv -q 22 -s 1,2,3
+      #initial length: 2:16
+      #conversion time: 2:23
+      #final size: 2Gb
+      #quality: same as original
+
+  #mkvtools
+
+    sudo aptitude install mkvtools
+
+    mkvinfo a.mkv
+    #see info about a
+
+    mkvextract tracks a.mkv 3:por 4:eng 5:spa
+    #extracts tracks 3, 4 and 5, named por, eng, and spa
+    #we know those are subtitles from mkinfo
+    #the type is that contained in the tracks, not necessarily srt, maybe vobsub idx + sub
+    #if you want srt, try vobsub2srt
+
+  #vobsub2srt
+    sudo add-apt-repository ppa:ruediger-c-plusplus/vobsub2srt
+    sudo aptitude update
+    sudo aptitude install vobsub2srt
+    sudo aptitude install tesseract-ocr-eng
+    #you must install the languages you want to use
+
+    vobsub2srt eng
+    #takes eng.sub and eng.ids and makes eng.srt with optical recognition
+
 #file sharing
 
   #torrent deluge
@@ -334,6 +370,10 @@ sudo aptitude install apt-rdepends
 
     ack --thpppt
     #bill the cat
+
+  #diff TODO
+
+  #patch
 
   #kiff3
     #kde diff tool
@@ -606,6 +646,11 @@ gnome-open "$FILE"
 
   install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
 
+#man man
+
+  man -k password
+  #search for commands with password word on summary
+
 #text
 
   #tr
@@ -659,41 +704,6 @@ gnome-open "$FILE"
     cat F | wc 
     #no filename
 
-  #sed
-    #just use perl lape/pie instead
-    find . -type f -iname '*.py' -print0 | xargs -0 sed -n 's/django_cheatsheet/project0/gp' #replaces, and prints replaced lines only
-    find . -type f -iname '*.py' -print0 | xargs -0 sed -i 's/django_cheatsheet/project0/g' #replaces in the file
-
-  #perl replace
-    perl -lape 's/r1/r2/g' F
-    #replace in file linewise
-    #print entire new file to screen
-    #does not make changes
-
-    perl -lane 'print if (s/a/A/g)' F
-    #print only new modified lines to screen
-
-    perl -lane 'print if (s/a/A/g)' F
-    #print only new modified lines to screen
-
-    perl -pi .bak -e 's/a/A/g' F
-    #saves files to F.bak
-
-    perl -pi -e 's/old-word/new-word/g' F
-    #modifies the file! prints nothing to screen
-
-    perl -0777 -lape 's/r1/r2/g' F
-    #replace in entire file (not linewise)
-
-    perl -ne 'print($.,"  ",$_)' F
-    #print file with line numbers, tab separated by 2 spaces from text
-
-    perl -ne 'print unless /^BEGIN$/ .. /^END$/' F
-    #prints only lines between BEGIN and END lines
-
-    perl -ne 'print if 15 .. 17' *.pod 
-    # print just lines 15 to 17
-
   #tac: cat reversed
     tac f
 
@@ -707,10 +717,73 @@ gnome-open "$FILE"
     # -e '1/1 " %02X"' : complicated format string
 
   #sort
+    #sort linewise
 
-    sort
+    sort f1 f2
+    # sort f1, f2 together linewise
     # -h : sort by human readable filesizes: 1k, 2M, 3G
     # -r : reverse order
+    # -f : ignore case. random lower/upper order
+    # -fs : ignore case and put always upper before lower
+    # -n : numbers
+    # -b : ignore leading blanks
+    # -u : uniq. remove dupesls -lh | sort -k5hr
+    # -uf : remove dupes, cas insensitive (A and a are dupes)
+    # -k5 : sort by field N
+    # -t: : set field separator to ':'
+    # -k 2,2n -k 4,4hr : sort by columns. from 2 to 2, numeric, then from 4 to 4, human and reverse
+    # -R : randomize
+    # -m : supposese f1 and f2 are already sorted, making merge faster
+    # -c : check if is sorted
+
+  #uniq
+    #ajacent dupe line operations
+    #sort combo detected
+
+    uniq F
+    #prints F with multiple adjacent dup lines reduced to a single one
+    # -u : only show lines that have no dupe
+    # -d : dupe lines only
+    # -c : counts how many dupes
+
+  #sed
+    #just use perl lape/pie instead
+    find . -type f -iname '*.py' -print0 | xargs -0 sed -n 's/django_cheatsheet/project0/gp' #replaces, and prints replaced lines only
+    find . -type f -iname '*.py' -print0 | xargs -0 sed -i 's/django_cheatsheet/project0/g' #replaces in the file
+
+  #perl one liners
+
+    #ack -f | xargs perl ...
+    #use like this!
+
+    perl -lape 's/r1/r2/g' F
+    #replace in file linewise
+    #print entire new file to screen
+    #does not make changes
+
+    perl -lane 'print if (s/a/A/g)' F
+    #print only new modified lines to screen
+
+    perl -lane '$old = $_; if (s/a/A/g) {print $., "  ", $old, "\n", $., "  ", $_, "\n"}' F
+    #print only new modified lines to screen
+
+    perl -pi -e 's/a/A/g' F
+    #modifies the file! prints nothing to screen
+
+    perl -pi .bak -e 's/a/A/g' F
+    #saves files to F.bak
+
+    perl -0777 -lape 's/r1/r2/g' F
+    #replace in entire file (not linewise)
+
+    perl -ne 'print $., "  " ,$_' F
+    #print file with line numbers, tab separated by 2 spaces from text
+
+    perl -ne 'print unless /^BEGIN$/ .. /^END$/' F
+    #prints only lines between BEGIN and END lines
+
+    perl -ne 'print if 15 .. 17' F
+    # print just lines 15 to 17
 
 #prompt user
 
