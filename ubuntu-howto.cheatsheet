@@ -6,6 +6,8 @@
 #
 #collection of programs and basic howtos on how to use them.
 #
+#this also contains lots of info on general linux programs, not ubuntu only.
+#
 #if a program gets large enough, a file will be created just for it.
 #
 #if a program does not comme with ubuntu 12.04, the aptitude install will be included
@@ -23,14 +25,13 @@ firefoxdownloadfolder="~/nobackup/download"
   sudo do-release-upgrade 
   sudo apt-get update && sudo apt-get upgrade
 
-#before anyting, update
-  sudo apt-get update && sudo apt-get upgrade
+#package management
 
-sudo aptitude install apt-file
-#lets you search packages by files it contains
-#see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
+  sudo aptitude install apt-file
+  #lets you search packages by files it contains
+  #see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
 
-sudo aptitude install apt-rdepends
+  sudo aptitude install apt-rdepends
 
 #configuration editing
 
@@ -45,11 +46,54 @@ sudo aptitude install apt-rdepends
 
   sudo aptitude install compiz compizconfig-settings-manager
 
+#desktop
+  sudo add-apt-repository ppa:gnome3-team/gnome3
+  sudo aptitude update
+  sudo aptitude install gnome-shell
+
+  #desktop/windows control
+
+    gnome-open "$FILE"
+    #opens with the deafult application. works in Ubuntu Unity 12.04
+
+    sudo aptitude install wmctrl
+    #maximize and minimize windows by grepping title or class
+
+    #xsel
+      sudo aptitude install xsel
+
+      xsel > file
+      xsel < file
+      #put xsel into a file. xsel is the last focused selected text
+      #this is not necessarily the clipboard, usually ce que tu obtiens
+      
+      xsel --clipboard > file
+      xsel --clipboard < file
+      #actually uses the clipboard, which you probably got with Ctrl-V
+      
+      xsel --append < file
+      #appends to file
+      
+      xsel --follow < file#
+      #follows stardard input as it grows
+
+  #key logging
+    #writes all keypresses to a file
+    sudo aptitude install logkeys
+
+    sudo logkeys -s
+    #start
+
+    sudo logkeys -k
+    #end
+
+    #-o : output file. default: logkeys -s -m mylang.map -o ~/.secret/keys.log
+
 #proprietary
   sudo -E wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list
-  sudo apt-get --quiet update
-  sudo apt-get --yes --quiet --allow-unauthenticated install medibuntu-keyring
-  sudo apt-get --quiet update
+  sudo aptitude --quiet update
+  sudo aptitude --yes --quiet --allow-unauthenticated install medibuntu-keyring
+  sudo aptitude --quiet update
   sudo aptitude install app-install-data-medibuntu apport-hooks-medibuntu
 
   #codecs #ERROR: mpg123libjpeg-progs cannot locate
@@ -57,11 +101,19 @@ sudo aptitude install apt-rdepends
   sudo aptitude install non-free-codecs libxine1-ffmpeg gxine mencoder totem-mozilla icedax tagtool easytag id3tool lame nautilus-script-audio-convert libmad0 mpg321 mpg123libjpeg-progs
 
   #skype
-  firefox http://www.skype.com/intl/en-us/get-skype/on-your-computer/linux/downloading.ubuntu32
-  nautilus $firefoxdownloadfolder
-  #Win > startup applications > bash -c "sleep 10 && skype" #must sleep, or interface broken
+    firefox http://www.skype.com/intl/en-us/get-skype/on-your-computer/linux/downloading.ubuntu32
+    nautilus $firefoxdownloadfolder
+    #Win > startup applications > bash -c "sleep 10 && skype" #must sleep, or interface broken
 
-  sudo aptitude install pidgin
+sudo aptitude install pidgin
+
+  #additional drivers : non free vendors
+
+    jockey-text --list
+    #list
+
+    jockey-text --enable=$DRIVER
+    #enable from list. ex: xorg:fglrx_updates
 
 #multimedia
 
@@ -105,7 +157,7 @@ sudo aptitude install apt-rdepends
     #sudo aptitude install handbrake-gtk
     #get command line version of course
 
-    HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/out.mkv -q 22 -s 1,2,3
+    HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/a.mkv -q 22 -s 1,2,3,4,5,6,7,8,9,10
     #1000 Kbps MPEG-4 Visual video and 160 Kbps AAC-LC audio in an MP4 container.
     #-f format (mkv|mp4)
     #-m extract title markers
@@ -146,13 +198,12 @@ sudo aptitude install apt-rdepends
       #quality: same as original
 
   #mkvtools
-
     sudo aptitude install mkvtools
 
     mkvinfo a.mkv
     #see info about a
 
-    mkvextract tracks a.mkv 3:por 4:eng 5:spa
+    mkvextract tracks a.mkv 4:a.eng
     #extracts tracks 3, 4 and 5, named por, eng, and spa
     #we know those are subtitles from mkinfo
     #the type is that contained in the tracks, not necessarily srt, maybe vobsub idx + sub
@@ -165,7 +216,7 @@ sudo aptitude install apt-rdepends
     sudo aptitude install tesseract-ocr-eng
     #you must install the languages you want to use
 
-    vobsub2srt eng
+    vobsub2srt a.eng
     #takes eng.sub and eng.ids and makes eng.srt with optical recognition
 
 #file sharing
@@ -431,39 +482,6 @@ sudo aptitude install libreoffice-base
   sudo aptitude install urban-terror
   #counter strike fps clone 
 
-#desktop/windows control
-
-  sudo aptitude install wmctrl
-  #maximize and minimize windows by grepping title or class
-
-  #xsel
-    sudo aptitude install xsel
-
-    xsel > file
-    xsel < file
-    #put xsel into a file. xsel is the last focused selected text
-    #this is not necessarily the clipboard, usually ce que tu obtiens
-    
-    xsel --clipboard > file
-    xsel --clipboard < file
-    #actually uses the clipboard, which you probably got with Ctrl-V
-    
-    xsel --append < file
-    #appends to file
-    
-    xsel --follow < file#
-    #follows stardard input as it grows
-
-  #dirname
-
-    #get the parent dir of a path, not / terminated except for /, no error checking
-    dirname /path/to/dir/or/file #/path/to/dir/or
-    dirname / #outputs /
-    dirname path/to/dir/or/file #path/to/dir/or
-
-  sudo aptitude install realpath
-  #transforms relative paths into absolute paths
-
 #sedlike multifile rename
 
 rename -n 's/^([0-9]) /0$1 /g' *.mp3 
@@ -474,11 +492,8 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
 #cpio
 
-find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
-#copy selected files to destination, building and keeping their relative directory structure
-
-gnome-open "$FILE"
-#opens with the deafult application. works in Ubuntu Unity 12.04
+  find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
+  #copy selected files to destination, building and keeping their relative directory structure
 
 #xargs
 
@@ -678,6 +693,12 @@ gnome-open "$FILE"
     tr -cd "[:print:]"
     #removes non printable chars
 
+  #tail
+
+    tail f
+    #shows last 10 lines of output
+    # -f : follow file. check it every 10 seconds, and output if it changes. TODO get this to work
+
   #cut
     #field and char wise operations
 
@@ -745,6 +766,25 @@ gnome-open "$FILE"
     # -u : only show lines that have no dupe
     # -d : dupe lines only
     # -c : counts how many dupes
+
+  #grep
+
+    grep
+    #-n : show line numbers
+
+
+  #path operations
+
+    #dirname
+
+      #get the parent dir of a path, not / terminated except for /, no error checking
+      dirname /path/to/dir/or/file #/path/to/dir/or
+      dirname / #outputs /
+      dirname path/to/dir/or/file #path/to/dir/or
+
+    sudo aptitude install realpath
+    #transforms relative paths into absolute paths
+
 
   #sed
     #just use perl lape/pie instead
@@ -874,12 +914,14 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
 #mysql
 
-  mysql -u root -p
-  mysql -u root -p'pass'
-  #create, access and modify your databases with interactive section
-  #commands:
-  #  http://www.pantz.org/software/mysql/mysqlcommands.html 
-  #  
+  #mysql command line
+    mysql -u root -p
+    mysql -u root -p"$PASS"
+    mysql -u root -p"$PASS" -e "CREATE DATABASE test;"
+    #execute command
+    #create, access and modify your databases with interactive section
+    #commands:
+    #  http://www.pantz.org/software/mysql/mysqlcommands.html 
 
   mysqladmin -u root -p'OLD_PASS_HERE' password 'NEW_PASS_HERE'
   #change passwords
@@ -905,20 +947,19 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     UNLOCK TABLES
     #releases all locks
 
-
   #dump (save to file)
 
-    mysqldump -u root -p"$ROOT_PASS" "$DB_NAME" > bak.sql
-    mysqldump -u root -p"$ROOT_PASS" "$DB_NAME" "$TABLE1" "$TABLE2" > bak.sql
+    mysqldump -u root "$DB_NAME" > bak.sql
+    mysqldump -u root "$DB_NAME" "$TABLE1" "$TABLE2" > bak.sql
     #dump to file
     #no USE
     #drops existing
 
-    mysqldump -u root -p"$ROOT_PASS" --databases "$DB1" "$DB2" > bak.sql
+    mysqldump -u root --databases "$DB1" "$DB2" > bak.sql
     #mutiple dbs
     #creates dbs with old names, uses them
 
-    mysqldump -u root -p"$ROOT_PASS" --all-databases > bak.sql
+    mysqldump -u root --all-databases > bak.sql
     #all dbs
     #with USE, old names
 
@@ -927,13 +968,15 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
   #restore
 
-    mysql-u root -p"$ROOT_PASS" < bak.sql
+    PASS=
+    mysql-u root -p"$PASS" < bak.sql
     #make sure the db exists/you want to overwrite it
 
-
+    DB=
+    DB2=
     PASS=
-    NEWDB=
-    mysqldump -u root -p"$PASS" $DB | mysql -u root -p"$PASS"
+    mysql -u root -p"$PASS" -e "create database $DB2;"
+    mysqldump -u root -p"$PASS" $DB | mysql -u root -p"$PASS" $DB2
     #make sure the db exists/you want to overwrite it
     #copy db to new name
 
@@ -1290,3 +1333,5 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
   sudo aptitude install hwinfo
   hwinfo
+
+  grep -i 

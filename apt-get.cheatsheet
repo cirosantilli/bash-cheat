@@ -13,7 +13,7 @@
 #imporant info
 
   #USE APTITUDE INSTEAD OF APT-GET!!!
-  #sudo apt-get install aptitude
+    #sudo apt-get install aptitude
 
   #apt-get vs aptitude vs synaptic
 
@@ -43,6 +43,12 @@
   #dev packages
 
     #are packages that contain libraries to build stuff, typically .so files
+
+  #source types
+    #Main - Officially supported software.
+    #Restricted - Supported software that is not available under a completely free license.
+    #Universe - Community maintained software, i.e. not officially supported software.
+    #Multiverse - Software that is not free. 
 
 #first time
 
