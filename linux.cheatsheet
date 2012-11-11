@@ -1,7 +1,1664 @@
-#linux
+#!/usr/bin/env bash
 
-- build a kernel
-    http://www.linuxplanet.com/linuxplanet/tutorials/6853/1 
+#------------------------------------------------------------
+#
+#Ciro D. Santilli
+#
+#collection of programs that can be used on linux and basic howtos on how to use them.
+#
+#for installation, I focus on ubuntu which is what I am using.
+#
+#if a program gets large enough, or fits better somewhereelse, it might be moved
+#a commit note will say when that happens.
+#
+#if a program does not comme with ubuntu 12.04, the aptitude install will be included
+#
+#try cat % | grep "aptitude install" to list all installs
+#
+#------------------------------------------------------------
 
-- build a linux from scratch
-    http://www.linuxfromscratch.org/blfs/view/svn/
+#linux directory structure
+#  http://www.tuxfiles.org/linuxhelp/linuxdir.html
+#.../bin : executables
+#.../lib : .so shared libraries/python modules
+#.../include : c header files
+#.../src : c source files
+#.../doc : documentation
+#/tmp : temporary files
+#/dev : devices
+#/lost+found : files recovered after system crash
+#/media : automatically mounted stuff
+#/mnt : manually mounted stuff
+#/var : data that changes when system runs
+#/etc : linux configuration files
+#/root : root user home
+#/usr : user installed/distribuiton installed/managed by package manager
+#/usr/local : user installed, managed either by package managers (pip) or manually
+
+firefoxdownloadfolder="~/nobackup/download"
+
+sudo apt-get install aptitude
+#first thing is first.
+#check aptitude cheatsheet for how to use
+
+#in order to upgrade from 11.10 or 12.04
+
+  sudo aptitude install update-manager-core
+  sudo do-release-upgrade 
+  sudo apt-get update && sudo apt-get upgrade
+
+#package management
+
+  sudo aptitude install apt-file
+  #lets you search packages by files it contains
+  #see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
+
+  sudo aptitude install apt-rdepends
+
+#configuration editing
+
+  #ubuntu
+    sudo add-apt-repository ppa:tualatrix/ppa
+    sudo apt-get update 
+    sudo aptitude install ubuntu-tweak
+    sudo aptitude install myunity
+    sudo aptitude install dconf-tools
+
+  sudo aptitude install gconf-editor
+
+  sudo aptitude install compiz compizconfig-settings-manager
+
+#desktop
+  sudo add-apt-repository ppa:gnome3-team/gnome3
+  sudo aptitude update
+  sudo aptitude install gnome-shell
+
+  #desktop/windows control
+
+    gnome-open "$FILE"
+    #opens with the deafult application. works in Ubuntu Unity 12.04
+
+    sudo aptitude install wmctrl
+    #maximize and minimize windows by grepping title or class
+
+    #xsel
+      sudo aptitude install xsel
+
+      xsel > file
+      xsel < file
+      #put xsel into a file. xsel is the last focused selected text
+      #this is not necessarily the clipboard, usually ce que tu obtiens
+      
+      xsel --clipboard > file
+      xsel --clipboard < file
+      #actually uses the clipboard, which you probably got with Ctrl-V
+      
+      xsel --append < file
+      #appends to file
+      
+      xsel --follow < file#
+      #follows stardard input as it grows
+
+  #key logging
+    #writes all keypresses to a file
+    sudo aptitude install logkeys
+
+    sudo logkeys -s
+    #start
+
+    sudo logkeys -k
+    #end
+
+    #-o : output file. default: logkeys -s -m mylang.map -o ~/.secret/keys.log
+
+  #alarm
+    sudo aptitude install alarm-clock-applet
+
+#proprietary
+  sudo -E wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list
+  sudo aptitude --quiet update
+  sudo aptitude --yes --quiet --allow-unauthenticated install medibuntu-keyring
+  sudo aptitude --quiet update
+  sudo aptitude install app-install-data-medibuntu apport-hooks-medibuntu
+
+  #codecs #ERROR: mpg123libjpeg-progs cannot locate
+  #use TAB to navigate msfonts
+  sudo aptitude install non-free-codecs libxine1-ffmpeg gxine mencoder totem-mozilla icedax tagtool easytag id3tool lame nautilus-script-audio-convert libmad0 mpg321 mpg123libjpeg-progs
+
+  #skype
+    firefox http://www.skype.com/intl/en-us/get-skype/on-your-computer/linux/downloading.ubuntu32
+    nautilus $firefoxdownloadfolder
+    #Win > startup applications > bash -c "sleep 10 && skype" #must sleep, or interface broken
+
+sudo aptitude install pidgin
+
+  #additional drivers : non free vendors
+
+    jockey-text --list
+    #list
+
+    jockey-text --enable=$DRIVER
+    #enable from list. ex: xorg:fglrx_updates
+
+#dictionnary
+
+  sudo aptitude install goldendict
+  #select text can make popup windows!
+  #
+  #accepted dictionnary formats:
+  #  http://goldendict.org/dictionaries.php
+  #  stardict
+  #  bgl : babylon
+  #    windows oriented: exes on site!
+
+#music
+
+  #cut up flac cue into multiple files
+
+    # via flacon GUI
+    sudo add-apt-repository ppa:flacon
+    sudo apt-get update
+    sudo apt-get install flacon
+
+    #cuetools command line
+    sudo apt-get install cuetools shntool
+    sudo apt-get install flac wavpack
+
+    #single ape and cue in dir, flac output, formatted as number, author, track
+    shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
+
+#books
+
+  #okular + djvu in extra backends
+  sudo aptitude install okular okular-extra-backends
+
+  #calibre
+      sudo aptitude install calibre
+      cd ~
+      mkdir kab/calibre
+      #set library there: Cntr p > ...
+
+  #orc indexing: tranform pdf textonly to searchable pdf
+      #https://help.ubuntu.com/community/OCR#OCR_on_a_Multi_Page_PDF
+      #http://blog.konradvoelkel.de/2010/01/linux-ocr-and-pdf-problem-solved/
+
+  #djvu
+      sudo aptitude install djvulibre-bin libdjvulibre21 okular-extra-backends evince libevdocument1 libevview1 libtiff-tools
+      #to convert djvu pdf, to ddjvu -format=pdf in out
+
+#image
+
+  #gimp
+  sudo aptitude install gimp
+
+  #inkscape
+  sudo aptitude install inkscape
+
+  #imagemagick
+    #tons of image conversion
+
+    sudo aptitude install imagemagick
+
+    identify -list format
+    #supported formats
+
+    convert a.pdf a.jpg
+    #open jpg per page, named a-1.jpg, a-2.jpg
+      #got smaller for file if lots of pics
+      #png also one per page
+      #
+      #tiff is really enourmous!!
+
+#ocr
+
+  #horc: format that contains orc + info about page position and certainty
+
+  #tesseract
+    sudo add-apt-repository ppa:ruediger-c-plusplus/vobsub2srt
+    sudo aptitude update
+    apt-cache search tesseract-ocr- #to find available languages
+    sudo aptitude install tesseract-ocr-eng #english
+
+    sudo aptitude install tesseract-ocr-chi-sim #simplified chinese
+    cd /usr/share/tesseract-ocr/tessdata
+    sudo ln -s chi_sim.traineddata zho.traineddata
+    #tesseract looks for zho instead of chi_sim
+    #there is probably a better way to do this in the tesseract configs, but apparently not directly from vobsub2srt
+
+    tesseract in out -l en -psm 3
+    #-psm 1 : detects pages *and* script automatically. most magic mode.
+
+#video
+
+  sudo aptitude install vlc
+
+  #handbrake
+    #dvd to mkv of mpeg4
+    #first check this for some good info:
+      #firefox http://msdn.microsoft.com/en-us/library/windows/desktop/dd388582%28v=vs.85%29.aspx
+
+    sudo add-apt-repository ppa:stebbins/handbrake-releases
+    sudo aptitude install handbrake-cli
+    #sudo aptitude install handbrake-gtk
+    #get command line version of course
+
+    $DVD
+    HandBrakeCLI -t 0 -i "$DVD"
+    #scans only for all titles and tracks
+
+    HandBrakeCLI -B 160 -e x264 -f mkv -i "$DVD" -m -o 1.mkv -q 22 -s 1,2,3,4,5,6,7,8,9,10 -t 1
+    #1000 Kbps MPEG-4 Visual video and 160 Kbps AAC-LC audio in an MP4 container.
+    #-f format (mkv|mp4)
+    #-m extract title markers
+    #-e x264 : video encode format x264/ffmpeg4/ffmpeg2/theora.
+    #-q 20 : CRF constant quality 0 .. 50. with x264: 20 for dvd, 22 for bluray.
+    #-B 160 : sound kbps
+    #-s 1,2,3 : subtitles to keep
+    #-t 1: title 1. A DVD can contain many titles, which are usually independent films or tracks
+    #In an MKV, you can store MPEG-4 video created by ffmpeg or x264, or Theora video.
+        #It stores audio in the AAC, MP3, or Vorbis formats. It can also pass through the Dolby Digital 5.1 (AC3) and Digital Theater Systems (DTS) surround sound formats used by DVDs.
+        #It supports chapters, as well as Variable Frame Rate video.
+        #It can include "soft" subtitles that can be turned on or off, instead of always being hard burned into the video frame. These can either be bitmap images of the subtitles included on a DVD (known as vobsub) or text. 
+        #it seems though that it can't produce srt
+
+    #CRF ~2hrs film:
+      #CRF off = 1214 MB
+      #CRF 26 = 926 MB
+      #CRF 24 = 1205 MB
+      #CRF 22 = 1586 MB
+      #CRF 20 = 2141 MB
+      #CRF 16 = 4503 MB
+
+    #to get subtitles
+      #must do OCR
+      #OGMRip : srt
+      #MEncoder and Transcode : idx + sub
+      #mkvextract : can do srt from mkvs
+
+    #my results:
+      #HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/out.mkv -q 20 -s 1,2,3
+      #initial length: 2:16
+      #conversion time: 4 hours
+      #final size: 2Gb
+      #quality: same as original
+
+      #HandBrakeCLI -B 160 -e x264 -f mkv -i /media/DVDVolume -m -o ~/out.mkv -q 22 -s 1,2,3
+      #initial length: 2:16
+      #conversion time: 2:23
+      #final size: 2Gb
+      #quality: same as original
+
+  #mkvtools
+    sudo aptitude install mkvtools
+
+    mkvinfo a.mkv
+    #see info about a
+
+    mkvextract tracks a.mkv 4:a.eng
+    #extracts tracks 3, 4 and 5, named por, eng, and spa
+    #we know those are subtitles from mkinfo
+    #the type is that contained in the tracks, not necessarily srt, maybe vobsub idx + sub
+    #if you want srt, try obsub2srt
+
+  #vobsub2srt
+    #uses tesseract for the ocr: this means you must install tesseract lanugages
+    #for chinese, must symlink 
+    #see: #tesseract for installing the languages
+    sudo aptitude install vobsub2srt
+
+    vobsub2srt --langlist a #view available languages inside a.sub a.idx pair
+    vobsub2srt --lang en a 
+    #takes a.sub and a.idx and makes eng.srt with optical recognition
+    #en or 0 were taken from --langlist
+    #don't know what to do if two subs for the same language such as
+    #  simplified and traditional chinese, both of which get zh
+    #output goes to a.str. don't forget to rename it as a.eng.srt before going to the next language
+
+  #srtmerge
+    #https://github.com/wistful/srtmerge
+    sudo pip install srtmerge
+    srtmerge a b ab
+    #mergers two srte files into one
+    #if there are two timings that coincide, they are merged into one
+    #newline separated
+    #perfect for dual sub language learning
+    
+
+#file sharing
+
+  #torrent deluge
+  sudo add-apt-repository ppa:deluge-team/ppa
+  sudo apt-get update
+  sudo aptitude install deluge
+
+  #soulseek client nicotine+ 
+  sudo aptitude install nicotine+
+  #behind a proxy router
+  # go to the router admin panel, port forwarding part
+  #  (http://192.168.0.1/RgForwarding.asp on dlink for example, default login:admin pass:motorola)
+  # open ports 2234 to 2239 on local ip found at
+  #  ifconfig eth0 | grep "inet addr:"
+  #
+  #now either put your files in another partition at the root, or symlink
+  #your share and download dirs to somewhere above user so that people cannot
+  #see your username
+
+  #fdupes
+    #fine command line tool for eliminating duplicates by content
+    sudo aptitude install fdupes
+
+    fdupes -r . # finds and prints dupes
+    fdupes -rd . # finds dupes, and prompt which to keep for each match
+
+  #dropbox
+  noaptget=~/nobackup/noaptget/
+  if [ ! -d $noaptget ]; then
+    mkdir $noaptget
+  fi
+  cd $noaptget
+  wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
+  ./.dropbox-dist/dropboxd &
+
+#programming tools
+
+  #compiling
+
+    sudo apt-get install build-essential
+    #building tools
+
+    sudo aptitude install nasm
+    #nasm assembler
+
+    #gcc
+      #http://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html#
+      #http://www.adp-gmbh.ch/cpp/gcc/create_lib.html
+
+      gcc -S a.c
+      #create a.s file with generated assembly code
+
+      #debug
+
+        gcc -g -Wall a.c -o a.out
+        #debug compilation
+        #g: generate debug info for gdb
+
+      #production
+
+        gcc -O a.c -o a.out
+
+      #compilation steps
+
+        cpp a.c > a.i
+        #expanded macros
+        #c pre processor
+
+        gcc -S a.i
+        #compile preprocessed into assembly code a.s
+
+        as -o a.o a.s
+        #assemble
+
+        ld -o a.out a.o -lm
+        #link code with library code
+
+        gcc -c a.c
+        gcc -c b.c
+        gcc a.o b.o -o ab.out
+        #same as above, but generats .o
+
+        gcc -c a.c
+        gcc a.c -o a.out
+        #compile and link separately
+
+      #multifile
+
+        #include
+          cpp -v
+          #will show include search paths
+          #done by the c pre processor
+
+          CPATH="/add/to/include"
+          export CPATH
+
+        #link
+          #.a and .so
+
+          gcc -print-search-dirs
+          #where the linker looks for .so and .a files
+
+          gcc a.c -o a.out -lm
+          #-l : link to library libm.so in path
+          #PUT -l AFTER ALL COMMANDS!!!!!!!!!!
+          #the name must be EXACTLY!!!!!! libm.so, libm.1.so for example will link as m.1!!!!!!
+
+          gcc -v a.c -o a.out -L/path/to/link -llib
+          #-L : append path to link search path
+          #-v : will show link search paths
+
+          LIBRARY_PATH="/add/to/link"
+          export LIBRARY_PATH
+
+          gcc a.c b.c -o ab.out
+          #compile multiple files
+        
+      #make libraries
+
+        gcc -c a.c
+        gcc -c b.c
+        ar rcs a.a a.o b.o
+        #.a is nothing but a compressed form of several .o
+
+        gcc -c -fPIC a.c
+        #compile for .so
+
+      #use libraries
+
+        gcc -static b.c -L. -la -o b_static.out
+        #static link
+
+        gcc main.c -o b_dyn.out -L. -la
+        #dynamic link
+
+        LD_LIBRARY_PATH
+        #where to load libraries at runtime
+
+      #utils
+
+        nm a.o
+        #simbol table for a.o
+
+        ldd a.out
+        #required shared libraries
+
+        readelf --syms liba.so
+        #shows symtable (defined stuff) of elf .so
+
+        readelf --relocs a.o
+        #TODO ?
+
+        objdump --disassemble a.o
+        #TODO ?
+
+        time ./a.out
+        #profiles a.out.
+        #bash builtin, different from /usr/bin/time
+        #
+        #real: wall clock time
+        #user: program cpu time usage
+        #sys: system call time used for program
+
+        /usr/bin/time -f "\t%U user,\t%S system,\t%x status" test.py
+        #time without path is the bash built-in
+        #does memorym iom etc profiles besides time profiles
+
+  #editors and ides
+    #eclipse
+      sudo aptitude install eclipse #ERROR cdt tools not good
+
+      #MANUAL: install plugins.
+
+      #must be root for those operations so
+      gksudo eclipse
+
+      #Help > Install new software > Availabe software sources > Check every single case there!
+      #Help > Install new software > New sources
+
+      #add vim like editing to eclipse
+      #http://vrapper.sourceforge.net/update-site/stable
+
+      #add eclipe functionality to vim
+      #http://vrapper.sourceforge.net/update-site/stable
+
+      #color themes
+
+      #http://eclipse-color-theme.github.com/update
+      #	mine: http://www.eclipsecolorthemes.org/?view=theme&id=7915
+      #to install: File > Import > Preferences > Select *.epf (Eclipse menus are SO unintuitive...)
+
+      #c and c++
+      #http://download.eclipse.org/tools/cdt/releases/indigo/
+
+      #python
+      #http://pydev.org/updates
+
+      #html, javascript, php
+      #http://download.eclipse.org/webtools/repository/indigo/
+
+      #latex
+      #http://texlipse.sourceforge.net
+      #forward search to okular: 
+      #   
+      #
+      #inverse search from okular: Settings > Configure Okular > Editor
+      #  Editor: custom text editor,
+      #  Command: gvim --remote +%l %f 
+
+    #version control
+
+      #git
+      sudo aptitude install git
+      sudo aptitude install gitk	#a git graphic local branch viewer
+      #not set it up to follow github
+      #http://help.github.com/linux-set-up-git/
+
+      #svn subversion
+      sudo aptitude install subversion
+
+    #vim
+
+      sudo aptitude install vim
+      sudo aptitude install vim-gtk #gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
+      sudo aptitude install exuberant-ctags #to create tags (allows you to jump to definitions for example)
+
+      #get an overpowered distro (will save hours of plugin management)
+
+      #install plugins
+      #I prefer to unzip the plugins under .vim, and then add their paths to my .vimrc. This way, if I ever want to remove a plugin, all I need is to remove the folder, and some small code in the vimrc.
+      mkdir -p ~./vim
+      cd ~/.vim
+
+      #easytags
+      #generates a tags file every seconds to that you can jump to tag definitions
+      #(functions, variables, etc.) with Cntl + ]
+      wget http://peterodding.com/code/vim/downloads/easytags.zip
+      unzip easytags.zip
+      rm easytags.zip
+      echo ":let g:easytags_file = '~/.vim/easytagstags'" >> ~/.vimrc #save tags in ~/.vim/easytagstags insteaed ot the default ~/
+      vim
+
+      vim-addons install latex-suite
+
+  #web design lamp (Linux Apache + Mysqp + PHP)
+
+    #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
+
+    #from tutorial at: http://community.linuxmint.com/tutorial/view/486
+    #apache
+    sudo aptitude install apache2
+    firefox http://localhost/ & #test apache
+
+    #php
+    sudo aptitude install php5 libapache2-mod-php5
+    sudo /etc/init.d/apache2 restart
+    #test php
+    echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null
+    firefox http://localhost/testphp.php &
+
+    #mysql server
+      sudo aptitude install mysql-server
+      #he will ask you for the password, fill it in
+      #mysql -u root #the tutorial said do that, but I didn't need to. This would be for the password.
+
+    #phpmyadmin
+    sudo aptitude install libapache2-mod-auth-mysql php5-mysql phpmyadmin
+    #gksudo gedit /etc/php5/apache2/php.ini #according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
+
+    #make sure 'Include /etc/phpmyadmin/apache.conf' is in the apache config file
+    sudo vim /etc/apache2/apache2.conf
+    #add:
+    #  Include /etc/phpmyadmin/apache.conf
+    sudo /etc/init.d/apache2 restart
+
+    #test phpmyadmin and mysql
+    firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
+
+  #web
+
+  #ack
+    sudo aptitude install ack-grep #ack package was already taken by a kanji converter!
+    #finds and greps, nice filename/line/match highlight output, ignores .git .svn, backup, swap files
+    #can detect and filter by filetype via shebangs
+    
+    ack --py perl_regex
+    #recursive find grep for perl_regex in python files only
+    
+    ack -f --py --print0 | xargs -0 -I '{}' git add '{}'
+    #adds all python files git. shebang aware.
+    
+    ack --cc '#include\s+<(.*)>' --output '$1'
+    #prints only include names in cpp files
+    #--sh for bash
+
+    ack -f | xargs perl -lane 'print if s/z/Z/g'
+    #recursive find
+    #print changes only
+
+    ack -f | xargs perl -pi -e 's/z/Z/g'
+    #recursive replace in files
+    #prints nothing
+
+    ack -g '\.py$'
+    #f, only stuff matching regex
+
+    ack --thpppt
+    #bill the cat
+
+  #diff TODO
+
+  #patch
+
+  #kiff3
+    #kde diff tool
+    sudo aptitude install kdiff3
+
+    kdiff3 f1 f2 -o fout
+
+  #publishing
+
+    #pandoc. convert to/from extended markdown / latex / html
+    sudo aptitude install pandoc
+    sudo aptitude install texlive
+    #sudo aptitude install texlive-full #enormous size and amount of packages
+    #you need this for certain latex fonts such as Continuous functions C
+
+    sudo aptitude install texmaker
+
+#file management
+
+  #krusader
+  sudo aptitude install krusader
+  sudo aptitude install konqueror #needs to manage bookmarks. (otherwise, button does nothing)
+  sudo aptitude install konsole   #needs to terminal emulator. (otherwise, button does nothing)
+
+  #filezilla
+  sudo aptitude install filezilla
+  sudo aptitude install deluge
+
+#sudo add-apt-repository ppa:libreoffice/pp #already comes with Ubuntu 11.10
+sudo aptitude install libreoffice-base
+
+#keyboard and mouse automation 
+
+  #autokey
+  sudo apt-add-repository ppa:cdekter/ppa
+  sudo aptitude install autokey-gtk
+
+  #xdotool. can send clicks and manage window properties.
+  sudo aptitude install xdotool
+
+#games
+
+  sudo add-apt-repository "deb http://archive.ubuntugames.org ubuntugames main"
+
+  sudo aptitude install nethack-console
+  #nethack dungeon rpg
+
+  sudo aptitude install netrek-client-cow
+  #netrek space ship click and shoot
+
+  sudo aptitude install urban-terror
+  #counter strike fps clone 
+
+#sedlike multifile rename
+
+rename -n 's/^([0-9]) /0$1 /g' *.mp3 
+#does not make changes to all .mp3 files
+
+rename 's/^([0-9]) /0$1 /g' *.mp3
+#makes changes
+
+#cpio
+
+  find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
+  #copy selected files to destination, building and keeping their relative directory structure
+
+#xargs
+
+  find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
+  #xargs find print0 combo.
+  #prints: 
+  #asdf pdf1
+  #asdf pdf2
+  #...
+  #
+  #print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
+  #
+  #this executes echo asdf 'pdf1', ..., for EACH pdf file found
+
+  find . -name '*.pdf' -print0 | xargs -0 echo asdf
+  #prints:
+  #asdf pdf1 pdf2 pdf3 ...
+  #
+  #echo is called only once.
+  #each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
+
+  find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
+  #xargs with multiple commands. must use bash.
+  #only use this for very simple commands, or you are in for an escaping hell!
+  #use the next pattern instead: TODO
+
+  while IFS= read -r -u3 -d $'\0' FILE; do
+    echo "$FILE"
+  done 3< <(find /tmp -type f -print0)
+  #the only thing tha breaks this is having programs that use 3<. godlike
+
+  while IFS= read -r -u3 -d $'\0' FILE; do
+    echo "$FILE"
+  done 3< <(find /tmp -type f -print0 | sort -rz)
+  #this reverses find order of the find output, allowing you to rename directories also (with this, directories)
+  #will come last and be renamed last. -r is for 'reverse, and -z is for null terminated
+
+  find . -printf '%f'
+
+  #%p	filename, including name(s) of directory the file is in
+  #%m	permissions of file, displayed in octal.
+  #%f	displays the filename, no directory names are included
+  #%g	name of the group the file belongs to.
+  #%h	display name of directory file is in, filename isn't included.
+  #%u	username of the owner of the file
+
+#tput modify terminal output
+
+  #multiple commands single tput
+  #tput -S
+  #clear
+  #cup 2 4
+
+  #colors
+    CLEAR_TERMINAL=`tput clear`
+
+    SET_CURSOR_POSITION=`tput cup 2 3`
+    tput sc #saves current position
+    tput rc #restore previously saved cursor position
+
+    NCOLS=`tput cols`
+    NLINES=`tput lines`
+
+    CLEAR_FORMAT=`tput sgr0`
+
+    HIDE_CURSOR=`tput civis`
+    SHOW_CURSOR=`tput cnorm`
+
+    BOLD=`tput bold`
+
+    UNDERLINE_ON=`tput smul`
+    UNDERLINE_OFF=`tput rmul`
+
+    LINE_WRAP_OFF=`tput rmam`
+    LINE_WRAP_ON=`tput smam`
+
+    Black="$(tput setaf 0)"
+    BlackBG="$(tput setab 0)"
+
+    Red="$(tput setaf 1)"
+    RedBG="$(tput setab 1)"
+
+    Green="$(tput setaf 2)"
+    GreenBG="$(tput setab 2)"
+
+    Brown="$(tput setaf 3)"
+    BrownBG="$(tput setab 3)"
+
+    Blue="$(tput setaf 4)"
+    BlueBG="$(tput setab 4)"
+
+    Purple="$(tput setaf 5)"
+    PurpleBG="$(tput setab 5)"
+
+    Cyan="$(tput setaf 6)"
+    CyanBG="$(tput setab 6)"
+
+    White="$(tput setaf 7)"
+    WhiteBG="$(tput setab 7)"
+
+    echo "${GreyBG}${Red}gray on red${CLEAR_FORMAT}no format"
+    tput bold; tput setaf 7; tput setab 1; echo "gray on red"; tput sgr0; echo "no format"
+
+    #colors
+    #Set background color 	tput setab color
+    #Set foreground color 	tput setaf color
+    #Set bold mode 	tput bold
+    #Set half-bright mode 	tput dim
+    #Set underline mode 	tput smul
+    #Exit underline mode 	tput rmul
+    #Reverse mode 	tput rev
+    #Set standout mode 	tput smso
+    #Exit standout mode 	tput rmso
+    #Reset all attributes 	tput sgr0
+    #Color 	Code
+    #black 	0
+    #red 	1
+    #green 	2
+    #yellow 	3
+    #blue 	4
+    #purple 	5
+    #cyan 	6
+    #white 	7o
+
+#PS1 variable: controls the format of the terminal prompt
+#PS2: second line. default '>'
+
+#mktemp
+
+  TFILE="$(mktemp)"
+  echo "$TFILE"
+  #creates a temporary file and returs its name
+
+#system date and time settings.
+
+  sudo date
+  #get system date
+
+  sudo date -s "1 JUN 2012 09:30:00"
+  #set system date
+
+  TIMESTAMP=`date +%Y-%m-%d-%H-%M-%S`
+
+  sudo hwclock --show
+  #see hardware clock
+
+  sudo hwclock --systohc
+  #sync hardware clock to system clock
+
+  $TIMEZONE_LOCATION=/usr/share/zoneinfo
+  cd $TIMEZONE_LOCATION
+  ls
+  $TIMEZONE_NAME=
+  cp $TIMEZONE_LOCATION/$TIMEZONE_NAME /etc/localtime
+  #set you time zone
+
+  #on dual boot with windows there are conflicts because Windows uses local time, and Linux UTC (more logical...). you must either tell Linux to use local, or better, Windows to use UTC
+
+  #id3tool get id3 tags info (for mp3 for example)
+  TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
+  ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+  ALBUM="`id3tool "$1" | grep '^Album:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+  YEAR="`id3tool "$1" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+  TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
+
+  install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
+
+#man man
+
+  man -k password
+  #search for commands with password word on summary
+
+  man 2 write
+  #write system call
+  #2 : man section fir system calls. default 1 for commands in path.
+  #  firefox http://en.wikipedia.org/wiki/Man_page#Manual_sections
+  #  firefox http://docs.cs.up.ac.za/programming/asm/derick_tut/syscalls.html
+
+#text
+
+  #tr
+    #charwise text operations
+
+    tr abc ABC
+    #-s : replaces a by A and b by B and c by C
+
+    tr -c abc d
+    #-c : complement and replace. replaces all non abc chars by d
+
+    tr -d abc
+    #deletes abc
+
+    tr -s a
+    #replaces multiple consecutive 'a's by isngle a
+    # aaaaa -> a
+
+    tr a-z A-Z
+    #to upper
+
+    tr -cs "[:alpha:]" "\n"
+    #replaces non alphanum by a newline
+
+    tr -cd "[:print:]"
+    #removes non printable chars
+
+  #tail
+
+    tail f
+    #shows last 10 lines of output
+    # -f : follow file. check it every 10 seconds, and output if it changes. TODO get this to work
+
+  #cut
+    #field and char wise operations
+
+    cut -d: -f 1 F
+    #first field from colon separated F
+
+    cut -d: -f 1,3 F
+    #first and third field from colon separated F
+
+    cut -c 1-8 F
+    #first 8 chars
+
+  #wc
+    #counting things
+
+    wc F F2
+    #newline, word, byte, filename table
+      #-c bytes
+      #-m chars
+      #-l newlines
+      #-L max line lenght
+      #-w words
+
+    cat F | wc 
+    #no filename
+
+  #tac: cat reversed
+    tac f
+
+  #hexdump: view bytes in hexa
+
+    hexdump -C $F
+    # -C : see bytes in hexadecimal
+    # -n32 : only 32 bytes
+    # -s32 : start at byte 32
+    # -v : show duplicate lines
+    # -e '1/1 " %02X"' : complicated format string
+
+  #sort
+    #sort linewise
+
+    sort f1 f2
+    # sort f1, f2 together linewise
+    # -h : sort by human readable filesizes: 1k, 2M, 3G
+    # -r : reverse order
+    # -f : ignore case. random lower/upper order
+    # -fs : ignore case and put always upper before lower
+    # -n : numbers
+    # -b : ignore leading blanks
+    # -u : uniq. remove dupesls -lh | sort -k5hr
+    # -uf : remove dupes, cas insensitive (A and a are dupes)
+    # -k5 : sort by field N
+    # -t: : set field separator to ':'
+    # -k 2,2n -k 4,4hr : sort by columns. from 2 to 2, numeric, then from 4 to 4, human and reverse
+    # -R : randomize
+    # -m : supposese f1 and f2 are already sorted, making merge faster
+    # -c : check if is sorted
+
+  #uniq
+    #ajacent dupe line operations
+    #sort combo detected
+
+    uniq F
+    #prints F with multiple adjacent dup lines reduced to a single one
+    # -u : only show lines that have no dupe
+    # -d : dupe lines only
+    # -c : counts how many dupes
+
+  #grep
+
+    grep
+    #-n : show line numbers
+
+
+  #path operations
+
+    #dirname
+
+      #get the parent dir of a path, not / terminated except for /, no error checking
+      dirname /path/to/dir/or/file #/path/to/dir/or
+      dirname / #outputs /
+      dirname path/to/dir/or/file #path/to/dir/or
+
+    sudo aptitude install realpath
+    #transforms relative paths into absolute paths
+
+
+  #sed
+    #just use perl lape/pie instead
+    find . -type f -iname '*.py' -print0 | xargs -0 sed -n 's/django_cheatsheet/project0/gp' #replaces, and prints replaced lines only
+    find . -type f -iname '*.py' -print0 | xargs -0 sed -i 's/django_cheatsheet/project0/g' #replaces in the file
+
+  #perl one liners
+
+    #ack -f | xargs perl ...
+    #use like this!
+
+    perl -lape 's/r1/r2/g' F
+    #replace in file linewise
+    #print entire new file to screen
+    #does not make changes
+
+    perl -lane 'print if (s/a/A/g)' F
+    #print only new modified lines to screen
+
+    perl -lane '$old = $_; if (s/a/A/g) {print $., "  ", $old, "\n", $., "  ", $_, "\n"}' F
+    #print only new modified lines to screen
+
+    perl -pi -e 's/a/A/g' F
+    #modifies the file! prints nothing to screen
+
+    perl -pi .bak -e 's/a/A/g' F
+    #saves files to F.bak
+
+    perl -0777 -lape 's/r1/r2/g' F
+    #replace in entire file (not linewise)
+
+    perl -ne 'print $., "  " ,$_' F
+    #print file with line numbers, tab separated by 2 spaces from text
+
+    perl -ne 'print unless /^BEGIN$/ .. /^END$/' F
+    #prints only lines between BEGIN and END lines
+
+    perl -ne 'print if 15 .. 17' F
+    # print just lines 15 to 17
+
+#pipes and redirection
+
+  ls | tee file
+  #ls to stdou and file
+
+  ls | tee file 1>&2
+  #ls to
+
+  ls -l | tee file | sort
+  #ls to file and sort
+
+  ls | tee –a file
+  #ls append to file
+
+  ls | tee –a f1 f2 f3
+  #ls to multple files
+
+
+#prompt user
+
+  #while read case method
+
+  #ask for user input, break into cases
+  #if none of the cases is met, print error message and ask again.
+  while true; do
+      read -p "Which case do you want? case a [a], case b [b], case c [c])" c 
+      case "$c" in
+        "a" ) echo "Action for case a"; break;;
+        "b" ) echo "Action for case b"; break;;
+        "c" ) echo "Action for case c"; break;;
+        * ) echo "Does not match any of the possible cases. Try again."
+      esac
+  done
+
+  #same as above, but for the ultra common case of yes [Y] no [n] case 
+  while true; do
+      read -p "Yes or no? [Y/n]" yn
+      case "$yn" in
+          Y ) ; break;;
+          n ) ; break;;
+          * ) echo "Please enter either 'Y' or 'n'.";;
+      esac
+  done
+
+#file compresssion
+
+  sudo aptitude install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack lha arj cabextract file-roller
+
+  #the performance parameters are:
+  #compression ratio
+  #compression time
+  #speed of seeing and extracting single files
+  #support across OS
+  #encryption
+  #break into small chunks
+  #keep file permissions and metadata
+
+  #example: I compressed 2.4 Gb of non compressed files. I got:
+  #zip and gz: 1.1Gb. gz was faster
+  #gz2: 760M, but way slower
+  #zip one by one: 1.1Gb, same as compressing whole dir.
+
+  #zip
+
+    #most widely supported format across operating systems.
+    #not so high compression
+    #easy to view and extract single files
+
+    zip name-of-archive.zip file-to-compress
+    zip -r name-of-archive.zip dir-to-compress
+    #creates a zip of dir-to-compress named name-of-archive.zip
+
+    #compressing files one by one and the whole dir gives the same size, thus explaining why it is easy to extract single files; he only uses one dictionnary per file
+    #therefore, if your major operation is to extract single files and you have tons of files, it is better to keep the file tree, and replace files by file.zip, so that is is easy to browse files
+
+    for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
+    #zip every file in cur dir to file.zip
+
+  #tar
+
+    #only turns dir into file, but no compression
+    #this is why it is often coupled with gz and bz2: those are files compressers
+    #gz gives similar compression to .zip
+    #gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
+
+    #create
+      tar cfv dir.tar dir/ 
+      tar cfvz dir.tar.gz dir/ 
+      tar cfvj dir.tar.bz2 dir/ 
+      #c: create
+      #z: tar.gz
+      #j: for bz2
+      #f: to output to a file and not to standard output (terminal)
+      #v: verbose
+
+    #extract
+      tar cfv dir.tar
+      tar cfvz dir.tar.gz
+      tar cfvj dir.tar.bz2 
+
+
+#encryption
+
+  gpg -c in
+  #will create a in.gpg encrypted file. can only be decrypted and then opened with password
+  #good combo with tar.gz
+
+
+#GUI control
+
+  #control some window properties
+  wmctrl -a ' - GVIM' #focus on a window with title containing '- GVIM' ( hopefully gVim! )
+
+sudo service lightdm restart #restart lightdm display manager used for Unity, more drastic and possibly effective
+unity --restart #restarts the unity shell only. less effective and drastic than restarting lightdm
+
+#mysql
+
+  #mysql command line
+    mysql -u root -p
+    mysql -u root -p"$PASS"
+    mysql -u root -p"$PASS" -e "CREATE DATABASE test;"
+    #execute command
+    #create, access and modify your databases with interactive section
+    #commands:
+    #  http://www.pantz.org/software/mysql/mysqlcommands.html 
+
+  mysqladmin -u root -p'OLD_PASS_HERE' password 'NEW_PASS_HERE'
+  #change passwords
+
+  #commands
+
+    DESC $table;
+    #get table description
+
+    CREATE TABLE $newtable LIKE $oldtable
+    #creates a new table with same structure as old one
+
+    drop table t1 , t2;
+    #destrois tables
+
+    INSERT INTO $newtable SELECT * FROM $oldtable
+    #copies data from old table to new table
+
+    TRUNCATE TABLE $tablename
+    #removes all data from a table
+
+    DELETE FROM $table;
+    #deletes entire table data. difference from truncate?
+
+    LOCK TABLES `$table1` READ; `$table2` WRITE;
+    #cannot read from table1 and write to table2
+    #use before making big db changes
+
+    UNLOCK TABLES
+    #releases all locks
+
+  #dump (save to file)
+
+    mysqldump -u root "$DB_NAME" > bak.sql
+    mysqldump -u root "$DB_NAME" "$TABLE1" "$TABLE2" > bak.sql
+    #dump to file
+    #no USE
+    #drops existing
+
+    mysqldump -u root --databases "$DB1" "$DB2" > bak.sql
+    #mutiple dbs
+    #creates dbs with old names, uses them
+
+    mysqldump -u root --all-databases > bak.sql
+    #all dbs
+    #with USE, old names
+
+    # -d : no data
+    # --no-create-info : data only
+
+  #restore
+
+    PASS=
+    mysql-u root -p"$PASS" < bak.sql
+    #make sure the db exists/you want to overwrite it
+
+    DB=
+    DB2=
+    PASS=
+    mysql -u root -p"$PASS" -e "create database $DB2;"
+    mysqldump -u root -p"$PASS" $DB | mysql -u root -p"$PASS" $DB2
+    #make sure the db exists/you want to overwrite it
+    #copy db to new name
+
+#cron jobs
+
+  crontab -e
+  #edit user cron jobs in vim
+  #1 2 3 4 5 /path/to/cmd.sh arg1 arg2 >/dev/null 2>&1
+    #1: Minute (0-59)
+    #2: Hours (0-23)
+    #3: Day (0-31)
+    #4: Month (0-12 [12 == December])
+    #5: Day of the week(0-7 [7 or 0 == sunday])
+    #/path/to/command - Script or command name to schedule#
+    #
+    #* : every
+    #*/5 : every five
+    #1,3,6 : several 
+    #1-5 : ranges
+    #
+    #>/dev/null 2>&1 to avoid recieving emails
+    #
+    #otherwise:
+    #MAILTO="vivek@nixcraft.in"
+    #1 2 3 ...
+
+    crontab -l
+    crontab -u user -l
+    #list all cronjobs
+
+    crontab -r
+    crontab -r -u username
+    #erase all crontabs
+
+    #@reboot	Run once, at startup.
+    #@yearly	Run once a year, "0 0 1 1 *".
+    #@annually	(same as @yearly)
+    #@monthly	Run once a month, "0 0 1 * *".
+    #@weekly	Run once a week, "0 0 * * 0".
+    #@daily	Run once a day, "0 0 * * *".
+    #@midnight	(same as @daily)
+    #@hourly	Run once an hour, "0 * * * *".
+    #
+    #can use instead of the 5 fields
+
+#memory
+
+  free -m
+  #shows RAM and swap memory in Megabytes
+  # -t totals at bottom
+  # -sN : repeat every N seconds
+
+  du -sh * | sort -hr
+  #disk usage per file/dir
+  # s: summarize: only for dirs in *
+  # h: human readable: G, M, b
+
+  #df
+    #show partitions, total and free space of each
+
+    df -h
+    # h: like for du -h
+
+    df -h | sort -hrk2
+    #sort by total size
+
+  #gparted
+    sudo aptitude install gparted
+    #gparted. create/delete/change partition size. In order to reduce you windows partition
+    #you need first to reduce it in windows, and then use this.
+
+    #to format hd:
+      #erase partition table and create new one. gpt seems to be a good choice of partition table type.
+      #create a partiion on the hd. ntfs seems to be best cross platform choice now.
+      #give a label. it will be mounted like that. I choose 300g for my 300 Gb hd.
+      #all ops are very quick!
+
+  #umount
+
+    umount /media/OS
+    #unmount what is mounted on this folder
+
+  #fdisk
+
+    fdisk -l /dev/dsb
+    #show partition table of dir
+
+  #get uid for devices
+    ls -l /dev/disk/by-uuid
+
+  #fstab: automatic mount info
+    sudo cp /etc/fstab /etc/fstab.bak
+    sudo vim /etc/fstab
+    sudo mount -a #acknowledge changes
+
+  #fuser
+    fuser -m /dev/sdb1
+    #which processes are keeping device busy
+    
+#system info
+
+  lsof | less
+  #list all open files and pipes
+    #COMMAND process name.
+    #PID process ID
+    #USER Username
+    #FD file descriptor
+    #TYPE node type of the file
+    #DEVICE device number
+    #SIZE file size
+    #NODE node number
+    #NAME full path of the file name.
+    #
+    #-u user : by given user
+
+
+  #vmstat
+    #memory, sway, io, cpu
+
+    vmstat 1 100
+    #run every 1s, 100 times
+
+    #Vmstat procs Section
+
+        #r field: Total number of runnable process
+        #b field: Total number of blocked process
+
+    #Memory section
+
+        #Swpd field: Used swap space
+        #Free field: Available free RAM
+        #Buff field: RAM used for buffers
+        #Cache field: RAM used for filesystem cache
+
+    #Swap Section
+
+        #Si field: Amount of memory swapped from disk per second
+        #So field: Amount of memory swapped to disk per second
+
+    #IO Section
+
+        #Bi field: Blocks received from disk
+        #Bo field: Blocks sent to disk.
+
+    #System Section
+
+        #In field: Number of interrupts per second.
+          #move you mouse and see this go up!
+
+        #Cs field: Number of context switches per second.
+
+    #CPU Section
+
+        #Us field: Time spend running user code. (non-kernel code)
+        #Sy field: Time spent running kernel code.
+        #Id field: Idle time.
+        #Wa field: Time spent waiting for the IO
+
+  sudo sysctl –a
+  #kernel parameters
+
+  #sar
+    #long term performance statistics
+
+    sudo aptitude install sysstat
+    #crontab -e
+    #
+    #paste:
+    #*/5 * * * * root /usr/lib/sa/sa1 1 1
+    #59 23 * * * root /usr/lib/sa/sa2 –A
+
+    sar -u
+    #cpu usage
+
+    sar –d
+    #disk io stats
+
+    sar -n DEV | more
+    sar -n SOCK |more
+    #network stats
+
+  uname -r
+  #get kernel version
+
+  sudo X -version
+  #get xserver version
+
+#process
+
+  #ps
+
+    ps auxw | grep 538
+    #find process name with id 538
+
+  #nice
+    #-20: high priority, 20 low priority
+
+    ps axl
+    #ps with NI(CE) column
+
+    nice -10 ./cmd 
+    #set nice to 10
+
+    sudo nice --10 ./cmd 
+    #set nice to -10
+    #only sudo can set negative nice
+
+    renice 16 -p 13245
+    #change priority of process
+
+#directory
+
+  #cd
+    cd -
+    #go back to last dir
+    #only works once
+
+    cd -lh
+    #-a : (all) show hidden files
+    #-h : human readable filesizes
+    #-l : long. one per line, lots of data.
+
+  #ls
+
+    ls | cat
+    #ls is aware if its ouput goes to a pipe or not.
+    #if yes, newline separates it!
+
+    ls -1
+    #one per line
+
+  #dirs
+    #move between dirs
+
+    dirs
+    #show dir stack
+    # -v : verbose. one per line, with line numbers
+
+    pushd .
+    #push to dir stack
+
+    popd
+    #pop fro dir stack and cd to it
+
+  #ln
+    #hardlinks and symlinks
+
+    ln -s from to
+    #make a symlink
+
+#file info
+
+  file f
+  #tries to guess the type of file f with magic lib
+
+  stat f
+  #last access, size, etc
+  # so this is where python and c commands come from...
+
+#shell options
+
+    set -o
+    #show options
+
+  #shopt
+
+    shopt
+    #show option
+
+    shopt -s op
+    #set option
+
+    shopt -u op
+    #unset option
+
+#users
+
+  #chown
+
+    sudo chown $NEW_OWNER $FILES
+    #-R : recursive
+
+
+  #ac
+    #connection statistics
+    sudo aptitude install acct
+
+    ac -d
+    #current user connection in hours, broken by days
+
+    ac -p
+    #connection time for all users
+
+#web
+
+  ping google.com
+  #sends an recieves data, measuring round trip, several times
+
+  whois 201.81.160.156
+  #check info about ip (country and ISP included)
+
+  netstat -a
+  #TODO understand crazy output
+
+  #curl
+    sudo aptitude install curl
+
+    curl ifconfig.me
+    #external ip address of your computer
+
+    curl "$URL"
+    #make get resquest, stdout server response
+    #
+    #<form method="GET" action="junk.cgi">
+      #<input type=text name="birthyear">
+      #<input type=submit name=press value="OK">
+    #</form>
+
+    curl -d "birthyear=1905&press=%20OK%20" $URL
+    curl --data-urlencode "name=I am Daniel" $URL
+    #post requests. --data-urlencode adds %20 for the spaces!
+    #
+    #<form method="POST" action="junk.cgi">
+      #<input type=text name="birthyear">
+      #<input type=submit name=press value=" OK ">
+    #</form>
+
+    curl -C - -O http://www.gnu.org/software/gettext/manual/gettext.html
+    #resume download from where it stopped
+
+    curl -u ftpuser:ftppass -O ftp://ftp_server/public_html/xss.php
+    #curl downloads tfp
+
+    curl -u ftpuser:ftppass -T myfile.txt ftp://ftp.testserver.com
+    curl -u ftpuser:ftppass -T "{file1,file2}" ftp://ftp.testserver.com
+    #curl uploads ftp
+
+    curl ftp://ftp.uk.debian.org/debian/pool/main/[a-z]/
+    #curl does a-z ranges
+
+    curl --mail-from user@gmail.com --mail-rcpt user@gmail.com smtp://gmail.com
+    #curl does mail
+    #end body with a single dot '.' on a line
+
+    curl dict://dict.org/show:db #dictionnaries
+    curl dict://dict.org/d:bash #general
+    curl dict://dict.org/d:bash:foldoc #computing
+    #curl does dict!
+
+    #-i : show output protocol headers
+    #-v , --trace $FILE, --trace-ascii $FILE: increasing levels of output showing
+    #-L : follows redirects
+    #-u user:pass : basic authentication. --digest and --ntlm exist too
+    # if no :pass, will ask for pass on command line.
+    #-x proxysever.test.com:3128 : proxy
+    #-X DELETE : make a DELETE request. defaults to GET, if no -data nor ftp.
+    #-z 21-Dec-11 : download iff it is modified after given time (sounds like crawlers!)
+
+  ifconfig
+  #shows local network ips
+
+  #nmap
+    sudo aptitude install nmap
+    nmap google.com
+    #shows open ports at google.com
+    #you are gonna get at least 80 for their http server
+
+
+  #apache2 server
+
+    cd /var/www
+    #default root for serving files
+
+    mkdir test
+    #going to a dir on the web browser opens the contained index.html file by default
+
+    echo "<h1>Test subdir!</h1>" > test/index.html
+    firefox http://127.0.0.1/test
+    firefox http://127.0.0.1/test/index.html
+    #same result
+
+    sudo vim /etc/apache2/httpd.conf
+    #file to put apache configuration
+
+      DocumentRoot "/var/www"
+      #sets apache serve root at given dir
+
+      Listen 80
+      Listen 8000
+      #listen those ports on all interfaces?
+
+      Listen 192.0.2.1:80
+      Listen 192.0.2.5:8000
+      #listen those ports on given interfaces
+
+  #telnet
+    #connect to external servers throught the telnet protocol. (no encryption I think)
+    #fun games MUD there!
+
+    telnet google.com 80
+    #type:
+    #  GET / googl.com 80
+    #  Host: www.google.com
+    #  From: me@me.com
+    #  User-Agent: fingers
+    #  <enter>
+    #
+    #connet to google at port 80 (classical HTTP server port)
+    #make a GET request
+    #and GET the google page
+    #Host is the only required field, since there can be multiple hosts per ip
+    #connexion is closed
+
+#size
+  gcc a.c
+  size a.out
+  #shows structure of program
+
+#hardware info
+
+  #lspci
+
+    sudo lspci | grep -i vga
+
+  sudo aptitude install hwinfo
+  hwinfo
+
+  grep -i 
+
+#boot
+
+  #grub
+
+  sudo vim /etc/default/grub
+  sudo update-grub
+  #timeout : time before OS choice
+  #must update grub after changing this file

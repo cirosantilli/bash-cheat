@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+set -u # error on undefined variable
+set -e # stop execution if one command returns error
+
+usage()
+{
+  echo 'USAGE latex-to-pdf latex-path-noext [aux-dir [out-dir]]
+
+  Convenient wrapper for pdflatex.
+
+SAMPLE CALL
+  
+  latex-to-pdf main tmp out
+  #compiles main.tex, puts trmporary files in ./tmp, output file in ./out
+
+  
+AUTHOR
+
+  Ciro D. Santilli 
+' 1>&2
+}
+
+if [ $# -gt 0 ]; then
+  INPUT_PATH_NOEXT="$1"
+  shift
+else
+  usage
+  exit 1
+fi
+
+# optional positional arguments
+AUX_DIR="./aux"
+OUT_DIR="./"
+
+if [ $# -gt 0 ]; then
+  AUX_DIR="$1"
+  shift
+fi
+
+if [ $# -gt 0 ]; then
+  OUT_DIR="$1"
+  shift
+fi
+
+if [ $# -gt 0 ]; then
+  usage
+  exit 2
+fi
+
+# make auxiliary directory if necessary. abort operation if it is a file.
+if [ ! -d "$AUX_DIR" ]; then
+  if [ ! -e "$AUX_DIR" ]; then
+    mkdir -p "$AUX_DIR"
+  else
+    echo "The auxiliary folder '$AUX_DIR' already exists, and is a file, aborting operation." 1>&2
+    exit 1
+  fi
+fi
+
+# make pdf with bibtex and synctex
+pdflatex -output-directory "$AUX_DIR" "$INPUT_PATH_NOEXT"
+bibtex "$AUX_DIR"/"$INPUT_PATH_NOEXT"
+pdflatex -interaction=nonstopmode -output-directory "$AUX_DIR" "$INPUT_PATH_NOEXT"
+pdflatex -interaction=nonstopmode -output-directory "$AUX_DIR" -synctex=1 -interaction=nonstopmode "$INPUT_PATH_NOEXT"
+
+# pdf latex puts output and auxiliary files in the same place.
+# this allows to separate them.
+if [ "$AUX_DIR" != "$OUT_DIR"  ]; then
+  OUT_PATH="$AUX_DIR"/"$INPUT_PATH_NOEXT".pdf
+  mv "$OUT_PATH" "$OUT_DIR"
+fi
+
+exit 0

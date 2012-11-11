@@ -70,17 +70,20 @@ TFILE="/tmp/$(basename $0).$$.tmp"
   fi
   #test is a string contains POSIX expr
 
-  ${variable#pattern}
+  ${V#pattern}
   #Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
 
-  ${variable##pattern}
+  ${V##pattern}
   #Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
 
-  ${variable%pattern}
+  ${V%pattern}
   #Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
 
-  ${variable%%pattern}
+  ${V%%pattern}
   #Delete the shortest part of pattern that matches the end of variable 's value.Return the rest.
+
+  echo ${F%.*}
+  #filename without extension
 
   #pattern is a POSIX regex, such as "*.?.*"
 

@@ -1,8 +1,20 @@
+simple bash scripts, and general linux how-tos
+
 # Note to myself
 
-Bash is evil, has evil quoting, evil to get values out of functions, evil to do list operations and does not cross operating systems.
+Bash is evil:
 
-Bash has 2 good things: find and pipes.
+- has evil quoting
+- evil to get values out of functions
+- does not cross operating systems.
+
+Bash has 2 good things:
+- pipes
+
+(find was the second, but after I learnt python and 
+about ack, I changed my mind)
+
+I shall only do extremelly simple stuff with bash, and nothing more than that!
 
 Now that I warned myself, to the bash!
 
@@ -65,7 +77,9 @@ This showcases scripts that I find:
 
 that I recommend you to check out
 
-## ubuntu-howto
+## linux.cheatsheet
+
+my most important file.
 
 how to do install and use stuff on Ubuntu/Linux.
 
@@ -101,3 +115,9 @@ becomes:
         * f112.ogg
 
 where the all.m3u contains all music files under its parent dir.
+
+## dush and dushf
+
+great for exploring where you hd is too filled
+
+dushf when it takes a long time for each du

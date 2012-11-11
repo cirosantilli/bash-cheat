@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-#du -hs to a File
-
-du -sh * | sort -hr > .dush`timestamp`
-
-exit 0

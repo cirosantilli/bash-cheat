@@ -93,21 +93,25 @@
 #time travel
 
   git log	#see hashes of versions
+  git log -p $file #history for a given file
+  git log --follow -p file #idem, but also goes back on renames
 
-  git checkout <version_id> #go back to given Hash and KEEP changes. new commits will start branches
-  #version_id can be:
+  git checkout $hash #go back to given Hash and KEEP changes. new commits will start branches
+  git checkout master #go back to last commit and lose uncommited changes on all files
+  git checkout $hash #go back to hash (beginning of hash). lose uncommited
+  git checkout $hash -- $file1 $file2
+  #  master :
   #  start of hash (4,6 chars, such as 1ab4)
   #  HEAD: most recent
   #  HEAD^: before most recent
   #  tag: version tag, usually versions such as v.1.2.
 
-  git checkout master #go back to last commit and lose uncommited changes
+  #revert only those files
+  #if they had different names/location back then, you must put the old names
+  #  and they will be restored under the old names/location
 
-  git checkout -- filename #revert filename to 
-
-  git reset -hard	#go back to last commit and lose all changes made
-
-  git reset -hard [START OF HASH]	#go back to hashe's commit and lose all that comes after it
+  git reset -hard	#go back to last commit and lose all changes made afterwards
+  git reset -hard $hash #go back to hashe's commit and lose all that comes after it
 
 #pull
   git pull github master
