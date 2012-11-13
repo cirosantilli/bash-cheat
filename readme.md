@@ -1,15 +1,29 @@
-simple bash scripts, and general linux how-tos
+#about
 
-# Note to myself
+simple and *dirty* bash scripts and linux how-tos
+
+they are dirty because bash is insane, for professional stuff, use python.
+
+## why perl is here
+
+im also including perl here, since I'll never learn it for real,
+so not worth making a separate repo, and I'm gonna use perl
+lapes and pies without mercy where regexes are needed.
+
+##why not to use bash!
 
 Bash is evil:
 
 - has evil quoting
+- has arithmetics, boolean arithmetics, etc
 - evil to get values out of functions
-- does not cross operating systems.
+- does not cross operating systems
+- lacks good libraries
+- slow
 
-Bash has 2 good things:
+bash has 3 good things:
 - pipes
+- calling methods
 
 (find was the second, but after I learnt python and 
 about ack, I changed my mind)
@@ -18,18 +32,7 @@ I shall only do extremelly simple stuff with bash, and nothing more than that!
 
 Now that I warned myself, to the bash!
 
-# About
-
-This is my collection of simple bash scripts and related languages ( only awk for the moment ).
-
-I use this to
-
-- learn bash
-- automate simple repetitive tasks
-
-For more complex tasks, I tend to use python scripts instead.
-
-# Dependencies
+# dependencies
 
 Before you use this collection, run
 
@@ -37,7 +40,7 @@ Before you use this collection, run
 
 if you have apt-get on your distro so that you have all the necessary dependencies.
 
-# File naming convention
+#file naming convention
 
 ## Extensions
 
@@ -83,10 +86,7 @@ my most important file.
 
 how to do install and use stuff on Ubuntu/Linux.
 
-I put every program I install there, and how to use it:
-
-- so that I won't forget
-- so that it may be useful to you
+I put every program I install there, and how to use it.
 
 For programs that are too large, they may get their own files in this repo like git.cheatsheet.
 

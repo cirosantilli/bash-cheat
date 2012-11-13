@@ -8,9 +8,7 @@
 #
 # The pdf is generated in the same directory and name as the pdf, but with extension pdf instead of djvu.
 #
-# DEPENDENCIES
-#
-#   sudo apt-get install djvulibre-bin libdjvulibre21 okular-extra-backends evince libevdocument1 libevview1
+#   sudo apt-get install 
 #
 #------------------------------------------------------------
 
@@ -19,11 +17,17 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-  echo 'Usage: djvu-to-pdf djvupath
+  echo 'djvu-to-pdf "$djvu"
+
+
+INSTALL UBUNTU
+
+    sudo aptitude install djvulibre-bin
   
 EXAMPLE
 
-djvu-to-pdf asdf.djvu
+    djvu-to-pdf a.djvu
+      generates a.pdf
 ' 1>&2
 }
 

@@ -3,11 +3,13 @@
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong
 
+F="$(basename "$0")"
 usage()
 {
-  echo 'USAGE
-
+  echo "USAGE
   
+    $F
+
 
 SUMMARY
 
@@ -17,9 +19,9 @@ DESCRIPTION
 
 
 
-INSTALLATION
+INSTALL UBUNTU
 
-
+    sudo aptitude install
 
 TIPS
 
@@ -37,18 +39,17 @@ SIDE EFFECTS
 
 
 
+EXAMPLES
+
+    $F
+
 TODO
-
-
-
-SAMPLE CALLS
-
 
 
 AUTHORS
 
   Ciro Duran Santilli
-' 1>&2
+" 1>&2
 }
 
 #check dependencies
