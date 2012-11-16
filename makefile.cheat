@@ -1,0 +1,142 @@
+#sources
+	#this takes the most kudos:
+		#http://www.jfranken.de/homepages/johannes/vortraege/make_inhalt.en.html
+
+#motivation
+
+	#takes care of dependencies
+	#only builds if requirements were changed! (looks at timestamps)
+
+#basics
+	target: dep1 dep2
+
+	needs1:
+		gcc dep1
+
+	needs1:
+		gcc dep2
+
+	#$make target #makes target
+
+#conventional targets
+
+	#first target in file is default! all is often it by convention
+
+	#all if no options required by convention, builds everything.
+	all: target
+
+	#help. can be first if options required
+	help:
+		@echo "must use an option:"
+		@echo "  c"
+		@echo "  cpp"
+	#$make #makes first target found on file
+
+	#clean what you built
+	clean:
+		@rm *.o *.tmp
+
+	install:
+		@mv out $(DIRINPATH)
+
+#variables
+	CC=gcc 
+	CXX=$(CC)
+	FLAGS=-Wall -Wno-unused-variable -Wno-unused-but-set-variable
+	OUTEXT=.out
+	OUTDIR=_out
+
+	$(OUTDIR)/target$(OUTEXT): dep.c
+		$(CC) $(FLAGS) -o $(OUTDIR)/target$(OUTEXT) dep.c
+
+	#multiple vars
+	articles = coat shoes mobile sweater socks\
+					trousers shirt pants undershirt
+
+	$(articles) :; @echo put on $@; touch $@
+
+#special vars
+
+	#$@: cur target
+	#$<: cur dep
+		$(OUTDIR)/target$(OUTEXT): dep.c
+			$(CC) $(FLAGS) -o $@ $<
+
+	#% pattern
+		%.pdf: %.ps; -ps2pdf $<
+
+#include
+	#sources a file
+	include make.inc
+
+	#continue even if missing
+	-include make.inc
+
+#implicit rules
+
+	# An explicit rule assigns the commands for several targets
+	coat shoes mobile sweater socks trousers\
+	shirt pants undershirt: ;  @echo put on $@; touch $@
+
+	# Implicit rules state the prerequisites
+	coat:      shoes mobile sweater
+	shoes:     socks trousers
+	mobile:    trousers
+	sweater:   shirt
+	trousers:  pants shirt
+	shirt:     undershirt
+
+#duplicate rules ::
+	#must use double colons
+	
+	#socks will build both
+	socks:: ; @echo get into left sock
+	socks:: ; @echo get into right sock
+
+#phony targets
+	#if you don't give phony, make thinks you want to build a file
+	#if a file install exists, make does nothing!
+	#http://stackoverflow.com/questions/2145590/what-is-the-purpose-of-phony-in-a-makefile
+
+	.PHONY: all install clean help
+
+#call other makefiles
+	$(MAKE)
+
+#builtin function
+
+	#wildcard. makes an array with wildcard.
+	SRCS = $(wildcard *$(INEXT))
+
+	#pathsub. makes an array with wildcard.
+	PROGS = $(patsubst %$(INEXT),%$(OUTEXT),$(SRCS))
+
+		#compile all files of a type
+			INEXT=.c
+			OUTEXT=
+			SRCS = $(wildcard *$(INEXT))
+			PROGS = $(patsubst %$(INEXT),%$(OUTEXT),$(SRCS))
+			all: $(PROGS)
+			%: %.c
+				$(CC) $(CFLAGS) -o $@ $<
+
+#silent @
+	#normally build outputs commands done
+	#not if @
+	all:
+		@gcc a.c
+
+#ignore errors -
+	#normally build stops if error
+	#not if -
+	all:
+		-gcc a.c
+
+#ignore error and silent
+	all:
+		@-gcc a.c
+
+#compile all c files into one target
+SRC=$(wildcard *.c)
+all: $(SRC)
+	gcc $(CFLAGS) -o $@ $^ $(LIBS)

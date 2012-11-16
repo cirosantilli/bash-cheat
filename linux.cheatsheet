@@ -163,6 +163,28 @@ sudo aptitude install pidgin
   #  I found some that actually contained the blg here:
   #    http://www.babylon.com/dictionaries-glossaries
 
+#text
+
+  #pandoc. convert to/from extended markdown / latex / html
+    #http://johnmacfarlane.net/pandoc/demos.html
+    sudo aptitude install pandoc
+
+    pandoc -s --toc -c pandoc.css -A footer.html README -o example3.html
+    #-s : standalone. header and everything
+    #--toc : headers are links to toc and have ids
+    #-A : include after
+    #-o : output to file
+    #-c : css to embbed
+
+    #-w rst : type rst
+
+  #latex
+    sudo aptitude install texlive
+    #sudo aptitude install texlive-full #enormous size and amount of packages
+    #you need this for certain latex fonts such as Continuous functions C
+
+  sudo aptitude install texmaker
+
 #music
 
   #id3tool get id3 tags info (for mp3 for example)
@@ -189,17 +211,18 @@ sudo aptitude install pidgin
     shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
 
 #image
-  #about image formats
+  #image formats
   #http://www.wfu.edu/~matthews/misc/graphics/formats/formats.html
   #formats
     #btm: bit by bit, no compression
-    #gif: max mas 8 bit colors. dead.
+    #gif: max mas 8 bit colors. obsolete
     #png: lossless, alpha layer,
     #tif: lossless or lossy, in practice lossless aplications only.
-    #jpg: lossy removing fourrier transform high freqs I think.
+    #jpg: lossy, huge compression. removes fourrier transform high freqs I think.
     #svg: vector. image is described by mathematical formulas, not bits.
-    #ps: a programming language! can have loops.
-    #  levels refer to versions: 1, 2 and 3 up to present date
+    #ps: a programming language! can have goto, branch, variables
+    #  levels refer to versions: 1, 2 and 3 exist up to today
+    #  cannot split page by page
     #eps:
     #djvu:
     #pdf: text layers, image layers, can be viewd page by page
@@ -212,7 +235,6 @@ sudo aptitude install pidgin
 
   #inkscape
   sudo aptitude install inkscape
-
 
   #calibre
       sudo aptitude install calibre
@@ -729,8 +751,6 @@ sudo aptitude install pidgin
     #test phpmyadmin and mysql
     firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
 
-  #web
-
   #ack
     sudo aptitude install ack-grep #ack package was already taken by a kanji converter!
     #finds and greps, nice filename/line/match highlight output, ignores .git .svn, backup, swap files
@@ -769,16 +789,6 @@ sudo aptitude install pidgin
     sudo aptitude install kdiff3
 
     kdiff3 f1 f2 -o fout
-
-  #publishing
-
-    #pandoc. convert to/from extended markdown / latex / html
-    sudo aptitude install pandoc
-    sudo aptitude install texlive
-    #sudo aptitude install texlive-full #enormous size and amount of packages
-    #you need this for certain latex fonts such as Continuous functions C
-
-    sudo aptitude install texmaker
 
 #file management
 
@@ -1004,6 +1014,11 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
 #text
 
+  #grep
+
+    grep
+    #-n : show line numbers
+
   #tr
     #charwise text operations
 
@@ -1028,6 +1043,13 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
     tr -cd "[:print:]"
     #removes non printable chars
+
+  #nl
+    #number lines
+
+    nl "$f"
+    #cat lines, number non-empty ones
+
 
   #tail
 
@@ -1103,12 +1125,6 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
     # -d : dupe lines only
     # -c : counts how many dupes
 
-  #grep
-
-    grep
-    #-n : show line numbers
-
-
   #path operations
 
     #dirname
@@ -1120,7 +1136,6 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
     sudo aptitude install realpath
     #transforms relative paths into absolute paths
-
 
   #sed
     #just use perl lape/pie instead
@@ -1142,7 +1157,7 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
     #modifies the file! prints nothing to screen
     #newlines are affected
     #-i : inline
-N
+
     perl -lapi.bak -e 's/a/A/g' F
     #saves newfile to F.bak, original is not changed
     #NO SPACE BETWEEN I AND '.bak'!!!
@@ -1571,7 +1586,13 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     renice 16 -p 13245
     #change priority of process
 
-#directory
+#files and dirs
+
+  #touch
+    #creates file if does not exist.
+    #updates modify date to present if exists
+    touch f
+  
 
   #cd
     cd -

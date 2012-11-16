@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong
