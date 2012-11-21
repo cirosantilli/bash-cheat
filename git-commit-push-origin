@@ -8,6 +8,6 @@ else
   git commit -a --allow-empty-message -m ''
 fi
 
-git push github master #one step commit push
+git push origin master
 
 exit 0

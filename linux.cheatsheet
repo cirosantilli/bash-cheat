@@ -226,21 +226,14 @@ sudo aptitude install pidgin
     #eps:
     #djvu:
     #pdf: text layers, image layers, can be viewd page by page
-
-  #okular + djvu in extra backends
-  sudo aptitude install okular okular-extra-backends
+    #mobi: mobipocket company, free format
+    #rtf: proprietary microsoft
 
   #gimp
   sudo aptitude install gimp
 
   #inkscape
   sudo aptitude install inkscape
-
-  #calibre
-      sudo aptitude install calibre
-      cd ~
-      mkdir kab/calibre
-      #set library there: Cntr p > ...
 
   #imagemagick
     #tons of image conversion
@@ -263,6 +256,18 @@ sudo aptitude install pidgin
   #exactimage
     #concurrence to imagemagick, supposedly faster. c++ template api
     sudo aptitude install exactimage
+
+  #okular + djvu in extra backends
+  sudo aptitude install okular okular-extra-backends
+
+  #open mobi
+  sudo aptitude install fbreader
+
+  #calibre
+      sudo aptitude install calibre
+      cd ~
+      mkdir kab/calibre
+      #set library there: Cntr p > ...
 
   #pdftotext
     #extracts text layer from pdf
@@ -1231,9 +1236,6 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
   done
 
 #file compresssion
-
-  sudo aptitude install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack lha arj cabextract file-roller
-
   #the performance parameters are:
   # compression ratio
   # compression time
@@ -1242,6 +1244,8 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
   # encryption
   # break into small chunks
   # keep file permissions and metadata
+
+  sudo aptitude install unace zip unzip p7zip-full p7zip-rar rar unrar sharutils uudeview mpack lha arj cabextract file-roller
 
   #example: I compressed 2.4 Gb of non compressed files. I got:
   # zip and gz: 1.1Gb. gz was faster
@@ -1265,7 +1269,6 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
     #zip every file in cur dir to file.zip
 
   #tar
-
     #only turns dir into file, but no compression
     #this is why it is often coupled with gz and bz2: those are files compressers
     #gz gives similar compression to .zip
@@ -1286,7 +1289,42 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
       tar xfvz dir.tar.gz
       tar xfvj dir.tar.bz2 
 
+  #rar
+    #proprietary Roshal ARchive
+    unrar x a.rar out
+    #extract contents of a.rar to ./out/, creates folders as necessary
+    #
+    #a.rar
+    #  /dir1/
+    #  /dir1/f1
+    #  /dir1/f2
+    #
+    #===============
+    #
+    #a.rar
+    #dir1/f1
+    #dir1/f2
+
+    unrar x a.part1.rar
+    #extract multipart rar
+
+    unrar e a.rar
+    #recursivelly finds all files in a.rar, and outputs them to current dir
+    #with old basename possible name conflicts
+    #
+    #a.rar
+    #  /dir1/
+    #  /dir1/f1
+    #  /dir1/f2
+    #
+    #===============
+    #
+    #a.rar
+    #f1
+    #f2
+
   #7zip
+    #microsoft proprietary
     #once you have 7zip, you can open .exe files to extract their inner data
 
 
@@ -1677,14 +1715,41 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
 #web
 
-  ping google.com
-  #sends an recieves data, measuring round trip, several times
+  #ping 
+    ping google.com
+    #sends an recieves data, measuring round trip, several times
 
   whois 201.81.160.156
   #check info about ip (country and ISP included)
 
   netstat -a
   #TODO understand crazy output
+
+  #wget
+    #for recursive down only, for the rest, curl it
+
+    u=
+    wget -r -np -nH -A.au,.mp3 $u
+    wget -r -np -nH -k $u
+    #get all files of a given types
+    #-r : follow links on page and downloads them
+      #default max depth of 5
+      #-L : follow relative links only
+    #-l 5 : -r depth
+      #-l inf
+    #-A : accept patterns.
+      #if *,?or [] appear on expression, matches basename
+      #else, suffix (.mp3 will work)
+      #-R : reject, opposite of A
+      #-X : exclude dir
+      #-I : include dir
+    #-p : page requesites : css, images
+    #-np : dont recurse into parent dirs
+    #-nH : dont make parent dirs on distk
+    #-nd : dont make directories, put all downl
+    #-k : convert links to local if local has been downloaded
+    #-N : timestamping. only down if newer than already downloaded
+    #--user-agent="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.3) Gecko/2008092416 Firefox/3.0.3"
 
   #curl
     sudo aptitude install curl

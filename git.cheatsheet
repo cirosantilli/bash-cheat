@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#sources
+  #http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging
+
 #config
 
   git config --global user.name "Ciro Duran Santilli"
@@ -28,6 +31,9 @@
 
   git remote show
   #view all names of remote branches
+
+  git remote show "$B"
+  #view detail of branch
 
   git remote rm github
   #remove the branch github (if you for isntance entered the bad url, you will have to first remove the old one before you can add the correct url)
@@ -119,13 +125,42 @@
   #you might need to merge to do this
 
 #push
+  git push "$R" "$B"
   git push github master
-  #pushes to github repository with alias github from here
-  #you must pull before you push!
+  #push branch B to remote R
 
   #- tags
   git tag "v1.3"
   git push --tags
+
+#branch and merge
+  git branch
+  #show branches. * before current
+
+  git branch "$B"
+  #create a branch
+
+  git checkout "$B"
+  #go to that branch
+
+  git checkout -b "$B"
+  #create a branch an go to it
+
+  git branch -d "$B"
+  #delete a branch after it gets old
+
+  git checkout master
+  git merge "$B"
+  #merge master with another branch 
+  #if auto merge is fine
+    #master goes to new node created after merge
+  #else
+    git status
+    #shows what was unmerged
+      #needs merge
+    #files get modified to contain trash merge markers
+    git mergetool
+    #open with a merging tool
 
 #remove mistaken push of sensitive data to github
   UNAME=cirosantilli

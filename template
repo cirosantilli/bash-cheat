@@ -35,18 +35,18 @@ OUTPUT
 
 
 
-SIDE EFFECTS
+SIDE EFFECT
 
 
 
-EXAMPLES
+EXAMPLE
 
     $F
 
 TODO
 
 
-AUTHORS
+AUTHOR
 
   Ciro Duran Santilli
 " 1>&2
@@ -104,13 +104,21 @@ done
 
 shift `expr $OPTIND - 1`
 
-#positional args
+#obligatory positional args
 if [ $# -gt 0 ]; then
   ="$1"
   shift
 else
   usage
   exit 2
+fi
+
+#positional args with default
+if [ $# -gt 0 ]; then
+  ="$1"
+  shift
+else
+  =
 fi
 
 #there must be no args left
