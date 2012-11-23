@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+F="$(basename "$0")"
+usage()
+{
+  echo "USAGE
+  
+    $F input [output-extension]
+
+SUMMARY
+
+    REMOVES ORIGINAL DIR!!!!!!
+
+    targz gpg encrypts input file or directory.
+
+    output has given output-extension
+
+EXAMPLE
+
+    $F dir
+    #generates a tgz gpg encrypted dir named dir.tgz.gpg
+    #dir IS REMOVED
+
+    $F dir 2
+    #output named dir2
+    #dir IS REMOVED
+
+" 1>&2
+}
+
+#obligatory positional args
+if [ $# -gt 0 ]; then
+  F="$1"
+  shift
+else
+  usage
+  exit 2
+fi
+
+#positional args with default
+if [ $# -gt 0 ]; then
+  E="$1"
+  shift
+else
+  E='.tgz.gpg'
+fi
+
+#there must be no args left
+if [ $# -gt 0 ]; then
+  usage
+  exit 2
+fi
+
+tar cz "$F" | gpg -o "$F""$E" -c && rm -rf "$F"
+
+exit 0

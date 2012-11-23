@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -u # error on undefined variable
+set -e # stop execution if one command goes wrong
+
+F="$(basename "$0")"
+usage()
+{
+  echo "USAGE
+  
+    $F input.tgz.gpg
+
+SUMMARY
+
+    targz gpg decrypts and extracts input file
+
+    REMOVES ENCRYPTED FILE!!!!!!
+
+EXAMPLE
+
+    $F dir.tgz.gpg
+    #decrypts and extracts dir.tgz.gpg
+    #removes encrypted file
+" 1>&2
+}
+
+#obligatory positional args
+if [ $# -gt 0 ]; then
+  F="$1"
+  shift
+else
+  usage
+  exit 2
+fi
+
+#there must be no args left
+if [ $# -gt 0 ]; then
+  usage
+  exit 2
+fi
+
+gpg -d "$F" | tar xz && rm "$F"
+
+exit 0

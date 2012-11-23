@@ -1253,14 +1253,22 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
   # zip one by one: 1.1Gb, same as compressing whole dir.
 
   #zip
-
-    #most widely supported format across operating systems.
-    #not so high compression: compresses dir one file by one it seems
+    #most widely supported
+    #not so high compression
+      #compresses dir one file by one it seems
     #easy to view and extract single files
 
-    zip name-of-archive.zip file-to-compress
-    zip -r name-of-archive.zip dir-to-compress
-    #creates a zip of dir-to-compress named name-of-archive.zip
+    zip -r "$F".zip "$F"
+    #zip file or directory
+      #-r : add dir recursivelly. otherwise, adds only the top dir! useless
+
+    zip -er "$F".zip "$F"
+    #-e : encrypts
+      #you can still see filenames!! but not extract them
+
+    unzip "$F".zip
+    #extracts from zip
+      #if has password, asks for it
 
     #compressing files one by one and the whole dir gives the same size, thus explaining why it is easy to extract single files; he only uses one dictionnary per file
     #therefore, if your major operation is to extract single files and you have tons of files, it is better to keep the file tree, and replace files by file.zip, so that is is easy to browse files
@@ -1275,19 +1283,20 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
     #gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
 
     #create
-      tar cfv dir.tar dir/ 
-      tar cfvz dir.tar.gz dir/ 
-      tar cfvj dir.tar.bz2 dir/ 
+      tar cf "$F".tar "$F" 
+      tar czf "$F".tgz "$F" 
+      tar cjf "$F".tbz "$F" 
       #c: create
-      #z: pipe though gzip tar.gz
-      #j: pipe through bzip2 for bz2
-      #f: to output to a file and not to standard output (terminal)
+      #f: to file given as next arg, not to stdout
+      #z: gzip
+      #j: bzip2
       #v: verbose
 
     #extract
-      tar xfv dir.tar
-      tar xfvz dir.tar.gz
-      tar xfvj dir.tar.bz2 
+      tar xf "$F".tar
+      tar xzf "$F".tgz
+      tar xjf "$F".tbz 
+      #f: from file given as next arg, not stdin
 
   #rar
     #proprietary Roshal ARchive
@@ -1330,10 +1339,33 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
 #encryption
 
-  gpg -c in
-  #will create a in.gpg encrypted file. can only be decrypted and then opened with password
+  gpg -c "$F"
+  #will create a "$F".gpg encrypted file
   #good combo with tar.gz
 
+  cat "$F" | gpg -o "$F".gpg -c
+  #create from stdin
+
+  gpg "$F".gpg
+  #decrypts to F
+
+  gpg -d "$F".gpg
+  #decrypt to stdout
+
+  gpg -o "$F" -d "$F".gpg
+  #decrypts to F
+
+  cat "$F".gpg | gpg -o "$F" -d 
+  #decrypts from stdin
+
+  #combos
+
+    E=tgz.gpg
+    tar cz "$F" | gpg -o "$F"."$E" -c && rm -rf "$F"
+    #targz encrypt "$F" to F.tgz.gpg, remove original
+
+    gpg -d "$F" | tar xz && rm "$F"
+    #targz decrypt "$F"
 
 #GUI control
 
@@ -1362,6 +1394,9 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     DESC $table;
     #get table description
 
+    show create table
+    #get more info on table: each step used to create it
+
     CREATE TABLE $newtable LIKE $oldtable
     #creates a new table with same structure as old one
 
@@ -1383,6 +1418,13 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
     UNLOCK TABLES
     #releases all locks
+
+  #column types
+    #length
+    #there are length limitation on *row* size (sum of all columns)
+      #2**16-1 = 8k-1
+      #this means 8k-1/256 = 85 CHAR(256) fields are permitted
+      #TEXT field not stored on the table: each occupies up to 12 bytes on their row
 
   #dump (save to file)
 
@@ -1514,6 +1556,9 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     #which processes are keeping device busy
     
 #system info
+
+  #find your linux distro
+  cat /etc/*-release
 
   lsof | less
   #list all open files and pipes
