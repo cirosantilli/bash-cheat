@@ -1,12 +1,14 @@
 #! /bin/bash
 #
+#KUDOS: http://www.hilltopyodeler.com/blog/?p=382
+#
 #helper to open terminal emulator
 #run command
 #and keep emulator open
 #
-#kudos: http://www.hilltopyodeler.com/blog/?p=382
-#
 #terminator -x bashx ls | sort
+#terminator -x bashx bash -c 'cd;ls'
+#
 #gnome-terminal -x bashx ls | sort
 #xterm -e bashx ls | sort
 

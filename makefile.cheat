@@ -178,6 +178,16 @@ all: $(SRC)
 	echo A
 	#as df
 
+#conditionals
+
+#A=defined
+all: a.out
+ifdef A
+	echo $(A)
+else
+	echo undefined
+endif
+
 #builtin funcs
 	$(subst from,to,text) 	Replace from with to in text.
 	$(patsubst pattern,replacement,text) 	Replace words matching pattern with replacement in text.

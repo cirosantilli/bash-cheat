@@ -953,6 +953,23 @@ sudo apt-get install aptitude
   sudo aptitude install filezilla
   sudo aptitude install deluge
 
+#terminal emulators
+
+  #terminator
+    #- window splitting
+    #- infinite history
+
+    sudo aptitude install terminator
+
+    terminator -x ls ~
+      #will quit terminator after ls ends
+      #only one commmand possible
+      #the rest are args for this command
+
+    terminator -x bash
+      #will quit terminator after bash ends
+      #but bash is interactive, so it does not end!
+
 #sudo add-apt-repository ppa:libreoffice/pp #already comes with Ubuntu 11.10
 sudo aptitude install libreoffice-base
 
