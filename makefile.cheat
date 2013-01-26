@@ -67,12 +67,29 @@
 
 	$(articles) :; @echo put on $@; touch $@
 
-
 	#assignment
 		#VARIABLE = value
 			#Normal setting of a variable - values within it are recursively expanded when the variable is used, not when it's declared
+
+			a = $(b)
+			b = $(c)
+			c = c
+
+			echo $(a)
+			#c
+
 		#VARIABLE := value
 			#Setting of a variable with simple expansion of the values inside - values within it are expanded at declaration time.
+
+			#always use this
+
+			c := c
+			b := $(c)
+			a := $(b)
+
+			echo $(a)
+			#c
+
 		#VARIABLE ?= value
 			#Setting of a variable only if it doesn't have a value
 		#VARIABLE += value
@@ -80,7 +97,8 @@
 
 	#define var inside rule
 		all:
-			$(eval X := $* ) define a variable inside a rule
+			$(eval X := $* )
+			#set a variable inside a rule
 			echo $(X)
 
 	#special vars
@@ -169,13 +187,32 @@ all: $(SRC)
 	gcc $(CFLAGS) -o $@ $^ $(LIBS)
 
 #command line variables
+
+	###
 	$make run A='"1"'
-	echo A
+	echo $(A)
+	#1
+
+	###
+	$make run A='"1"'
+	A=2
+	echo $(A)
+	#1
+
+	###
+	$make run A='"1"'
+	override A=2
+	echo $(A)
+	#2
+
+	###
+	$make run A='"1"'
+	override A?=2
+	echo $(A)
 	#1
 
 	$make run A='"as df"'
-
-	echo A
+	echo $(A)
 	#as df
 
 #conditionals

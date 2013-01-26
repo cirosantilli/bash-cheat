@@ -618,9 +618,69 @@ sudo apt-get install aptitude
         #debug compilation
         #g: generate debug info for gdb
 
-      #production
+      #profiling
 
-        gcc -O a.c -o a.out
+        #gprof
+
+          #shows time spent into individual functions
+
+          gcc -p -pg -c a.c -o a.o
+          gcc -p -pg a.o -o a.out
+          #generates extra profiling code for ``prof`` and ``gprof`` programs
+          #must be used only both link and compile steps if separate
+
+          ./a.out
+          #will generate ``gmon.out`` with gprof data in *cur dir*, not bin dir 
+
+          gprof a.out gmon.out
+          #-b : remove large output explanation
+          #-p : only flat profile
+          #-pfunc1 : only flat profile of ``func1``
+          #-q : only call graph
+          #-qfunc1 : only call graph for ``func1``
+
+      #code optimization
+
+        gcc -Q -O --help=optimizers
+        #shows optimizations for -O
+
+        #-O0 : no speed optimization. This is the default
+        #-O : -O1 basic speed optimization
+        #-O2 : more than O1
+        #-O3 : more than O2
+        #-Og : optimize for debugging
+        #-Os : optimize for size
+        #-Ofast : optimize for speed more than O3, *even if it breaks standards*
+
+        gcc -O3 a.c -o a.out
+        #compile with optimization
+
+      #preprocessor
+
+        #define command line
+
+          gcc -DLINELENGTH=80 -DDEBUG c.c -o c
+          #same as adding
+          #define LINELENGTH 80 
+          #define DEBUG
+          #to top of file
+
+        #include
+
+          cpp -v
+          #will show include search paths
+          #done by the c pre processor
+
+          CPATH="/add/to/include"
+          export CPATH
+
+          gcc a.c -I/path/dir/ -I/path/dir2/
+          #-I: search in given dir for .h files
+            #must be *full path*, that is, will not look realtive to existing search path
+
+        #output preprocessed file
+          #learing purposes only
+          gcc -E c.c -o c
 
       #compilation steps
 
@@ -647,18 +707,6 @@ sudo apt-get install aptitude
         #same for single file
 
       #multifile
-
-        #include
-          cpp -v
-          #will show include search paths
-          #done by the c pre processor
-
-          CPATH="/add/to/include"
-          export CPATH
-
-          gcc a.c -I/path/dir/ -I/path/dir2/
-          #-I: search in given dir for .h files
-            #must be *full path*, that is, will not look realtive to existing search path
 
         #link
           #.a and .so
@@ -969,6 +1017,17 @@ sudo apt-get install aptitude
     terminator -x bash
       #will quit terminator after bash ends
       #but bash is interactive, so it does not end!
+
+    terminator
+    #quit
+    #exits terminator
+
+    terminator
+    #bash
+    #quit
+    ##exits first sub bash
+    #quit
+    ##exists terminator's bash, and terminator closes
 
 #sudo add-apt-repository ppa:libreoffice/pp #already comes with Ubuntu 11.10
 sudo aptitude install libreoffice-base
