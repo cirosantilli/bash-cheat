@@ -6,7 +6,7 @@
 #run command
 #and keep emulator open
 #
-#terminator -x bashx ls | sort
+#terminator -x bashx ls | sort -r
 #terminator -x bashx bash -c 'cd;ls'
 #
 #gnome-terminal -x bashx ls | sort

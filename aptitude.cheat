@@ -95,6 +95,20 @@
     #this looks at the internet repositories, and spots upgrades that may take place, but does not do any upgrade. to do that , see upgrade
     sudo apt-get update
 
+#get info on installed packages
+
+  #dpkg
+    #info on installed packages
+    
+    dpkg -l | grep $EXPRESSION
+    #lists all installed packages.and greps for foo.
+    #the first two letters mean:
+    # ii: installed
+    # rc: configuration files only (rc means config such as in bashRC)
+
+    dpkg -L mysql
+    #list files in installed package
+
 #find new packages
 
   sudo apt-cache search "Apache Server"
@@ -103,9 +117,11 @@
   sudo aptitude install apt-file
   apt-file update
   apt-file search "$F"
-  #search for file "$F" in packages
+    #search for file "$F" in packages
+  apt-file show "$pkg"
+    #shows files in pkg
 
-#get package info
+#get new package info
 
   apt-cache depends $PKG
   #list package dependencies
@@ -124,18 +140,6 @@
 
   sudo aptitude install debtags
   debtags tag ls $PKG
-
-  #dpkg
-    #info on installed packages
-    
-    dpkg -l | grep $EXPRESSION
-    #lists all installed packages.and greps for foo.
-    #the first two letters mean:
-    # ii: installed
-    # rc: configuration files only (rc means config such as in bashRC)
-
-    dpkg -L mysql
-    #list files in installed package
 
   #package naming conventions
     #-dev: contains header and libraries, no docs

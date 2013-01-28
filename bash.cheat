@@ -4,8 +4,9 @@
 #
 #Ciro D. Santilli
 #
-#Major bash commands and standard utilities.
-#This covers commands briefly only, they may have their own cheatsheet.
+#bash commands/constucts that correspond to programming languages like c
+#
+#no complex programs shown
 #
 #------------------------------------------------------------
 
@@ -195,11 +196,77 @@ TFILE="/tmp/$(basename $0).$$.tmp"
     #stdout and stderr to null
     #ignores output
 
-#speical chars
+#*
 
-  #*
+  echo *
+  #files in current dir
 
-    echo *
-    #files in current dir
+  for f in *; do echo "$f"; done
 
-    for f in *; do echo "$f"; done
+#background
+
+  jobs
+    #shows jobs running on background of cur bash
+    #
+    #%N	Job number [N]
+    #%S	Invocation (command line) of job begins with string S
+      #if several matches, ambiguous, and does nothing
+    #%?S	Invocation (command line) of job contains within it string S
+    #%%	"current" job (last job stopped in foreground or started in background)
+    #%+	"current" job (last job stopped in foreground or started in background)
+    #%-	Last job
+    #$!	Last background process
+    #
+    #shows:
+    #  jobspec : local id
+    #  status : runnning, stopped, done
+    #  invocation : exact program call, including command line args. Ex: ``ls ~``
+
+  ls &
+  sleep 100 &
+  sleep 100 &
+  sleep 100 &
+    #runs on background
+    #
+    #[1] 12345678
+    #means local id 1
+    #process number 12345678
+    #
+    #when process ends, it prints ``[n] 1234`` and disappears
+    #
+    #stdout continues to go to cur terminal, even if in bg
+
+  firefox
+    #Ctrl z
+    #puts currently foreground running on background stopped
+
+  bg %3
+    #starts running job 3 which was stopped on background
+  bg
+  bg %+
+  bg %%
+    #last bg job [+]
+  bg %-
+    #before last bg job [-]
+
+  fg %3
+    #starts running job 3 which was on background on foreground
+  fg
+    #last job
+
+  kill %1
+    #kill subprocess [1]
+  kill $PID
+    #kill by process id
+
+  wait && ls
+    #wait for all bg jobs to finish
+  wait %3 && ls
+    #job 3
+
+  vlc 100 &
+  vlc 100 &
+  vlc 100 &
+  disown %3
+    #remove job 3 from list of sub jobs
+    #closing bash will not kill it anymore

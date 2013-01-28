@@ -614,15 +614,168 @@ sudo apt-get install aptitude
 
       #debug
 
-        gcc -g -Wall a.c -o a.out
-        #debug compilation
-        #g: generate debug info for gdb
+        #gdb
+
+          gcc -ggdb3 -Wall a.c
+          #adds debug information to executable such as line numbers,
+          #and symbol names (normally exceutables contain only memory adresses)
+          #makes exec larger
+          #-g : generate debug info for gdb
+          #-ggdb : adds more info
+          #-ggdb3 : adds max info. default if 2 when ggdb is used.
+
+          gdb a.out
+          gdb a.out $pid
+            #attach to a running process
+            #pauses the process
+            #on quit, process continues
+
+            #r
+              #run prog
+              #if already runnin, kill and rerun.
+              #keeps breakpoints, etc
+            #r 1 2
+              #start running with arguments
+              #next r calls will use those args
+            #set args
+              #removes args
+
+            #k
+              #kill program
+              #keeps breakpoints, etc
+
+            #b
+              #b 10
+              #b func
+              #b c.c:10
+              #b c.c:func
+              #b +2
+                #two lines down from cur
+              #b -2
+                #two lines down from cur
+
+            #i b
+              #view breakpoints
+
+            #dis 1
+              #disable breakpoint 1.
+              #1 is gotten from ``i b``
+
+            #en 1
+              #enable breakpoint 1.
+              #1 is gotten from ``i b``
+
+            #d
+              #delete all breakpoints
+            #d 1
+              #delete breakpoint 1
+
+            #cl 10
+            #cl func
+            #cl file:func
+            #cl file:10
+              #delete breakpoint at line 10
+
+            #w 
+              #set watchpoint
+              #stop prog when var or expr changes value
+
+            #c
+              #set catchpoint
+              #TODO ?
+
+            #s
+              #step exec next line
+              #if func call, step inside funv
+            #n  
+              #setp next. if func call
+              #run entire func now
+            #whe
+              #where, print line number
+
+            #ba
+              #show backtrace of stack at current point
+
+            #f
+              #show cur frame number
+            #f 1
+              #go to frame 1
+
+            #l
+              #list next 10 lines of code.
+              #l again, lists next 10.
+            #l -
+              #previous
+            #l 20
+              #list 10 lines around line 20
+            #l 5,20
+            #l ,20
+            #l 5,
+            #l func
+            #l c.c
+            #l c.c:12
+            #l c.c:func
+            #set listsize 5
+
+            #p
+              #p x
+                #print value of variable x in current frame
+                #vars in other frames cannot be seen
+              #p x+1
+              #p x*2
+              #p func(1)
+              #p array
+              #p array[3]@5
+                #print 3 vals or array, starting at elem 5
+              #p myStruct
+              #p myStruct.key
+              #set print pretty
+
+              #format
+                #(gdb) p mychar    #default
+                #$33 = 65 'A'
+                #(gdb) p /o mychar #octal
+                #$34 = 0101
+                #(gdb) p /x mychar #hex
+                #$35 = 0x41
+                #(gdb) p /d mychar 
+                #$36 = 65
+                #(gdb) p /u mychar #unsigned decimal
+                #$37 = 65
+                #(gdb) p /t mychar #binary
+                #$38 = 1000001
+                #(gdb) p /f mychar #float
+                #$39 = 65
+                #(gdb) p /a mychar 
+                #$40 = 0x41
+              
+              #p &mychar
+                #addres of mychar
+                #p *(&mychar)
+
+              #pt x
+                #print type of var x
+
+            #attach
+              #links to a running process
+
+            #q
+              #quit
+
+            #gdbinit
+              #~/.gdbinit
+              #somedir/.gdbinit
 
       #profiling
 
         #gprof
 
-          #shows time spent into individual functions
+          #shows time spent into each call of individual functions
+          #also shows average times per function
+          #sorts from most to least time consuming
+
+          #you could get all those infos from <time.h> clock() func
+          #but this automates all for you in the case you want to measure functions
 
           gcc -p -pg -c a.c -o a.o
           gcc -p -pg a.o -o a.out
@@ -756,7 +909,7 @@ sudo apt-get install aptitude
       #utils
 
         nm a.o
-        #simbol table for a.o
+        #symbol table for a.o
 
         ldd a.out
         #required shared libraries
@@ -768,7 +921,8 @@ sudo apt-get install aptitude
         #TODO ?
 
         objdump --disassemble a.o
-        #TODO ?
+        objdump -h a.o
+        #see memory structure
 
         time ./a.out
         #profiles a.out.
@@ -783,9 +937,13 @@ sudo apt-get install aptitude
         #does memorym iom etc profiles besides time profiles
 
         #size
-          gcc a.c
-          size a.out
-          #shows structure of program
+          gcc -c a.c
+          gcc a.o
+          size a.out a.o
+          #shows size of each memory part of a program
+          #text : instructions
+          #data : init and uinit data
+          #dec and hex : size of executable in dec and hex
 
         #pkg-config
           #automatically gives you location of headers and libraries
@@ -1003,34 +1161,33 @@ sudo apt-get install aptitude
 
 #terminal emulators
 
-  #terminator
-    #- window splitting
-    #- infinite history
+  #guake
 
-    sudo aptitude install terminator
+    sudo aptitude install guake
 
-    terminator -x ls ~
-      #will quit terminator after ls ends
-      #only one commmand possible
-      #the rest are args for this command
+    #- drop down: hit a key (<F12> default) and it shows
+    #- single instance, great ipc communication
+      # this means it is very fast to open new tabs on it
+      # since it is always running!
 
-    terminator -x bash
-      #will quit terminator after bash ends
-      #but bash is interactive, so it does not end!
-
-    terminator
-    #quit
-    #exits terminator
-
-    terminator
-    #bash
-    #quit
-    ##exits first sub bash
-    #quit
-    ##exists terminator's bash, and terminator closes
-
-#sudo add-apt-repository ppa:libreoffice/pp #already comes with Ubuntu 11.10
-sudo aptitude install libreoffice-base
+    guake -t
+      #toogle guake
+    guake -p
+      #open preferences window
+    guake -n /usr
+      #new tab, cur dir /usr
+    guake -s 0
+      #go to tab 0
+      #it is always a number, not what is written on the tab
+    guake -g
+      #print cur tab
+    guake -e cd
+    guake -e 'cd / ; ls'
+      #exec string
+      #keep term open afterwards
+    guake -r 'new name'
+      #rename cur tab
+      #no good for -s: only renames on gui
 
 #keyboard and mouse automation 
 
@@ -1242,6 +1399,10 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
   #2 : man section fir system calls. default 1 for commands in path.
   #  firefox http://en.wikipedia.org/wiki/Man_page#Manual_sections
   #  firefox http://docs.cs.up.ac.za/programming/asm/derick_tut/syscalls.html
+
+#office suite
+
+  sudo aptitude install libreoffice-base
 
 #text
 
@@ -2166,30 +2327,41 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     #for recursive down only, for the rest, curl it
 
     u=
-    wget -r -np -nH -k $u
-    #make local version os page
+    wget -E -k -l inf -np -p -r $u
+    #make local version of html page
 
     wget -r -np -nH -A.au,.mp3 $u
     #get all files of a given types
 
+    #-E --adjust-extension
+      #converts for example ``*.php?key=val`` pages to ``.php?key=val.html``
+      #while keeping ``*.css`` extension untouched
+    #--cut-dirs=2 : similar to -nd, but only does nd up to given level
+    #-k : convert links to local if local has been downloaded
+    #-l 5 : -r depth
+      #-l inf
+    #-m : mirror options. same as "-r -N -l inf --no-remove-listing"
+    #-nd : dont make sub directories, even if they existed on original site
+    #-np : dont recurse into parent dirs
+    #-nH : dont make a dir structure starting at host
+      #default: ``wget http://www.abc.com/a/b/c``
+      #creates: www.abc.com/a/b/c file structure.
+      #
+      #``wget -nH http://www.abc.com/a/b/c``
+      #creates only : a/b/c
+    #-p : page requesites : css, images
     #-r : follow links on page and downloads them
       #default max depth of 5
       #-L : follow relative links only
-    #-l 5 : -r depth
-      #-l inf
+    #--user-agent="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.3) Gecko/2008092416 Firefox/3.0.3"
     #-A : accept patterns.
       #if *,?or [] appear on expression, matches basename
       #else, suffix (.mp3 will work)
       #-R : reject, opposite of A
       #-X : exclude dir
       #-I : include dir
-    #-p : page requesites : css, images
-    #-np : dont recurse into parent dirs
-    #-nH : dont make parent dirs on distk
-    #-nd : dont make directories, put all downl
-    #-k : convert links to local if local has been downloaded
     #-N : timestamping. only down if newer than already downloaded
-    #--user-agent="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.3) Gecko/2008092416 Firefox/3.0.3"
+    
 
   #curl
     sudo aptitude install curl
@@ -2307,3 +2479,6 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
   sudo update-grub
   #timeout : time before OS choice
   #must update grub after changing this file
+
+sleep 2
+#program that does nothing for 2 seconds
