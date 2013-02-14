@@ -52,6 +52,7 @@
 
 #first time
 
+  sudo apt-get update
   sudo apt-get install aptitude
 
   #proxy
@@ -75,6 +76,9 @@
     sudo add-apt-repository ppa:deluge-team/ppa
     sudo aptitude update
 
+    sudo add-apt-repository -y "$SRC"
+      #don't ask for confirmation
+
   #list sources 
 
     #sources list. does not include ppas
@@ -92,22 +96,24 @@
 
   #update existing sources
 
-    #this looks at the internet repositories, and spots upgrades that may take place, but does not do any upgrade. to do that , see upgrade
-    sudo apt-get update
+    sudo aptitude update
+      #looks for possible updgrades on known dirs, but does not install them
 
 #get info on installed packages
 
   #dpkg
+  #{
     #info on installed packages
     
     dpkg -l | grep $EXPRESSION
-    #lists all installed packages.and greps for foo.
-    #the first two letters mean:
-    # ii: installed
-    # rc: configuration files only (rc means config such as in bashRC)
+      #lists all installed packages.and greps for foo.
+      #the first two letters mean:
+      # ii: installed
+      # rc: configuration files only (rc means config such as in bashRC)
 
     dpkg -L mysql
-    #list files in installed package
+      #list files in installed package
+  #}
 
 #find new packages
 
@@ -191,6 +197,11 @@
 
   sudo apt-get clean
   #?
+
+#optins
+
+  sudo aptitude install -y "$PKG"
+     #dont prompt for confirmation
 
 #common combos
 

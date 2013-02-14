@@ -42,52 +42,102 @@
 
 firefoxdownloadfolder="~/nobackup/download"
 
-sudo apt-get install aptitude
-#first thing is first.
-#check aptitude cheatsheet for how to use
+sudo aptitude update
+sudo aptitude install -y aptitude
+  #first thing is first.
+  #check aptitude cheatsheet for how to use
+sudo aptitude install -y python-pip
+  #python package manager
 
 #in order to upgrade from 11.10 or 12.04
 
-  sudo aptitude install update-manager-core
+  sudo aptitude install -y update-manager-core
   sudo do-release-upgrade 
-  sudo apt-get update && sudo apt-get upgrade
+  sudo aptitude update && sudo aptitude upgrade
 
 #package management
 
-  sudo aptitude install apt-file
-  #lets you search packages by files it contains
-  #see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
+  sudo aptitude install -y apt-file
+    #lets you search packages by files it contains
+    #see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
 
-  sudo aptitude install apt-rdepends
+  sudo aptitude install -y apt-rdepends
 
 #configuration editing
 
   #ubuntu
-    sudo add-apt-repository ppa:tualatrix/ppa
-    sudo apt-get update 
-    sudo aptitude install ubuntu-tweak
-    sudo aptitude install myunity
-    sudo aptitude install dconf-tools
 
-  sudo aptitude install gconf-editor
+    sudo aptitude install -y ubuntu-restricted-extras
+      #usefull stuff that does not come by default or Canonical would have to pay royalties
 
-  sudo aptitude install compiz compizconfig-settings-manager
+    #ubuntu-tweak
+      #configure ubuntu
+      sudo add-apt-repository -y ppa:tualatrix/ppa
+      sudo aptitude update 
+      sudo aptitude install -y ubuntu-tweak
+
+    #sudo aptitude install -y myunity
+
+    #additional drivers : non free vendors
+
+      jockey-text --list
+      #list
+
+      jockey-text --enable=$DRIVER
+      #enable from list. ex: xorg:fglrx_updates
+
+  sudo aptitude install -y dconf-tools
+
+  sudo aptitude install -y gnome-tweak-tool
+    #change themes
+    #gui
+
+  sudo aptitude install -y gconf-editor
+
+  #gsettings
+
+    #set vaules
+
+      #applies instantly
+      gsettings set com.canonical.desktop.interface scrollbar-mode normal
+        #normal not hidden scroll bars
+
+      gsettings set com.canonical.indicator.session show-real-name-on-panel true
+        #show username on panel
+
+      gsettings reset com.canonical.desktop.interface scrollbar-mode
+        #return to default value
+
+  sudo aptitude install -y compiz compizconfig-settings-manager compiz-plugins-extra
 
 #desktop
-  sudo add-apt-repository ppa:gnome3-team/gnome3
-  sudo aptitude update
-  sudo aptitude install gnome-shell
+
+  sudo service lightdm restart #restart lightdm display manager used for Unity, more drastic and possibly effective
+  unity --restart #restarts the unity shell only. less effective and drastic than restarting lightdm
+
+  #gnome shell
+
+    sudo add-apt-repository -y ppa:gnome3-team/gnome3
+    sudo aptitude update
+    sudo aptitude install -y gnome-shell
 
   #desktop/windows control
 
     gnome-open "$FILE"
-    #opens with the deafult application. works in Ubuntu Unity 12.04
+      #opens with the deafult application. works in Ubuntu Unity 12.04
 
-    sudo aptitude install wmctrl
-    #maximize and minimize windows by grepping title or class
+      #maximize and minimize windows by grepping title or class
+
+      #GUI control
+
+        sudo aptitude install -y wmctrl
+        
+        wmctrl -a ' - GVIM'
+        #focus on a window with title containing '- GVIM' ( hopefully gVim! )
 
     #xsel
-      sudo aptitude install xsel
+
+      sudo aptitude install -y xsel
 
       xsel > file
       xsel < file
@@ -105,67 +155,394 @@ sudo apt-get install aptitude
       #follows stardard input as it grows
 
   #key logging
+  
     #writes all keypresses to a file
-    sudo aptitude install logkeys
+    sudo aptitude install -y logkeys
 
     sudo logkeys -s
-    #start
+      #start
 
     sudo logkeys -k
-    #end
+      #end
+#file compresssion
+
+  #the performance parameters are:
+    #compression ratio
+    #compression time
+    #can see and extracting single files
+    #support across OS
+    #ability to break into chunks
+    #keep file metadata such as permissions, hidden (windows), etc.
+
+  #zip
+    #most widely supported
+    #not so high compression
+      #compresses dir one file by one it seems
+    #easy to view and extract single files
+    sudo aptitude install -y zip unzip
+
+    zip -r "$F".zip "$F"
+    #zip file or directory
+      #-r : add dir recursivelly. otherwise, adds only the top dir! useless
+
+    zip -er "$F".zip "$F"
+    #-e : encrypts
+      #you can still see filenames!! but not extract them
+
+    unzip -l "$F".zip
+    #list all files (recursive)
+
+    unzip "$F".zip
+    #extracts from zip
+      #if has password, asks for it
+
+    unzip "$F".zip -d out
+    #to a dir
+
+    for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
+    #zip every file in cur dir to file.zip
+
+  #tar tar.gz tgz tar.bz2 tb2
+    #tar only turns dir into file, but no compression
+    #this is why it is often coupled with gz and bz2: those are files compressers
+    #gz gives similar compression to .zip
+    #gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
+    #tgz == tar.gz and tb2 == tar.bz2
+
+    #create
+      tar cf "$F".tar "$F" 
+      tar czf "$F".tgz "$F" 
+      tar cjf "$F".tbz "$F" 
+      #c: create
+      #f: to file given as next arg, not to stdout
+      #z: gzip
+      #j: bzip2
+      #v: verbose
+
+    #extract
+      tar xf "$F".tar
+      tar xzf "$F".tgz
+      tar xjf "$F".tbz
+      #f: from file given as next arg, not stdin
+
+  #rar
+    #proprietary Roshal ARchive
+    #can do split archive
+      #split archive extensions:
+        #.part\d+.rar
+        #.r\d+
+
+    unrar x a.rar
+    #extract contents of a.rar to ./
+    #
+    #a.rar
+    #  /dir1/
+    #  /dir1/f1
+    #  /dir1/f2
+    #
+    #===============
+    #
+    #a.rar
+    #dir1/f1
+    #dir1/f2
+
+    unrar x a.rar out
+    #out to ./out/, creates this folders if necessary
+
+    unrar x a.r00
+    unrar x a.part1.rar
+    #extract multipart rar
+
+    unrar e a.rar
+    #recursivelly finds all files in a.rar, and outputs them to current dir
+    #with old basename possible name conflicts
+    #
+    #a.rar
+    #  /dir1/
+    #  /dir1/f1
+    #  /dir1/f2
+    #
+    #===============
+    #
+    #a.rar
+    #f1
+    #f2
+
+  #7zip
+    #microsoft proprietary program
+    #can do lots of formats:
+      #7z format
+      #rar with p7zip-rar installed
+      #zip
+    #but *use only for 7z*, which it was made for
+    #with 7zip, you can open .exe files to extract their inner data
+
+    sudo aptitude install -y p7zip-full
+
+  sudo aptitude install -y sharutils
+    #shell archives
+
+  sudo aptitude install -y unace
+    #ace files
+
+  sudo aptitude install -y uudeview
+    #uuencode, xxencode, BASE64, quoted printable, BinHex
+
+  sudo aptitude install -y mpack
+    #mime messages
+
+  sudo aptitude install -y lha
+    #lzh, used on DOS, legacy
+
+  sudo aptitude install -y arj
+    #.arj files
+
+  sudo aptitude install -y cabextract
+    #microsoft cabinet format
+
+  sudo aptitude install -y file-roller
+    #gui app to view inside archives and extrac them
+
+#encryption
+
+  gpg -c "$F"
+  #will create a "$F".gpg encrypted file
+  #good combo with tar.gz
+
+  cat "$F" | gpg -o "$F".gpg -c
+  #create from stdin
+
+  gpg "$F".gpg
+  #decrypts to F
+
+  gpg -d "$F".gpg
+  #decrypt to stdout
+
+  gpg -o "$F" -d "$F".gpg
+  #decrypts to F
+
+  cat "$F".gpg | gpg -o "$F" -d 
+  #decrypts from stdin
+
+  #combos
+
+    E=tgz.gpg
+    tar cz "$F" | gpg -o "$F"."$E" -c && rm -rf "$F"
+    #targz encrypt "$F" to F.tgz.gpg, remove original
+
+    gpg -d "$F" | tar xz && rm "$F"
+    #targz decrypt "$F"
+
 
     #-o : output file. default: logkeys -s -m mylang.map -o ~/.secret/keys.log
 
-  #alarm
-    sudo aptitude install alarm-clock-applet
-
   #ibus input methods
+
     #for chinese, japanes, etc input
 
-    sudo aptitude install ibus-qt4
-    #how have I looked for this, but no one told me: ibus for qt apps!!!!
+    sudo aptitude install -y ibus-qt4
+      #how have I looked for this, but no one told me: ibus for qt apps!!!!
 
-#proprietary
-  sudo -E wget --output-document=/etc/apt/sources.list.d/medibuntu.list http://www.medibuntu.org/sources.list.d/$(lsb_release -cs).list
-  sudo aptitude --quiet update
-  sudo aptitude --yes --quiet --allow-unauthenticated install medibuntu-keyring
-  sudo aptitude --quiet update
-  sudo aptitude install app-install-data-medibuntu apport-hooks-medibuntu
+  #alarm
+    sudo aptitude install -y alarm-clock-applet
 
-  #codecs #ERROR: mpg123libjpeg-progs cannot locate
-  #use TAB to navigate msfonts
-  sudo aptitude install non-free-codecs libxine1-ffmpeg gxine mencoder totem-mozilla icedax tagtool easytag lame nautilus-script-audio-convert libmad0 mpg321 mpg123libjpeg-progs
+  #weather indicator
+    sudo add-apt-repository -y ppa:atareao/atareao
+    sudo apt-get update
+    sudo apt-get install my-weather-indicator
 
-  #additional drivers : non free vendors
+#compresssion
 
-    jockey-text --list
-    #list
+  #the performance parameters are:
+    #compression ratio
+    #compression time
+    #can see and extracting single files
+    #support across OS
+    #ability to break into chunks
+    #keep file metadata such as permissions, hidden (windows), etc.
 
-    jockey-text --enable=$DRIVER
-    #enable from list. ex: xorg:fglrx_updates
+  #zip
+    #most widely supported
+    #not so high compression
+      #compresses dir one file by one it seems
+    #easy to view and extract single files
+    sudo aptitude install -y zip unzip
+
+    zip -r "$F".zip "$F"
+    #zip file or directory
+      #-r : add dir recursivelly. otherwise, adds only the top dir! useless
+
+    zip -er "$F".zip "$F"
+    #-e : encrypts
+      #you can still see filenames!! but not extract them
+
+    unzip -l "$F".zip
+    #list all files (recursive)
+
+    unzip "$F".zip
+    #extracts from zip
+      #if has password, asks for it
+
+    unzip "$F".zip -d out
+    #to a dir
+
+    for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
+    #zip every file in cur dir to file.zip
+
+  #tar tar.gz tgz tar.bz2 tb2
+    #tar only turns dir into file, but no compression
+    #this is why it is often coupled with gz and bz2: those are files compressers
+    #gz gives similar compression to .zip
+    #gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
+    #tgz == tar.gz and tb2 == tar.bz2
+
+    #create
+      tar cf "$F".tar "$F" 
+      tar czf "$F".tgz "$F" 
+      tar cjf "$F".tbz "$F" 
+      #c: create
+      #f: to file given as next arg, not to stdout
+      #z: gzip
+      #j: bzip2
+      #v: verbose
+
+    #extract
+      tar xf "$F".tar
+      tar xzf "$F".tgz
+      tar xjf "$F".tbz
+      #f: from file given as next arg, not stdin
+
+  #rar
+    #proprietary Roshal ARchive
+    #can do split archive
+      #split archive extensions:
+        #.part\d+.rar
+        #.r\d+
+
+    unrar x a.rar
+    #extract contents of a.rar to ./
+    #
+    #a.rar
+    #  /dir1/
+    #  /dir1/f1
+    #  /dir1/f2
+    #
+    #===============
+    #
+    #a.rar
+    #dir1/f1
+    #dir1/f2
+
+    unrar x a.rar out
+    #out to ./out/, creates this folders if necessary
+
+    unrar x a.r00
+    unrar x a.part1.rar
+    #extract multipart rar
+
+    unrar e a.rar
+    #recursivelly finds all files in a.rar, and outputs them to current dir
+    #with old basename possible name conflicts
+    #
+    #a.rar
+    #  /dir1/
+    #  /dir1/f1
+    #  /dir1/f2
+    #
+    #===============
+    #
+    #a.rar
+    #f1
+    #f2
+
+  #7zip
+    #microsoft proprietary program
+    #can do lots of formats:
+      #7z format
+      #rar with p7zip-rar installed
+      #zip
+    #but *use only for 7z*, which it was made for
+    #with 7zip, you can open .exe files to extract their inner data
+
+    sudo aptitude install -y p7zip-full
+
+  sudo aptitude install -y sharutils
+    #shell archives
+
+  sudo aptitude install -y unace
+    #ace files
+
+  sudo aptitude install -y uudeview
+    #uuencode, xxencode, BASE64, quoted printable, BinHex
+
+  sudo aptitude install -y mpack
+    #mime messages
+
+  sudo aptitude install -y lha
+    #lzh, used on DOS, legacy
+
+  sudo aptitude install -y arj
+    #.arj files
+
+  sudo aptitude install -y cabextract
+    #microsoft cabinet format
+
+  sudo aptitude install -y file-roller
+    #gui app to view inside archives and extrac them
+
+#encryption
+
+  gpg -c "$F"
+  #will create a "$F".gpg encrypted file
+  #good combo with tar.gz
+
+  cat "$F" | gpg -o "$F".gpg -c
+  #create from stdin
+
+  gpg "$F".gpg
+  #decrypts to F
+
+  gpg -d "$F".gpg
+  #decrypt to stdout
+
+  gpg -o "$F" -d "$F".gpg
+  #decrypts to F
+
+  cat "$F".gpg | gpg -o "$F" -d 
+  #decrypts from stdin
+
+  #combos
+
+    E=tgz.gpg
+    tar cz "$F" | gpg -o "$F"."$E" -c && rm -rf "$F"
+    #targz encrypt "$F" to F.tgz.gpg, remove original
+
+    gpg -d "$F" | tar xz && rm "$F"
+    #targz decrypt "$F"
+
 
 #dictionnary
 
-  sudo aptitude install goldendict
-  #select text can make popup windows!
-  #
-  #accepted dictionnary formats:
-  # http://goldendict.org/dictionaries.php
-  # stardict
-  #   for dicts, go here:
-  #     www.stardict.org/download.php
-  # bgl : babylon
-  #  windows oriented: exes on site!
-  #  can open .exe with 7zip to extract data content
-  #  now most exes are downloader without blgs, probably vendor lockin
-  #  I found some that actually contained the blg here:
-  #    http://www.babylon.com/dictionaries-glossaries
+  sudo aptitude install -y goldendict
+    #select text can make popup windows!
+    #
+    #accepted dictionnary formats:
+    # http://goldendict.org/dictionaries.php
+    # stardict
+    #   for dicts, go here:
+    #     www.stardict.org/download.php
+    # bgl : babylon
+    #  windows oriented: exes on site!
+    #  can open .exe with 7zip to extract data content
+    #  now most exes are downloader without blgs, probably vendor lockin
+    #  I found some that actually contained the blg here:
+    #    http://www.babylon.com/dictionaries-glossaries
 
 #text
 
   #pandoc. convert to/from extended markdown / latex / html
     #http://johnmacfarlane.net/pandoc/demos.html
-    sudo aptitude install pandoc
+    sudo aptitude install -y pandoc
 
     pandoc -s --toc -c pandoc.css -A footer.html README -o example3.html
     #-s : standalone. header and everything
@@ -177,16 +554,21 @@ sudo apt-get install aptitude
     #-w rst : type rst
 
   #latex
-    sudo aptitude install texlive
-    #sudo aptitude install texlive-full #enormous size and amount of packages
-    #you need this for certain latex fonts such as Continuous functions C
+    sudo aptitude install -y texlive
+      #sudo aptitude install -y texlive-full #enormous size and amount of packages
+      #you need this for certain latex fonts such as Continuous functions C
 
-  sudo aptitude install texmaker
+  sudo aptitude install -y texmaker
+
+#codecs #ERROR: mpg123libjpeg-progs cannot locate
+  #use TAB to navigate msfonts
+  sudo aptitude install -y mencoder totem-mozilla icedax tagtool lame libmad0 mpg321 mpg123libjpeg-progs
+    #TODO understand/remove
 
 #music
 
   #id3tool get id3 tags info (for mp3 for example)
-    sudo aptitude install id3tool
+    sudo aptitude install -y id3tool
 
     TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
     ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
@@ -198,17 +580,17 @@ sudo apt-get install aptitude
 
   #cut up flac cue into multiple files
 
-    # via flacon GUI
-    sudo add-apt-repository ppa:flacon
-    sudo apt-get update
-    sudo apt-get install flacon
+    #via flacon GUI
+      sudo add-apt-repository -y ppa:flacon
+      sudo aptitude update
+      sudo aptitude install -y flacon
 
     #cuetools command line
-    sudo apt-get install cuetools shntool
-    sudo apt-get install flac wavpack
+      sudo aptitude install -y cuetools shntool
+      sudo aptitude install -y flac wavpack
 
-    #single ape and cue in dir, flac output, formatted as number, author, track
-    shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
+      shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
+        #single ape and cue in dir, flac output, formatted as number, author, track
 
 #image
   #image formats
@@ -230,15 +612,15 @@ sudo apt-get install aptitude
     #rtf: proprietary microsoft
 
   #gimp
-  sudo aptitude install gimp
+    sudo aptitude install -y gimp
 
   #inkscape
-  sudo aptitude install inkscape
+    sudo aptitude install -y inkscape
 
   #imagemagick
     #tons of image conversion
 
-    sudo aptitude install imagemagick
+    sudo aptitude install -y imagemagick
 
     identify -list format
     #supported formats
@@ -255,20 +637,19 @@ sudo apt-get install aptitude
 
   #exactimage
     #concurrence to imagemagick, supposedly faster. c++ template api
-    sudo aptitude install exactimage
+    sudo aptitude install -y exactimage
 
 #book
 
   #okular + djvu in extra backends
-  sudo aptitude install okular okular-extra-backends
+    sudo aptitude install -y okular okular-extra-backends
 
-  #open mobi
-  sudo aptitude install fbreader
+  #free mobi reader
+    sudo aptitude install -y fbreader
 
   #calibre
-      sudo aptitude install calibre
-      cd ~
-      mkdir kab/calibre
+      sudo aptitude install -y calibre
+      mkdir ~/calibre
       #set library there: Cntr p > ...
 
   #pdftotext
@@ -278,7 +659,7 @@ sudo apt-get install aptitude
 
   #pdftk
     #manipulate pdfs
-    sudo aptitude install pdftk
+    sudo aptitude install -y pdftk
     #Merge Two or More PDFs into a New Document
         pdftk 1.pdf 2.pdf 3.pdf cat output 123.pdf
     #or (Using Handles):
@@ -312,13 +693,9 @@ sudo apt-get install aptitude
     #Report on PDF Document Metadata, Bookmarks and Page Labels
         pdftk mydoc.pdf dump_data output report.txt
 
-  #djvu
-      sudo aptitude install djvulibre-bin libdjvulibre21 okular-extra-backends evince libevdocument1 libevview1 libtiff-tools
-      #to convert djvu pdf, to ddjvu -format=pdf in out
-
   #djvulibre-bin
-      sudo aptitude install djvulibre-bin
 
+      sudo aptitude install -y djvulibre-bin
 
       #ddjvu
         #formats: pbm, pgm, ppm, pnm, rle, tiff, and pdf
@@ -327,6 +704,7 @@ sudo apt-get install aptitude
       #loses text layer
 
   #ps2pdf
+
     ps2pdf a.ps
     #produces a.pdf
 
@@ -351,28 +729,31 @@ sudo apt-get install aptitude
       #http://blog.konradvoelkel.de/2010/01/linux-ocr-and-pdf-problem-solved/
 
   #pdfs
+
     #before you go about extracting pdfs, you must use the right command to convert!
     #some good options are:
     convert -density 300 -monochrome -normalize a.pdf a.png
     convert -depth 1 -density 300 -normalize a.pdf a.png
 
   #tesseract
-    sudo aptitude install tesseract #english
-    apt-cache search tesseract-ocr- #to find available languages
-    sudo aptitude install tesseract-ocr-eng #english
 
-    sudo aptitude install tesseract-ocr-chi-sim #simplified chinese
-    cd /usr/share/tesseract-ocr/tessdata
-    sudo ln -s chi_sim.traineddata zho.traineddata
-    #tesseract looks for zho instead of chi_sim
-    #there is probably a better way to do this in the tesseract configs, but apparently not directly from vobsub2srt
+    sudo aptitude install -y tesseract-ocr
+    apt-cache search tesseract-ocr- #to find available languages
+    sudo aptitude install -y tesseract-ocr-eng #english
+
+    #chinese hack
+      sudo aptitude install -y tesseract-ocr-chi-sim #simplified chinese
+      cd /usr/share/tesseract-ocr/tessdata
+      sudo ln -s chi_sim.traineddata zho.traineddata
+      #tesseract looks for zho instead of chi_sim
+      #there is probably a better way to do this in the tesseract configs, but apparently not directly from vobsub2srt
 
     tesseract -l eng -psm 3 a.png a
     tesseract -l eng -psm 3 a.png a hocr
     #-psm 1 : detects pages *and* script automatically. most magic mode.
 
   #cuneiform
-    sudo aptitude install cuneiform #english
+    #sudo aptitude install -y cuneiform
     cuneiform -l eng -f text -o "$f.txt" "$f.png"
     #-f: html, hocr
     #-l: lang, see man cuneirform
@@ -381,7 +762,7 @@ sudo apt-get install aptitude
     hocr2pdf -i "$f.png" -s -o "$f.pdf" < "$f.hocr"
 
 #video
-  #formats:
+
   #*ripping* is taking the dvd from the dvd to files in computer
   #*trancoding*, is encoding the dvd on some smaller format.
   #*containers* are filetypes that turn video, audio and subtitles in a single files
@@ -396,7 +777,7 @@ sudo apt-get install aptitude
       #around 5
       #after this number of changes, YOU CANNOT CHANGE IT ANYMORE!!!!
 
-  sudo aptitude install vlc
+  sudo aptitude install -y vlc
     
   #handbrake
     #transcode
@@ -404,9 +785,9 @@ sudo apt-get install aptitude
     #first check this for some good info:
       #firefox http://msdn.microsoft.com/en-us/library/windows/desktop/dd388582%28v=vs.85%29.aspx
 
-    sudo add-apt-repository ppa:stebbins/handbrake-releases
-    sudo aptitude install handbrake-cli
-    #sudo aptitude install handbrake-gtk
+    sudo add-apt-repository -y ppa:stebbins/handbrake-releases
+    sudo aptitude install -y handbrake-cli
+    #sudo aptitude install -y handbrake-gtk
     #get command line version of course
 
     i=/media/
@@ -462,13 +843,13 @@ sudo apt-get install aptitude
     #gtk interface
 
   #dvdrip
-    sudo aptitude install dvdrip
+    sudo aptitude install -y dvdrip
 
   #k9copy
-    sudo aptitude install k9copy
+    sudo aptitude install -y k9copy
 
   #mkvtools
-    sudo aptitude install mkvtools
+    sudo aptitude install -y mkvtools
 
     mkvinfo 1.mkv
     #see info about a
@@ -486,9 +867,9 @@ sudo apt-get install aptitude
     #uses tesseract for the ocr: this means you must install tesseract lanugages
     #for chinese, must symlink 
     #see: #tesseract for installing the languages
-    sudo add-apt-repository ppa:ruediger-c-plusplus/vobsub2srt
+    sudo add-apt-repository -y ppa:ruediger-c-plusplus/vobsub2srt
     sudo aptitude update
-    sudo aptitude install vobsub2srt
+    sudo aptitude install -y vobsub2srt
 
     vobsub2srt --langlist 1 #view available languages inside a.sub a.idx pair
     l=en
@@ -510,29 +891,33 @@ sudo apt-get install aptitude
     #perfect for dual sub language learning
 
   #guvcview
-    sudo aptitude install guvcview
+    sudo aptitude install -y guvcview
     #record video/audio with webcam
     #click on the bottom video icon to record, click again to stop
 
 #messaging and video
-  sudo aptitude install skype
 
-  sudo aptitude install pidgin
+  sudo add-apt-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
+  sudo aptitude update
+  sudo aptitude install -y skype
 
+  sudo aptitude install -y pidgin
     
 #file sharing
 
-  #torrent deluge
-    sudo add-apt-repository ppa:deluge-team/ppa
-    sudo apt-get update
-    sudo aptitude install deluge
+  #torrent
+
+    #deluge
+      sudo add-apt-repository -y ppa:deluge-team/ppa
+      sudo aptitude update
+      sudo aptitude install -y deluge
 
   #dropbox
-    sudo apt-key adv --keyserver pgp.mit.edu --recv-keys 5044912E
-    sudo add-apt-repository "deb http://linux.dropbox.com/ubuntu $(lsb_release -sc) main"
-    sudo aptitude update && sudo aptitude install nautilus-dropbox 
+
+    sudo aptitude install -y nautilus-dropbox 
 
     firefox https://www.dropbox.com/home
+      #see your home files on browser
 
     dropbox filestatus
     dropbox filestatus "$F" "$G"
@@ -554,51 +939,57 @@ sudo apt-get install aptitude
     dropbox autostart y
     #autostart dropbox
 
+    #ubuntu one
+      #shows sync status on task bar
+      sudo add-apt-repository -y ppa:noobslab/initialtesting
+      sudo apt-get update
+      sudo apt-get install indicator-ubuntuone
 
   #soulseek client nicotine+ 
-  sudo aptitude install nicotine+
-  #behind a proxy router
-  # go to the router admin panel, port forwarding part
-  #  (http://192.168.0.1/RgForwarding.asp on dlink for example, default login:admin pass:motorola)
-  # open ports 2234 to 2239 on local ip found at
-  #  ifconfig eth0 | grep "inet addr:"
-  #
-  #now either put your files in another partition at the root, or symlink
-  #your share and download dirs to somewhere above user so that people cannot
-  #see your username
 
-  #dropbox
-  noaptget=~/nobackup/noaptget/
-  if [ ! -d $noaptget ]; then
-    mkdir $noaptget
-  fi
-  cd $noaptget
-  wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
-  ./.dropbox-dist/dropboxd &
+    sudo aptitude install -y nicotine+
+    #behind a proxy router
+    # go to the router admin panel, port forwarding part
+    #  (http://192.168.0.1/RgForwarding.asp on dlink for example, default login:admin pass:motorola)
+    # open ports 2234 to 2239 on local ip found at
+    #  ifconfig eth0 | grep "inet addr:"
+    #
+    #now either put your files in another partition at the root, or symlink
+    #your share and download dirs to somewhere above user so that people cannot
+    #see your username
 
 #programming tools
 
   #compiling
 
-    sudo aptitude install build-essential
-    #building tools
+    sudo aptitude install -y build-essential
+      #building tools
 
-    sudo aptitude install automake
-    #makefile macros
-    #generates makefiles
+    sudo aptitude install -y automake
+      #makefile macros
+      #generates makefiles
 
-    sudo aptitude install libtool
-    #helps generatin libraries for c, c++, fortran and java
+    sudo aptitude install -y libtool
+      #helps generatin libraries for c, c++, fortran and java
 
-    sudo aptitude install cmake
-    #make advanced
+    sudo aptitude install -y cmake
+      #make advanced
 
-    sudo aptitude install nasm
     #nasm assembler
 
+      sudo aptitude install -y nasm
+
+      nasm -w+all -f elf -o a.o a.asm
+        #-w+all : enable all warnings
+        #-f ouptut format
+
+      nasm -w+all -f elf -o a.o a.asm
+
     #gcc/g++
+
       #Gnu Compiler Collection: NOT c compiler
       #does: C, C++, Objective-C, Fortran, Java, Ada, and Go
+      #large frontend to severl subprograms such as ``as``, ``cpp`` and so on
 
       #g++:
         #http://stackoverflow.com/questions/172587/what-is-the-difference-between-g-and-gcc
@@ -609,14 +1000,169 @@ sudo apt-get install aptitude
       #http://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html#
       #http://www.adp-gmbh.ch/cpp/gcc/create_lib.html
 
-      gcc -S a.c
-      #create a.s file with generated assembly code
+      #compilation steps
+
+        cpp a.c > a.i
+        cpp b.c > b.i
+        #expanded macros
+        #c pre processor
+
+        gcc -S a.i -o a.s
+        gcc -S b.i -o b.s
+          #generate human readable assembly code
+          #default format: att
+        gcc -masm=att -S a.c -o a.s
+        gcc -masm=intel -S a.c -o a.s
+          #specify format
+
+        as -o a.o a.s
+        as -o b.o b.s
+          #make machine code
+
+        gcc -c a.c -o a.o
+        gcc -c b.c -o b.o
+          #all above steps in one
+
+        ld -o ab.out a.o b.o
+          #link object files into single executable
+
+        gcc a.c b.c -o ab.out
+          #does all above steps in one
+          #if you use make, it is faster to genterate ``.o``
+          #and keep them, since if the source does not change,
+          #make will not recompile the corresponding ``.o``
+
+      #compilation flags
+
+        #YOU SHOULD ALWAYS USE
+
+          gcc -Wall
+            #enables all warnings
+            #ALWAYS USE IT
+          gcc -Wall -Wno-unused-variable
+            #enables all warnings, except ``unused-variable
+
+          #std
+          #specifies version os the language to be used
+          #{
+            #disable gcc extensions that conflict with c standrad
+            gcc -std=c90
+            gcc -std=c99
+            gcc -std=1x
+              #current most modern
+            gcc -std=c11
+              #not yet available
+              #will be when implementation complete
+
+            gcc -ansi
+              #changes with time, currently equals ``-std=c90``
+              #don't use it
+
+          gcc -std=c1x -pedantic 
+            #give warnings for code that does not comply with c1x standard
+            #this does not mean *FULL* complience, but greatly increases complience
+            #there is currently no full complience check in ``gcc``
+          gcc -std=c1x -pedantic-errors
+            #give errors instead of warnings
+
+          #-march cputype
+
+            #optimizes code to given cpu architecture
+            #may use instructions only available to given cpu
+              gcc -march=native
+                #optimize for currrent compiling machine
+              gcc -march=i386
+                #simplest instruction set
+
+          #code optimization
+
+            gcc -Q -O --help=optimizers
+            #shows optimizations for -O
+
+            #-O0 : no speed optimization. This is the default
+            #-O : -O1 basic speed optimization
+            #-O2 : more than O1
+            #-O3 : more than O2
+            #-Og : optimize for debugging
+            #-Os : optimize for size
+            #-Ofast : optimize for speed more than O3, *even if it breaks standards*
+
+            gcc -O3 a.c -o a.out
+            #compile with optimization
+
+          #summary
+            #for production code always use:
+              gcc -std=c99 -pedantic-errors -Wall -03 -march=native a.c
+
+        #other flags
+          gcc -std=gnu90
+            #c90 + gcc extensions
+
+      #preprocessor
+        #define command line
+
+          gcc -DLINELENGTH=80 -DDEBUG c.c -o c
+          #same as adding
+          #define LINELENGTH 80 
+          #define DEBUG
+          #to top of file
+
+        #include
+
+          cpp -v
+          #will show include search paths
+          #done by the c pre processor
+
+          CPATH="/add/to/include"
+          export CPATH
+
+          gcc a.c -I/path/dir/ -I/path/dir2/
+          #-I: search in given dir for .h files
+            #must be *full path*, that is, will not look realtive to existing search path
+
+        #output preprocessed file
+          #learing purposes only
+          gcc -E c.c -o c
+
+      #libs
+
+        #create
+
+          gcc -c a.c
+          gcc -c b.c
+          ar rcs a.a a.o b.o
+            #.a is nothing but a compressed form of several .o
+
+          gcc -c -fPIC a.c
+            #compile for .so
+
+        #use
+
+          gcc -static b.c -L. -la -o b_static.out
+            #static link
+
+          gcc -print-search-dirs
+            #where the linker looks for .so and .a files
+
+          export LIBRARY_PATH="/path/to/link"
+          export LD_LIBRARY_PATH="/path/to/link"
+            #where to load libraries at runtime
+
+          gcc a.c -o a.out -lm
+          #-l : link to library libm.so in path
+          #PUT -l AFTER ALL COMMANDS!!!!!!!!!!
+          #the name must be EXACTLY!!!!!! libm.so,
+            #libm.1.so for example will link as m.1!!!!!!
+
+          gcc -v a.c -o a.out -L/path/to/link -llib
+            #-L : append path to link search path
+            #-v : will show link search paths
 
       #debug
 
         #gdb
-
-          gcc -ggdb3 -Wall a.c
+          
+          gcc -ggdb3 a.c
           #adds debug information to executable such as line numbers,
           #and symbol names (normally exceutables contain only memory adresses)
           #makes exec larger
@@ -767,9 +1313,9 @@ sudo apt-get install aptitude
               #somedir/.gdbinit
 
       #profiling
-
+        
         #gprof
-
+          
           #shows time spent into each call of individual functions
           #also shows average times per function
           #sorts from most to least time consuming
@@ -791,120 +1337,6 @@ sudo apt-get install aptitude
           #-pfunc1 : only flat profile of ``func1``
           #-q : only call graph
           #-qfunc1 : only call graph for ``func1``
-
-      #code optimization
-
-        gcc -Q -O --help=optimizers
-        #shows optimizations for -O
-
-        #-O0 : no speed optimization. This is the default
-        #-O : -O1 basic speed optimization
-        #-O2 : more than O1
-        #-O3 : more than O2
-        #-Og : optimize for debugging
-        #-Os : optimize for size
-        #-Ofast : optimize for speed more than O3, *even if it breaks standards*
-
-        gcc -O3 a.c -o a.out
-        #compile with optimization
-
-      #preprocessor
-
-        #define command line
-
-          gcc -DLINELENGTH=80 -DDEBUG c.c -o c
-          #same as adding
-          #define LINELENGTH 80 
-          #define DEBUG
-          #to top of file
-
-        #include
-
-          cpp -v
-          #will show include search paths
-          #done by the c pre processor
-
-          CPATH="/add/to/include"
-          export CPATH
-
-          gcc a.c -I/path/dir/ -I/path/dir2/
-          #-I: search in given dir for .h files
-            #must be *full path*, that is, will not look realtive to existing search path
-
-        #output preprocessed file
-          #learing purposes only
-          gcc -E c.c -o c
-
-      #compilation steps
-
-        cpp a.c > a.i
-        #expanded macros
-        #c pre processor
-
-        gcc -S a.i
-        #compile preprocessed into assembly code a.s
-
-        as -o a.o a.s
-        #assemble
-
-        ld -o a.out a.o -lm
-        #link code with library code
-
-        gcc -c a.c
-        gcc -c b.c
-        gcc a.o b.o -o ab.out
-        #same as above, but generates intermediate .o
-
-        gcc -c a.c
-        gcc a.c -o a.out
-        #same for single file
-
-      #multifile
-
-        #link
-          #.a and .so
-
-          gcc -print-search-dirs
-          #where the linker looks for .so and .a files
-
-          gcc a.c -o a.out -lm
-          #-l : link to library libm.so in path
-          #PUT -l AFTER ALL COMMANDS!!!!!!!!!!
-          #the name must be EXACTLY!!!!!! libm.so,
-            #libm.1.so for example will link as m.1!!!!!!
-
-          gcc a.c -o a.out -lm
-
-          gcc -v a.c -o a.out -L/path/to/link -llib
-          #-L : append path to link search path
-          #-v : will show link search paths
-
-          LIBRARY_PATH="/add/to/link"
-          export LIBRARY_PATH
-
-          gcc a.c b.c -o ab.out
-          #compile multiple files
-        
-      #make libraries
-
-        gcc -c a.c
-        gcc -c b.c
-        ar rcs a.a a.o b.o
-        #.a is nothing but a compressed form of several .o
-
-        gcc -c -fPIC a.c
-        #compile for .so
-
-      #use libraries
-
-        gcc -static b.c -L. -la -o b_static.out
-        #static link
-
-        gcc main.c -o b_dyn.out -L. -la
-        #dynamic link
-
-        LD_LIBRARY_PATH
-        #where to load libraries at runtime
 
       #utils
 
@@ -955,8 +1387,11 @@ sudo apt-get install aptitude
             LIBS=$(shell pkg-config opencv --libs)
 
   #editors and ides
+
     #eclipse
-      sudo aptitude install eclipse #ERROR cdt tools not good
+
+      #sudo aptitude install -y eclipse
+        #problems with cdt tools
 
       #MANUAL: install plugins.
 
@@ -996,103 +1431,21 @@ sudo apt-get install aptitude
       #  Editor: custom text editor,
       #  Command: gvim --remote +%l %f 
 
-    #version control
+    #vim
 
-      #git
-      sudo aptitude install git
-      sudo aptitude install gitk	#a git graphic local branch viewer
+      sudo aptitude install -y vim
+      sudo aptitude install -y vim-gtk #gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
+
+  #version control
+
+    #git
+      sudo aptitude install -y git
+      sudo aptitude install -y gitk	#a git graphic local branch viewer
       #not set it up to follow github
       #http://help.github.com/linux-set-up-git/
 
-      #svn subversion
-      sudo aptitude install subversion
-
-    #vim
-
-      sudo aptitude install vim
-      sudo aptitude install vim-gtk #gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
-      sudo aptitude install exuberant-ctags #to create tags (allows you to jump to definitions for example)
-
-      #get an overpowered distro (will save hours of plugin management)
-
-      #install plugins
-      #I prefer to unzip the plugins under .vim, and then add their paths to my .vimrc. This way, if I ever want to remove a plugin, all I need is to remove the folder, and some small code in the vimrc.
-      mkdir -p ~./vim
-      cd ~/.vim
-
-      #easytags
-      #generates a tags file every seconds to that you can jump to tag definitions
-      #(functions, variables, etc.) with Cntl + ]
-      wget http://peterodding.com/code/vim/downloads/easytags.zip
-      unzip easytags.zip
-      rm easytags.zip
-      echo ":let g:easytags_file = '~/.vim/easytagstags'" >> ~/.vimrc #save tags in ~/.vim/easytagstags insteaed ot the default ~/
-      vim
-
-      vim-addons install latex-suite
-
-  #web design lamp (Linux Apache + Mysqp + PHP)
-
-    #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
-
-    #from tutorial at: http://community.linuxmint.com/tutorial/view/486
-    #apache
-    sudo aptitude install apache2
-    firefox http://localhost/ & #test apache
-
-    #php
-    sudo aptitude install php5 libapache2-mod-php5
-    sudo /etc/init.d/apache2 restart
-    #test php
-    echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null
-    firefox http://localhost/testphp.php &
-
-    #mysql server
-      sudo aptitude install mysql-server
-      #he will ask you for the password, fill it in
-      #mysql -u root #the tutorial said do that, but I didn't need to. This would be for the password.
-
-    #phpmyadmin
-    sudo aptitude install libapache2-mod-auth-mysql php5-mysql phpmyadmin
-    #gksudo gedit /etc/php5/apache2/php.ini #according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
-
-    #make sure 'Include /etc/phpmyadmin/apache.conf' is in the apache config file
-    sudo vim /etc/apache2/apache2.conf
-    #add:
-    #  Include /etc/phpmyadmin/apache.conf
-    sudo /etc/init.d/apache2 restart
-
-    #test phpmyadmin and mysql
-    firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
-
-  #ack
-    sudo aptitude install ack-grep #ack package was already taken by a kanji converter!
-    #finds and greps, nice filename/line/match highlight output, ignores .git .svn, backup, swap files
-    #can detect and filter by filetype via shebangs
-    
-    ack --py perl_regex
-    #recursive find grep for perl_regex in python files only
-    
-    ack -f --py --print0 | xargs -0 -I '{}' git add '{}'
-    #adds all python files git. shebang aware.
-    
-    ack --cc '#include\s+<(.*)>' --output '$1'
-    #prints only include names in cpp files
-    #--sh for bash
-
-    ack -f | xargs perl -lane 'print if s/z/Z/g'
-    #recursive find
-    #print changes only
-
-    ack -f | xargs perl -pi -e 's/z/Z/g'
-    #recursive replace in files
-    #prints nothing
-
-    ack -g '\.py$'
-    #f, only stuff matching regex
-
-    ack --thpppt
-    #bill the cat
+    #svn subversion
+      sudo aptitude install -y subversion
 
   #diff
     
@@ -1118,52 +1471,119 @@ sudo apt-get install aptitude
       touch b/c
       diff a b
 
-  #patch
-  
-  #wdiff
+    #patch
+    
+    #wdiff
 
-    #word oriented diff
+      #word oriented diff
 
-    sudo aptitude Install wdiff
+      sudo aptitude install -y wdiff
 
-    wdiff a b
+      wdiff a b
 
-  #kiff3
-    #kde diff tool
-    sudo aptitude install kdiff3
+    #kiff3
+      #kde diff tool
+      sudo aptitude install -y kdiff3
 
-    kdiff3 f1 f2 -o fout
+      kdiff3 f1 f2 -o fout
 
-#libs
+  #ack
 
-  #glut opengl
-  sudo aptitude install freeglut3-dev
+    #finds and greps
+    #nice filename/line/match highlight output
+    #ignores .git .svn, backup, swap files
+    #can detect and filter by filetype via extension and shebangs
 
-  #opencv
-    sudo aptitude install libopencv-dev opencv-doc
-    sudo aptitude install libavformat-dev
-    sudo aptitude install ffmpeg
-    sudo aptitude install libcv2.1 libcvaux2.1 libhighgui2.1 python-opencv opencv-doc libcv-dev libcvaux-dev libhighgui-dev
+    sudo aptitude install -y ack-grep
+      #ack package was already taken by a kanji converter!
+    
+    ack --py perl_regex
+      #recursive find grep for perl_regex in python files only, detects shebangs
+    
+    ack -f --py --print0 | xargs -0 -I '{}' git add '{}'
+    #adds all python files git. shebang aware.
+    
+    ack --cc '#include\s+<(.*)>' --output '$1'
+    #prints only include names in cpp files
+    #--sh for bash
 
-  #ode physics engine
-  sudo aptitude install libode-dev
+    ack -f | xargs perl -lane 'print if s/z/Z/g'
+    #recursive find
+    #print changes only
+
+    ack -f | xargs perl -pi -e 's/z/Z/g'
+    #recursive replace in files
+    #prints nothing
+
+    ack -g '\.py$'
+    #f, only stuff matching regex
+
+    ack --thpppt
+    #bill the cat
+
+
+  #libs
+
+    #glut opengl
+      sudo aptitude install -y freeglut3-dev
+
+    #ode physics engine
+      sudo aptitude install -y libode-dev
+
+    #opencv
+      sudo aptitude install -y libopencv-dev opencv-doc
+      sudo aptitude install -y libavformat-dev
+      sudo aptitude install -y ffmpeg
+      sudo aptitude install -y python-opencv opencv-doc libcv-dev libcvaux-dev libhighgui-dev
+
+  #web design lamp (Linux Apache + Mysqp + PHP)
+
+    #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
+
+    #apache
+      sudo aptitude install -y apache2
+      firefox http://localhost/ & #test apache
+
+    #php
+      sudo aptitude install -y php5 libapache2-mod-php5
+      sudo /etc/init.d/apache2 restart
+      #test php
+      echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null
+      firefox http://localhost/testphp.php &
+
+    #mysql server
+      sudo aptitude install -y mysql-server
+      #he will ask you for the password, fill it in
+      #mysql -u root #the tutorial said do that, but I didn't need to. This would be for the password.
+
+    #phpmyadmin
+      sudo aptitude install -y libapache2-mod-auth-mysql php5-mysql phpmyadmin
+      #gksudo gedit /etc/php5/apache2/php.ini
+        #according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
+
+      sudo vim /etc/apache2/apache2.conf
+      #add:
+      #  Include /etc/phpmyadmin/apache.conf
+      sudo /etc/init.d/apache2 restart
+
+    #test phpmyadmin and mysql
+      firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
 
 #file management
 
   #krusader
-  sudo aptitude install krusader
-  sudo aptitude install konqueror #needs to manage bookmarks. (otherwise, button does nothing)
-  sudo aptitude install konsole   #needs to terminal emulator. (otherwise, button does nothing)
+    sudo aptitude install -y krusader
+    sudo aptitude install -y konqueror #needs to manage bookmarks. (otherwise, button does nothing)
+    sudo aptitude install -y konsole   #needs to terminal emulator. (otherwise, button does nothing)
 
   #filezilla
-  sudo aptitude install filezilla
-  sudo aptitude install deluge
+    sudo aptitude install -y filezilla
 
 #terminal emulators
 
   #guake
 
-    sudo aptitude install guake
+    sudo aptitude install -y guake
 
     #- drop down: hit a key (<F12> default) and it shows
     #- single instance, great ipc communication
@@ -1192,31 +1612,42 @@ sudo apt-get install aptitude
 #keyboard and mouse automation 
 
   #autokey
-  sudo apt-add-repository ppa:cdekter/ppa
-  sudo aptitude install autokey-gtk
+    #sudo apt-add-repository ppa:cdekter/ppa
+    #sudo aptitude install -y autokey-gtk
 
-  #xdotool. can send clicks and manage window properties.
-  sudo aptitude install xdotool
+  #xdotool
+    #can send clicks and manage window properties.
+
+    #sudo aptitude install -y xdotool
 
 #games
-  sudo add-apt-repository "deb http://archive.ubuntugames.org ubuntugames main"
+  sudo add-apt-repository -y "deb http://archive.ubuntugames.org ubuntugames main"
 
-  sudo aptitude install nethack-console
-  #nethack dungeon rpg
+  sudo aptitude install -y nethack-console
+    #nethack dungeon rpg
 
-  sudo aptitude install netrek-client-cow
-  #netrek space ship click and shoot
+  sudo aptitude install -y netrek-client-cow
+    #netrek space ship click and shoot
 
-  sudo aptitude install urban-terror
-  #counter strike fps clone 
+  sudo aptitude install -y urban-terror
+    #counter strike fps clone 
 
-#sedlike multifile rename
+  #golly
 
-rename -n 's/^([0-9]) /0$1 /g' *.mp3 
-#does not make changes to all .mp3 files
+    #conways game of life simulator
 
-rename 's/^([0-9]) /0$1 /g' *.mp3
-#makes changes
+    sudo aptitude install -y golly
+
+    env UBUNTU_MENUPROXY=0 golly 
+      #because the global menu does not work
+
+#rename
+
+  rename -n 's/^([0-9]) /0$1 /g' *.mp3 
+    #does not make changes to all .mp3 files
+
+  rename 's/^([0-9]) /0$1 /g' *.mp3
+    #makes changes
 
 #cpio
 
@@ -1225,6 +1656,7 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
 #find
 
+  #consider ack-grep instead for searching code
   #read from stdin
 
   while IFS= read -r -u3 -d $'\0' FILE; do
@@ -1402,7 +1834,7 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
 #office suite
 
-  sudo aptitude install libreoffice-base
+  sudo aptitude install -y libreoffice-base
 
 #text
 
@@ -1410,18 +1842,39 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
 
     echo a
     #a\n
-
-    #no final newline
-      echo -n a
+    
+    echo -n a
       #a
+        #no final newline
 
-    #3 arguments, output space separated
-      echo a b c
+    echo a b c
       #a b c\n
+        #3 arguments, output space separated
 
-    #-e for newlines inside
+    #-e interprets \ escaped chars
       echo -e 'a\nb'
-      #a\nb\n
+        #uses newlines
+      echo -e "\a"
+        #bell char
+        #if configured to do so, your terminal will emmit beep sound
+        #appplication: warn when a lengthy process has ended
+
+  #grep
+
+    #select lines from stdin or files
+
+    echo -e "a\nb" | grep a
+    #a
+
+    echo -e "a\nb" > 优秀f
+    grep a f
+
+    #-n show line numbers
+    #-v select non matching
+
+    echo a | grep b
+    echo $?
+      #1
 
   #cat
 
@@ -1431,166 +1884,50 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
     echo qwer > b
 
     cat a
-    #asdf
+      #asdf
 
     cat a b
-    #asdf
-    #qwer
+      #asdf
+      #qwer
 
-  #tac: cat reversed
+  #less
 
-    tac f
+    #file pager (viewer)
+    #loads faster than vim
+    #vimlike commands
 
-  #head
+    #/ : search forward
+    #n : repeat last search
+    #d : down one page
+    #u : up one page
+    #g : top of document
+    #G : bottom of document
+    #g : top of document
+    #<ENTER> : down one line
 
-    head f
-    #shows 10 first lines of f
-
-    head -n3 f
-    #shows 3 first lines of f
-
-  #tail
-
-    tail f
-    #shows last 10 lines of output
-
-    tail -n3 f
-
-  #tee
-
-    ls | tee file
-    #ls to stdou and file
-
-    ls | tee file 1>&2
-    #ls to
-
-    ls -l | tee file | sort
-    #ls to file and sort
-
-    ls | tee –a file
-    #ls append to file
-
-    ls | tee –a f1 f2 f3
-    #ls to multple files
-
-  #split
-
-    #split files into new files
-
-    echo -n asdf > a
-
-    split -db1 a pref_
-    split -dn4 a pref_
-    #four files are created, named pref_00, pref_01 .. pref 04, contaning a, s, d and f
-    #if exist, they are *overwritten*
-    #-d: uses number suffixes, otherwise, uses letters aa, ab, ac, ...
-    #-b: bytes per file
-    #-n: number of files
-
-  #grep
-
-    #select lines from stdin or files
-
-    echo -e "a\nb" | grep a
-    #a
-
-    echo -e "a\nb" > f
-    grep a f
-
-    #-n show line numbers
-    #-v select non matching
-
-  #tr
-    #charwise text operations
-
-    tr abc ABC
-    #-s : replaces a by A and b by B and c by C
-
-    tr -c abc d
-    #-c : complement and replace. replaces all non abc chars by d
-
-    tr -d abc
-    #deletes abc
-
-    tr -s a
-    #replaces multiple consecutive 'a's by isngle a
-    # aaaaa -> a
-
-    tr a-z A-Z
-    #to upper
-
-    tr -cs "[:alpha:]" "\n"
-    #replaces non alphanum by a newline
-
-    tr -cd "[:print:]"
-    #removes non printable chars
-
-  #cut
-
-    #field and char wise operations
-
-    cut -d: -f 1 F
-    #first field from colon separated F
-
-    cut -d: -f 1,3 F
-    #first and third field from colon separated F
-
-    cut -c 1-8 F
-    #first 8 chars
-
-  #wc
-
-    #count things
-
-    echo -en 'a\nb c' | wc
-    #1 5 3
-
-    echo -en 'a\nb c' > a
-    wc a
-    #1 5 3
-
-    #newline, word, byte
-
-      #-c bytes only
-      #-m chars only
-      #-l newlines only
-      #-L max line lenght only
-      #-w words only
-
-  #nl
-    #number lines
-
-    nl "$f"
-    #cat lines, number non-empty ones
-
-  #hexdump: view bytes in hexa
-
-    hexdump -C $F
-    # -C : see bytes in hexadecimal
-    # -n32 : only 32 bytes
-    # -s32 : start at byte 32
-    # -v : show duplicate lines
-    # -e '1/1 " %02X"' : complicated format string
+    less "$F"
+    echo -e "ab\ncd" | less
 
   #sort
+
     #sort linewise
 
     sort f1 f2
-    # sort f1, f2 together linewise
-    # -h : sort by human readable filesizes: 1k, 2M, 3G
-    # -r : reverse order
-    # -f : ignore case. random lower/upper order
-    # -fs : ignore case and put always upper before lower
-    # -n : numbers
-    # -b : ignore leading blanks
-    # -u : uniq. remove dupesls -lh | sort -k5hr
-    # -uf : remove dupes, cas insensitive (A and a are dupes)
-    # -k5 : sort by field N
-    # -t: : set field separator to ':'
-    # -k 2,2n -k 4,4hr : sort by columns. from 2 to 2, numeric, then from 4 to 4, human and reverse
-    # -R : randomize
-    # -m : supposese f1 and f2 are already sorted, making merge faster
-    # -c : check if is sorted
+      # sort f1, f2 together linewise
+      # -r : reverse order
+      # -n : numbers
+      # -u : uniq. remove dupesls -lh | sort -k5hr
+      # -t: : set field separator to ':'
+      # -k5 : sort by field N
+        # -k 2,2n -k 4,4hr : sort by columns. from 2 to 2, numeric, then from 4 to 4, human and reverse
+      # -R : randomize
+      # -h : sort by human readable filesizes: 1k, 2M, 3G
+      # -f : ignore case. random lower/upper order
+      # -fs : ignore case and put always upper before lower
+      # -b : ignore leading blanks
+      # -uf : remove dupes, cas insensitive (A and a are dupes)
+      # -m : supposesing f1 and f2 are already sorted, making merge faster
+      # -c : check if is sorted
 
   #uniq
 
@@ -1622,17 +1959,175 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
     # -d : dupe lines only
     # -c : counts how many dupes
 
+  #read
+
+    while read l; do
+      echo "$l";
+    done < "$f"
+      #read file linewise
+
+    while read l; do
+      echo "$l"
+    done < <( echo -e "a\nb\na b" )
+      #read echo linewise
+
+    while IFS=' : ' read f1 f2
+    do          
+      echo "$f1 $f2"
+    done < <( echo -e "a : b\nc : d" )
+      #delimiers
+
+  #tee
+
+    ls | tee file
+      #ls to stdou and file
+
+    ls | tee file 1>&2
+      #ls to
+
+    ls -l | tee file | sort
+      #ls to file and sort
+
+    ls | tee –a file
+      #ls append to file
+
+    ls | tee –a f1 f2 f3
+      #ls to multple files
+
+  #tr
+
+    #charwise text operations
+
+    tr abc ABC
+    #-s : replaces a by A and b by B and c by C
+
+    tr -c abc d
+    #-c : complement and replace. replaces all non abc chars by d
+
+    tr -d abc
+    #deletes abc
+
+    tr -s a
+    #replaces multiple consecutive 'a's by isngle a
+    # aaaaa -> a
+
+    tr a-z A-Z
+    #to upper
+
+    tr -cs "[:alpha:]" "\n"
+    #replaces non alphanum by a newline
+
+    tr -cd "[:print:]"
+    #removes non printable chars
+
+  #cut
+
+    #field and char wise operations
+
+    cut -d: -f 1 "$F"
+      #first field from colon separated F
+
+    cut -d: -f 1,3 "$F"
+      #first and third field from colon separated F
+
+    cut -c 1-8 "$F"
+      #first 8 bytes from F
+
+  #wc
+
+    #count things
+    #mnemonic: Word Count
+
+    echo -en 'a\nb c' | wc
+    #1 5 3
+
+    echo -en 'a\nb c' > a
+    wc a
+    #1 5 3
+
+    #newline, word, byte
+
+      #-c bytes only
+      #-m chars only
+      #-l newlines only
+      #-L max line lenght only
+      #-w words only
+
+
+  #printf
+
+    printf "%1.2d" 1
+      #01
+    printf "%1.2f" 1.23
+      #1.23
+
+  #tac: cat reversed
+
+    tac "$f"
+
+  #head
+
+    head "$f"
+      #shows 10 first lines of f
+
+    head -n3 "$f"
+      #shows 3 first lines of f
+
+  #tail
+
+    tail "$f"
+      #shows last 10 lines of f
+
+    tail -n3 "$f"
+      #shows last 3 lines of f
+
+  #split
+
+    #split files into new smaller files
+
+    echo -n asdf > a
+
+    split -db1 a pref_
+    split -dn4 a pref_
+    #four files are created, named pref_00, pref_01 .. pref 04, contaning a, s, d and f
+    #if exist, they are *overwritten*
+    #-d: uses number suffixes, otherwise, uses letters aa, ab, ac, ...
+    #-b: bytes per file
+    #-n: number of files
+
+  #nl
+
+    #number lines
+
+    nl "$f"
+      #cat lines, number non-empty ones
+
+  #hexdump: view bytes in hexa
+
+    hexdump -C $F
+    # -C : see bytes in hexadecimal
+    # -n32 : only 32 bytes
+    # -s32 : start at byte 32
+    # -v : show duplicate lines
+    # -e '1/1 " %02X"' : complicated format string
+
+  #seq
+
+    seq 1
+    seq 1 3
+      #1
+      #2
+      #3
+
+    seq 1 2 5
+      #1
+      #3
+      #5
+
+    #-s : separator
+    #-w : equal width
+
   #path operations
-
-    #dirname
-
-      #get the parent dir of a path, not / terminated except for /, no error checking
-      dirname /path/to/dir/or/file #/path/to/dir/or
-      dirname / #outputs /
-      dirname path/to/dir/or/file #path/to/dir/or
-
-    sudo aptitude install realpath
-    #transforms relative paths into absolute paths
 
     #basename
 
@@ -1642,6 +2137,17 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
       basename /usr/a.txt .txt
         #a
 
+    #dirname
+
+      #get the parent dir of a path, not / terminated except for /, no error checking
+      dirname /path/to/dir/or/file
+        #/path/to/dir/or
+      dirname /
+        #outputs /
+
+    sudo aptitude install -y realpath
+      #transforms relative paths into absolute paths
+
   #sed
     #just use perl lape/pie instead
     find . -type f -iname '*.py' -print0 | xargs -0 sed -n 's/django_cheatsheet/project0/gp' #replaces, and prints replaced lines only
@@ -1650,7 +2156,7 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
   #perl one liners
 
     #ack -f | xargs perl ...
-    #use like this!
+      #use like this!
 
     perl -lape 's/r1/r2/g' F
     #replace in file linewise
@@ -1692,6 +2198,7 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
     #Substitute (find and replace) "foo" with "bar" on lines that match "baz".
   
   #iconv
+
     #convet character encodings
 
     #major encodings
@@ -1734,161 +2241,6 @@ rename 's/^([0-9]) /0$1 /g' *.mp3
           * ) echo "Please enter either 'Y' or 'n'.";;
       esac
   done
-
-#file compresssion
-  #the performance parameters are:
-  # compression ratio
-  # compression time
-  # can see and extracting single files
-  # support across OS
-  # ability to break into chunks
-  # keep file metadata such as permissions, hidden (windows), etc.
-
-  sudo aptitude install unace sharutils uudeview mpack lha arj cabextract file-roller
-
-  #zip
-    #most widely supported
-    #not so high compression
-      #compresses dir one file by one it seems
-    #easy to view and extract single files
-    sudo aptitude install zip unzip
-
-    zip -r "$F".zip "$F"
-    #zip file or directory
-      #-r : add dir recursivelly. otherwise, adds only the top dir! useless
-
-    zip -er "$F".zip "$F"
-    #-e : encrypts
-      #you can still see filenames!! but not extract them
-
-    unzip -l "$F".zip
-    #list all files (recursive)
-
-    unzip "$F".zip
-    #extracts from zip
-      #if has password, asks for it
-
-    unzip "$F".zip -d out
-    #to a dir
-      
-
-    for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
-    #zip every file in cur dir to file.zip
-
-  #tar tar.gz tgz tar.bz2 tb2
-    #tar only turns dir into file, but no compression
-    #this is why it is often coupled with gz and bz2: those are files compressers
-    #gz gives similar compression to .zip
-    #gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
-    #tgz == tar.gz and tb2 == tar.bz2
-
-    #create
-      tar cf "$F".tar "$F" 
-      tar czf "$F".tgz "$F" 
-      tar cjf "$F".tbz "$F" 
-      #c: create
-      #f: to file given as next arg, not to stdout
-      #z: gzip
-      #j: bzip2
-      #v: verbose
-
-    #extract
-      tar xf "$F".tar
-      tar xzf "$F".tgz
-      tar xjf "$F".tbz
-      #f: from file given as next arg, not stdin
-
-  #rar
-    #proprietary Roshal ARchive
-    #can do split archive
-      #split archive extensions:
-        #.part\d+.rar
-        #.r\d+
-
-    unrar x a.rar
-    #extract contents of a.rar to ./
-    #
-    #a.rar
-    #  /dir1/
-    #  /dir1/f1
-    #  /dir1/f2
-    #
-    #===============
-    #
-    #a.rar
-    #dir1/f1
-    #dir1/f2
-
-    unrar x a.rar out
-    #out to ./out/, creates this folders if necessary
-
-    unrar x a.r00
-    unrar x a.part1.rar
-    #extract multipart rar
-
-    unrar e a.rar
-    #recursivelly finds all files in a.rar, and outputs them to current dir
-    #with old basename possible name conflicts
-    #
-    #a.rar
-    #  /dir1/
-    #  /dir1/f1
-    #  /dir1/f2
-    #
-    #===============
-    #
-    #a.rar
-    #f1
-    #f2
-
-  #7zip
-    #microsoft proprietary program
-    #can do lots of formats:
-      #7z format
-      #rar with p7zip-rar installed
-      #zip
-    #but *use only for 7z*, which it was made for
-    #with 7zip, you can open .exe files to extract their inner data
-
-    sudo aptitude install p7zip-full
-
-#encryption
-
-  gpg -c "$F"
-  #will create a "$F".gpg encrypted file
-  #good combo with tar.gz
-
-  cat "$F" | gpg -o "$F".gpg -c
-  #create from stdin
-
-  gpg "$F".gpg
-  #decrypts to F
-
-  gpg -d "$F".gpg
-  #decrypt to stdout
-
-  gpg -o "$F" -d "$F".gpg
-  #decrypts to F
-
-  cat "$F".gpg | gpg -o "$F" -d 
-  #decrypts from stdin
-
-  #combos
-
-    E=tgz.gpg
-    tar cz "$F" | gpg -o "$F"."$E" -c && rm -rf "$F"
-    #targz encrypt "$F" to F.tgz.gpg, remove original
-
-    gpg -d "$F" | tar xz && rm "$F"
-    #targz decrypt "$F"
-
-#GUI control
-
-  #control some window properties
-  wmctrl -a ' - GVIM' #focus on a window with title containing '- GVIM' ( hopefully gVim! )
-
-sudo service lightdm restart #restart lightdm display manager used for Unity, more drastic and possibly effective
-unity --restart #restarts the unity shell only. less effective and drastic than restarting lightdm
 
 #mysql
 
@@ -2038,7 +2390,7 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     #sort by total size
 
   #gparted
-    sudo aptitude install gparted
+    sudo aptitude install -y gparted
     #gparted. create/delete/change partition size. In order to reduce you windows partition
     #you need first to reduce it in windows, and then use this.
 
@@ -2093,8 +2445,8 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     #
     #-u user : by given user
 
-
   #vmstat
+
     #memory, sway, io, cpu
 
     vmstat 1 100
@@ -2137,52 +2489,124 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
         #Wa field: Time spent waiting for the IO
 
   sudo sysctl –a
-  #kernel parameters
+    #kernel parameters
 
   #sar
+
     #long term performance statistics
 
-    sudo aptitude install sysstat
+    sudo aptitude install -y sysstat
     #crontab -e
     #
     #paste:
     #*/5 * * * * root /usr/lib/sa/sa1 1 1
-    #59 23 * * * root /usr/lib/sa/sa2 –A
 
     sar -u
-    #cpu usage
+      #cpu usage
 
     sar –d
-    #disk io stats
+      #disk io stats
 
     sar -n DEV | more
     sar -n SOCK |more
-    #network stats
+      #network stats
 
   uname -r
-  #get kernel version
+    #get kernel version
 
   sudo X -version
-  #get xserver version
+    #get xserver version
 
   #hardware info
 
+    cat /proc/cpuinfo
+      #cpu info
+
+    cat /proc/meminfo
+      #mem info
+
     #lspci
 
-      sudo lspci | grep -i vga
+      sudo lspci | less
 
-    sudo aptitude install hwinfo
-    hwinfo
+      #/VGA for graphics cards
 
-    grep -i 
+    #hwinfo
+
+      sudo aptitude install -y hwinfo
+
+      hwinfo | less
 
 #process
 
   #ps
 
-    ps auxw | grep 538
-    #find process name with id 538
+    sleep 100
+    sleep 100
+    ps
+      #see processes running on current tty
+      #pid
+        #unique identifier for all process on system
+      #tty
+        #from which tty it was launched
+      #time
+        #cpu time used for process
+        #not real time
+      #cmd
+        #command that launched th process
+        #without command line args
 
+    ps -A
+      #see all process on system
+
+    ps -Am
+      #shows thrads of each process
+
+    ps -Al
+      #shows lots of extra columns in addition to the 4 default:
+
+    ps -A --sort cmd,-time,pid,-tty
+      #sort output
+      #cmd
+      #time reversed (-)
+      #pid
+      #tty reversed (-)
+
+  #kill
+
+    #send signals to a process
+    #not necessarily kill signal
+
+    ps -A
+    ID=
+    kill $ID
+      #send TERM signal
+      #select by pid, found on ps for example
+
+    jobs
+    ID=
+    kill $ID
+      #select by jobid found on jobs
+
+    kill -STOP $ID
+      #stops process
+
+    kill -CONT $ID
+      #continues stopped process
+
+  #killall
+
+    #kill all process by name
+
+  #top
+
+    #ncurses constantly updated process list
+
+    #h: help
+    #f: field add/remove/sort
+    #k: kill process
+    #arrow keys: move view
+    
   #nice
     #-20: high priority, 20 low priority
 
@@ -2201,48 +2625,93 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
 #files
 
-  #touch
-    #creates file if does not exist.
-    #updates modify date to present if exists
-    touch f
-
-  #cd
-    cd -
-    #go back to last dir
-    #only works once
-
-    cd -lh
-    #-a : (all) show hidden files
-    #-h : human readable filesizes
-    #-l : long. one per line, lots of data.
-
   #ls
 
+    ls -l
+      #-rw-rw-r-- 1 athenaxh athenaxh   62 Jan 28 17:35 file-list
+      #  -rw-rw-r-- : permissions
+      #     first char:
+      #       l : symlink (not for hardlink)
+      #       d : dir
+      #       c : character file
+      #  1 : no of linked hardlinks
+
     ls | cat
-    #ls is aware if its ouput goes to a pipe or not.
-    #if yes, newline separates it!
+      #ls is aware if its ouput goes to a pipe or not.
+      #if yes, automatically newline separates it!
 
     ls -1
-    #one per line
+      #one per line
+
+    #-lL : when showing symlinks, shows info to what is linked to
+
+  #cd
+
+    cd dir
+      #go to dir
+
+    cd
+    cd ~
+      #goto home dir
+
+    cd -
+      #go back to last dir
+      #only works once
+
+    cd -lh
+      #-a : (all) show hidden files
+      #-h : human readable filesizes
+      #-l : long. one per line, lots of data.
+
+  #touch
+
+    touch f
+      #creates file if does not exist.
+      #updates modify date to present if exists
+
+  #chown
+
+    sudo chown $NEW_OWNER $FILES
+      #-R : recursive
+
+  #chmod
+
+    chmod +x f
+      #makes f executable
+
+    chmod -x f
+      #makes f not executable
 
   #ln
+
     #hardlinks and symlinks
 
+    ln from to
+      #hardlink
+
     ln -s from to
-    #make a symlink
+      #symlink
 
-  #fdupes
-    #fine command line tool for eliminating byte by byte duplicates
-    #you can either
-      #pick one by one
-      #tell fdupes to pick the first one without asking (seem to pick one of the dirs first always)
-    sudo aptitude install fdupes
+  #cmp 
 
-    fdupes -r .
-    # finds and prints dupes
+    cmp "$F" "$G"
+    #compares F and G byte by byte, until first difference
+    #if equal, print nothing
+      #else, print location of first difference
 
-    fdupes -rd .
-    # finds dupes, and prompt which to keep for each match
+    cmp -s "$F" "$G"
+    if [ $? -eq 1 ]; then
+        echo neq
+    else
+        echo eq
+    fi
+
+  file f
+    #tries to guess the type of file f with magic lib
+
+  stat f
+    #last access, size, etc
+    # so this is where python and c commands come from...
 
   #dirs
     #move between dirs in stack
@@ -2257,25 +2726,19 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     popd
     #pop fro dir stack and cd to it
 
-  #cmp 
-    cmp "$F" "$G"
-    #compares F and G byte by byte, until first difference
-    #if equal, print nothing
-      #else, print location of first difference
+  #fdupes
+    #fine command line tool for eliminating byte by byte duplicates
+    #you can either
+      #pick one by one
+      #tell fdupes to pick the first one without asking (seem to pick one of the dirs first always)
 
-    cmp -s "$F" "$G"
-    if [ $? -eq 1 ]; then
-        echo neq
-    else
-        echo eq
-    fi
+    sudo aptitude install -y fdupes
 
-  file f
-  #tries to guess the type of file f with magic lib
+    fdupes -r .
+    # finds and prints dupes
 
-  stat f
-  #last access, size, etc
-  # so this is where python and c commands come from...
+    fdupes -rd .
+    # finds dupes, and prompt which to keep for each match
 
 #shell options
 
@@ -2293,17 +2756,32 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     shopt -u op
     #unset option
 
-#users
+#users and groups
 
-  #chown
+  whoami
+    #print cur user name
 
-    sudo chown $NEW_OWNER $FILES
-    #-R : recursive
+  #useradd
+    useradd $UNAME
+      #addes user, but useless because he has no pass
+    passwd $UNAME
+      #gives abc a pass
+    useradd -e 2000-00-00 $UNAME
+      #create user. password expires automatically at the given date.
+    useradd -f 5
+      #account disables 5 days after password expires if pass not changed.
 
+  cat /etc/passwd
+    #shows users
+
+  cat /etc/group
+    #show groups
 
   #ac
+
     #connection statistics
-    sudo aptitude install acct
+
+    sudo aptitude install -y acct
 
     ac -d
     #current user connection in hours, broken by days
@@ -2318,20 +2796,24 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     #sends an recieves data, measuring round trip, several times
 
   whois 201.81.160.156
-  #check info about ip (country and ISP included)
+    #check info about ip (country and ISP included)
 
   netstat -a
-  #TODO understand crazy output
+    #TODO understand crazy output
 
   #wget
     #for recursive down only, for the rest, curl it
 
     u=
     wget -E -k -l inf -np -p -r $u
-    #make local version of html page
+      #make local version of site
+    wget -R *.pdf -R *.zip -R *.rar -E -k -l inf -np -p -r $u
+      #don't take pdfs, zips and rars
+    wget -A *.html -A *.css -A *.php -A *.gif -A *.png -A *.jpg -E -k -l inf -np -p -r $u
+      #only take, html, css, etc
 
     wget -r -np -nH -A.au,.mp3 $u
-    #get all files of a given types
+      #get all files of a given types
 
     #-E --adjust-extension
       #converts for example ``*.php?key=val`` pages to ``.php?key=val.html``
@@ -2355,7 +2837,7 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
       #-L : follow relative links only
     #--user-agent="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.3) Gecko/2008092416 Firefox/3.0.3"
     #-A : accept patterns.
-      #if *,?or [] appear on expression, matches basename
+      #if *, ? or [] appear on expression, matches basename only
       #else, suffix (.mp3 will work)
       #-R : reject, opposite of A
       #-X : exclude dir
@@ -2364,7 +2846,8 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
     
 
   #curl
-    sudo aptitude install curl
+
+    sudo aptitude install -y curl
 
     curl ifconfig.me
     #external ip address of your computer
@@ -2421,7 +2904,7 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
   #shows local network ips
 
   #nmap
-    sudo aptitude install nmap
+    sudo aptitude install -y nmap
     nmap google.com
     #shows open ports at google.com
     #you are gonna get at least 80 for their http server
@@ -2477,8 +2960,28 @@ unity --restart #restarts the unity shell only. less effective and drastic than 
 
   sudo vim /etc/default/grub
   sudo update-grub
-  #timeout : time before OS choice
-  #must update grub after changing this file
+    #timeout : time before OS choice
+    #must update grub after changing this file
 
 sleep 2
-#program that does nothing for 2 seconds
+  #sleep 2 seconds
+
+#environment variables
+
+  env
+    #shows all environment variables and their values
+
+  env GLOBAL_VAR=value some-command
+    #runs some command with GLOBAL_VAR=value
+
+    env UBUNTU_MENUPROXY=0 golly 
+      #oppens app without global menu
+
+#combos
+
+  find . | sort -f | uniq -di
+    #find files whose path differ from other files only by case
+    #useful when copying from linux to a system that does not accept
+    #files that differ only by case (the case for MacOS and Windows)
+  find . | sort -f | uniq -di | xargs -I'{}' rm '{}'
+    #remove them

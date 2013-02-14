@@ -1,207 +1,372 @@
 #!/usr/bin/env bash
 
-#------------------------------------------------------------
-#
-#Ciro D. Santilli
-#
-#bash commands/constucts that correspond to programming languages like c
-#
-#no complex programs shown
-#
-#------------------------------------------------------------
+#no complex programs shown: only language "basics"
 
-#logical operations
-  if 0 -a 0; then
-    echo true
+#sources
+
+  #<http://tldp.org/LDP/abs/html/abs-guide.html>
+
+# bash shell follows POSIX standards
+  #this includes common commands such as ``ls``, ``cd`` and many more
+  #full list:
+    #<http://pubs.opengroup.org/onlinepubs/9699919799/>
+
+set -u # error on undefined variable1&>2
+set -e # stop execution if one command return != 0
+
+OUT="./_out/"
+rm -fr "$OUT"
+mkdir "$OUT"
+cd "$OUT"
+
+function assert {
+  if [ ! $1 ]; then
+    echo "assertion failed:"
+    echo "$1"
+    exit 1
   fi
-  #logical 'and'. DO NOT PUT IT INSIDE [], or it becmoses file exists
+}
 
-#command line arguments
-PDF_PATH="$1" #argument 1
-DJVU_PATH="$2" #argument 2
+assert '1 = 1'
+assert '"a b" = "a b"'
+assert "\"a b\" = \"a b\""
+#assert "1 = 2"
+  #ends program
+
+#special vars
+
+  #echo $1
+    #ERROR
+    #possibly unbound
+
+  if [ $# -gt 0 ]; then
+    arg1="$1"
+      #argument 1
+    shift
+      #destroy arg 1
+  fi
+
+  if [ $# -gt 0 ]; then
+    arg2="$1"
+      #argument 2
+    shift
+      #destroy arg 2
+  fi
 
   DJVU_PATH="$*"
-  #List of all arguments separated by SPACES.
-  #Each argument is NOT quoted individually. 
+    #List of all arguments separated by SPACES.
+    #Each argument is NOT quoted individually. 
 
   DJVU_PATH="$@"
-  #List of all arguments separated by SPACES.
-  #Each argument IS quoted individually.
+    #List of all arguments separated by SPACES.
+    #Each argument IS quoted individually.
 
-  CUR_PROCESS="$$"
+  current_process="$$"
+    #returns current process name. Useful to create unique temporary files that have a recognizable component.
 
-#returns current process name. Useful to create unique temporary files that have a recognizable component.
-TFILE="/tmp/$(basename $0).$$.tmp"
+  TFILE="/tmp/$(basename $0).$$.tmp"
+    #APPLICATION
+    #create temp filename
 
-#variables
-  PDF_PATH="$VAR_NAME"
-  PDF_PATH="${VAR_NAME}"
-  #acess the value of a variable
+  #$? exit status
+    echo a | grep a
+    echo $?
+      #0
+    echo a | grep b
+    echo $?
+      #1
 
-  PDF_PATH="${PATH_NOEXT}.pdf"
-  #concatenate a variable and a string 
+echo variable
 
-#strings
-  STR='asdf'
+  a="abc"
+  assert "$a = abc"
 
-  VAR=$'\n'
+  a="abc"
+  assert "0${a}1 = 0abc1"
+
+  a="echo b"
+  $a
+    #b
+  a='echo b'
+  $a
+
+#eval expression
+
+  assert "$(echo abc) = abc"
+  echo "`echo abc`"
+
+echo string
+
+  s='abcd'
+
+  s1=$'\n'
   #newline to var
 
-  VAR=$'\0'
+  s1=$'\0'
   #null to var
 
-  echo ${#STR}
-  #string length
+  echo ${#s}
+    #4
+      #string length
+  echo ${s:0:1}
+    #a
+  echo ${s:1:1}
+    #b
+  echo ${s:0:2}
+    #ab
+  echo ${s:2}
+    #cd
 
-  echo ${STR:2}
-  #df
-  #extract from char 2
+  #posix shell glob pattern ops
+    s='abcd'
+    echo ${s#pattern}
+    echo ${s##pattern}
+    echo ${s%pattern}
+    echo ${s%%pattern}
 
-  echo ${STR:1:2}
-  #sd
-  #extract 2 chars starting at 1
+  s='a/b.ext'
+  echo ${s%.*}
+    #a/b
+      #simple remove ext
 
-  echo ${STR:1:1}
-  #'s'
-  #get char at an index
+echo glob
+  #simple regex like expanded before command is evaluated
 
-  if [[ "$string" == *My* ]]
-  then
-    echo "It's there!";
+  echo *
+    #files cur dir
+  echo '*'
+    #literal
+  echo a*
+    #start with a
+  echo ?a*
+    #second letter a
+    #* matches ""
+  echo [ab]*
+    #start with a or b
+
+  for f in *; do echo "$f"; done
+  for f in .*; do echo "$f"; done
+
+echo array
+
+  #declare
+    a=()
+    a=( a b c "d d" )
+
+  a+=( "e e" )
+    #append
+
+  #access
+
+  a[0]=1
+  a[1]=2
+  a[2]=3
+
+  echo ${a[1]}
+  echo ${a[2]}
+  echo ${a[3]}
+    #{} is obligatory here
+
+  is=( a b "a b" )
+  for i in "${is[@]}"; do echo $i; done
+    #a
+    #b
+    #a b
+
+  for i in "${a[@]}"; do echo $i; done
+  #four lines. @ with quotes "" expands similary to "$@"
+  #quotes for each element are actually put on the terminal
+
+  echo ${a[@]:1}
+    #subarray
+
+  echo ${a[@]:1:2}
+    #subarray: from 1, select 2
+
+  #associative array
+  declare -A aa
+  aa=([hello]=world [ab]=cd)
+  echo ${aa[hello]}
+    #world
+  echo ${aa[ab]}
+    #cd
+
+echo string
+
+  if [ abc = abc ]; then echo true; fi
+  if [ abc = a*c ]; then echo false; fi
+    #no glob pattern
+
+  if [[ abcd == a*d ]]; then echo true; fi
+  if [[ abc == a?c ]]; then echo 'abc == a?c'; fi
+  if [[ abc == a[bB]c ]]; then echo 'abc == a[bB]c'; fi
+    #shell glob pattern
+
+  if [[ abcd == "a*d" ]]; then echo false; fi 
+    #don't quote right
+
+  a=""
+  if [ -z "$a" ]; then echo true; fi
+  a="not empty"
+  if [ -z "$a" ]; then echo true; fi
+
+#if
+
+  [ 1 = 1 ]
+  [ $? = 0 ]
+    #[ ] is an external program
+    #it retunrs an exit status
+
+  #[ 1 = 0 ]
+    #program ends because of -e
+
+  v=false
+  v=true
+  if $v; then
+    echo "true"
   fi
-  #test is a string contains POSIX expr
 
-  ${V#pattern}
-  #Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+  #integer
 
-  ${V##pattern}
-  #Delete the shortest part of pattern that matches the beginning of variable 's value. Return the rest.
+    if [ 1 -eq 1 ]; then echo true; fi
+    if [ 1 -lt 2 ]; then echo true; fi
+    if [ 2 -gt 2 ]; then echo true; fi
+    if [ 1 -le 2 ]; then echo true; fi
+    if [ 2 -ge 2 ]; then echo true; fi
 
-  ${V%pattern}
-  #Delete the longest part of pattern that matches the beginning of variable 's value. Return the rest.
+  #logical
 
-  ${V%%pattern}
-  #Delete the shortest part of pattern that matches the end of variable 's value.Return the rest.
+    a=true
+    if [ ! a = b ]; then echo true; fi
+      #not
+    if [ a = a ] && [ b = b ]; then echo true; fi
+      #and
+    if [ a = b ] || [ b = b ]; then echo true; fi
+      #or
 
-  echo ${F%.*}
-  #"$F" without extension
+echo for while
 
-  #pattern is a POSIX regex, such as "*.?.*"
+  for f in "a b"; do echo $f; done
+    #a b
+      #separtes at line sep
 
-#$() evaluate an expression and paste output at position of '$'
+  for f in `ls -A`; do echo $f; done
 
-  #this is how you return values from a function and put them into varibales
+  for i in `seq 1 10`; do echo $i; done
 
-  VAR="$(find . -name '*.pdf')"
-  echo "$VAR"
+  i=0
+  while [ $i -lt 10 ]; do
+      echo $i
+      let i=i+1 
+  done
 
-#arithmetic expression
+#arithmetic
 
   TWO=$(( 1+1 ))
   echo $TWO
-  #obviously, bash was not made with this in mind, VERY cumbersome.
-  #bash is all about strings and files, not numbers. 
+    #obviously, bash was not made with this in mind, VERY cumbersome.
+    #bash is all about strings and files, not numbers. 
 
-#operators
-  (( 1>2 ))
-  #(( )) arithmetic test
+  if (( 1>2 )); then echo '1>2'; fi
 
+  #let
+    let i=1+1
+    let i=i+1
+    echo $i
+    #3
 
   #[[ ]] extended logical test
 
-  #data structures
+#functions
 
-  #array
+  function f {
+    echo f $1
+  }
 
-    #declare
-    array1=( itm1 itm2 itm3 "itm 4")
-
-    array2[1]=itm1
-    array2[2]=itm2
-    array2[3]=itm3
-
-    array2+=("itm 4")
-    #append
-
-    #access
-
-    echo ${array1[1]}
-    echo ${array1[2]}
-    echo ${array1[3]}
-    #the {} is obligatory here
-
-    for i in ${array1[*]}; do echo $i; done
-    for i in ${array1[@]}; do echo $i; done
-    for i in "${array1[*]}"; do echo $i; done
-    #one line. * with quotes "" expands similary to "$*"
-
-    for i in "${array1[@]}"; do echo $i; done
-    #four lines. @ with quotes "" expands similary to "$@"
-    #quotes for each element are actually put on the terminal
-
-    echo ${array[@]:1}
-    #subarray
-
-    echo ${array[@]:1:2}
-    #subarray: from 1, select 2
-
-    #associative array
-    declare -A aa
-    aa=([hello]=world [ab]=cd)
-    echo ${aa[hello]}
-    echo ${aa[cd]}
-
-#flow control
-  var=true
-  if $var
-  then
-    echo "var is true"
-  fi
+  #f
+    #unbound
+  f a
+    #f a
+  f a b
+    #f a
 
 #redirection
-  #default file descriptors:
-    #0: stdin
-    #1: stdout
-    #2: stderr
 
-  echo a M>&N
+  #0: stdin
+  #1: stdout
+  #2: stderr
+
+  M=1
+  N=2
+  f=file
+  echo a "$M">&"$N"
     #descriptor M to descriptor N
+  echo a "$M">"$f"
+    #descriptor M to file f
+  echo a >&"$N"
+  echo a >"$f"
+    #defaults to descriptor 1 (stdout)
+  echo a &>"$f"
+    #descriptors 1 and 2
+  echo a >>"$f"
+    #append stdout to file
 
-  echo a >&N
-    #same as 1>&N
+  #descriptors
+    function outerr {
+      echo out
+      echo err 1>&2
+    }
 
-    echo a 1>&2
-      #echo to stderr
+    outerr
+      #out
+      #err
+    outerr &>/dev/null
+      #
+    outerr >/dev/null
+      #err
+    outerr 2>/dev/null
+      #out
+    outerr >/dev/null 2>&1
+      #
+      #writes stderr *and* stdout to /dev/null
+      #- first redirects stderr to stdout
+      #- then stdout to f
+      #so they both go to f
+      #rightmost comes first
 
-    echo a >&2
-      #echo to stderr
+  #< input
 
-  echo a M>"$F"
-    #descriptor M F
-    #OLD F IS DESTROYED!!!!!
+    cat <"$f"
+      #file f to stdin
+    cat < <(echo -e "a\nb\na b")
+    echo -e "a\nb\na b" | cat 
+      #echo to stdin
 
-    echo a 1>a.txt
-      #echo to a.txt
+  #| pipe
 
-  echo a M>>"$F"
-    #append to F
+    outerr | cat
+      #out
+      #err
+        #pipes out *and* err
+    outerr >/dev/null | cat
+      #err
 
-    echo a 1>>a.txt
-      #append "a" to a.txt
+  #other fd
+    exec 3<&1
+      #create 3
+      #write 3 to 1
+    echo 3 >&3
+      #1 to 3 to 1
+    exec 3>&-
+      #close 3
 
-  echo a &>"$F"
-    #stdout and stderr to F
-
-  echo a &> /dev/null
-    #stdout and stderr to null
-    #ignores output
-
-#*
-
-  echo *
-  #files in current dir
-
-  for f in *; do echo "$f"; done
+    exec 3<> "$f"
+      #open f and assign fd 3 to it
+    read <&3
+      #read the first line
+    exec 3>&-
+      #close 3
+    echo $REPLY
 
 #background
 
@@ -236,37 +401,62 @@ TFILE="/tmp/$(basename $0).$$.tmp"
     #
     #stdout continues to go to cur terminal, even if in bg
 
-  firefox
+  #firefox
     #Ctrl z
     #puts currently foreground running on background stopped
 
-  bg %3
+  #bg %3
     #starts running job 3 which was stopped on background
-  bg
-  bg %+
-  bg %%
+  #bg
+  #bg %+
+  #bg %%
     #last bg job [+]
-  bg %-
+  #bg %-
     #before last bg job [-]
 
-  fg %3
+  #fg %3
     #starts running job 3 which was on background on foreground
-  fg
+  #fg
     #last job
 
-  kill %1
+  #kill %1
     #kill subprocess [1]
-  kill $PID
+  #kill $PID
     #kill by process id
 
-  wait && ls
+  #wait && ls
     #wait for all bg jobs to finish
-  wait %3 && ls
+  #wait %3 && ls
     #job 3
 
-  vlc 100 &
-  vlc 100 &
-  vlc 100 &
-  disown %3
+  #vlc 100 &
+  #vlc 100 &
+  #vlc 100 &
+  #disown %3
     #remove job 3 from list of sub jobs
     #closing bash will not kill it anymore
+
+
+#list available commands
+  #commands: programs in path
+  #aliases: alias a="b"
+    #can only be run on interctive section, not on scripts
+  #built-ins: 
+    #hard coded in bash
+    #like commands
+    #examples:
+      #echo, printf, read
+      #let, eval, set export
+  #keywords: 
+    #hard coded in bash
+    #not commands, but parts of commands
+      #if, do, for, while, end*
+    #source:
+      #http://tldp.org/LDP/abs/html/internal.html
+  compgen -c #commands
+  compgen -a #aliases
+  compgen -ac #both
+  compgen -b #built-ins
+  compgen -k #keywords
+  compgen -A function #functions
+  compgen -A function -abck #all above at once
