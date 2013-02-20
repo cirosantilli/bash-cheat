@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+#exactly like seq but sleep 1 sec between counts
+
+for i in `seq "$@"`; do
+  echo $i
+  sleep 1
+done

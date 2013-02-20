@@ -18,36 +18,59 @@
 #------------------------------------------------------------
 
 #linux directory structure
-#  http://www.tuxfiles.org/linuxhelp/linuxdir.html
-#
-#/bin : executables
-#/lib : .so shared libraries/python modules
-#/include : c header files
-#/share : system independent data (not compiled for an specific system type)
-  #for example documentation
-#/src : c source files
-#/doc : documentation
-#/tmp : temporary files
-#/dev : devices
-#/lost+found : files recovered after system crash
-#/media : automatically mounted stuff
-#/mnt : manually mounted stuff
-#/var : data that changes when system runs
-#/etc : linux configuration files
-#/root : root user home
-#/usr : user installed/distribuiton installed/managed by package manager
-  #/usr/share/doc : where library documentation goes usually
+  #http://www.tuxfiles.org/linuxhelp/linuxdir.html
+  #
+  #/bin : executables in path
+  #/sbin : executables used only for admin taks
+  #/lib : .so shared libraries/python modules
+  #/include : c header files
+  #/share : system independent data (not compiled for an specific system type)
+    #documentations
+  #/etc : linux configuration files
+    #/etc/default : default values of some configs
+  #/src : c source files
+  #/doc : documentation
+  #/tmp : temporary files
+  #/dev : devices
+  #/lost+found : files recovered after system crash
+  #/media : automatically mounted stuff
+  #/mnt : manually mounted stuff
+  #/var : data that changes when system runs
+  #/root : root user home
+  #/usr : user installed/distribuiton installed/managed by package manager
+    #/usr/share/doc : where library documentation goes usually
+  #/usr/local : user installed, managed either by package managers (pip) or manually
 
-#/usr/local : user installed, managed either by package managers (pip) or manually
+  #home dir
+    #~/.profile
+      #sourced when root bash starts
+      #consequences:
+        #variables will be acessible to programs, even if opened from desktop shortcuts/dash menu
+    #~/.bashrc
+      #sourced when each bash starts
+    #~/.bash_logout
+      #sourced when each bash ends
+    #~/.xinitrc
+      #xserver initi files
+      #applications:
+        #remap keys
+
+#run levels
 
 firefoxdownloadfolder="~/nobackup/download"
 
-sudo aptitude update
-sudo aptitude install -y aptitude
-  #first thing is first.
-  #check aptitude cheatsheet for how to use
-sudo aptitude install -y python-pip
-  #python package manager
+#package management
+  sudo apt-get update
+  sudo apt-get install -y aptitude
+    #like apt-get, but removing  a package will also uninstall all dependencies that
+    #were installed for that package
+  sudo aptitude install -y apt-file
+  apt-file update
+    #search package by file and list package files
+  sudo aptitude install -y ppa-purge
+    #remove added ppas
+  sudo aptitude install -y python-pip
+    #python package manager
 
 #in order to upgrade from 11.10 or 12.04
 
@@ -112,8 +135,9 @@ sudo aptitude install -y python-pip
 
 #desktop
 
-  sudo service lightdm restart #restart lightdm display manager used for Unity, more drastic and possibly effective
-  unity --restart #restarts the unity shell only. less effective and drastic than restarting lightdm
+  unity --restart
+    #restarts the unity shell only
+    #less effective and drastic than restarting lightdm
 
   #gnome shell
 
@@ -135,25 +159,6 @@ sudo aptitude install -y python-pip
         wmctrl -a ' - GVIM'
         #focus on a window with title containing '- GVIM' ( hopefully gVim! )
 
-    #xsel
-
-      sudo aptitude install -y xsel
-
-      xsel > file
-      xsel < file
-      #put xsel into a file. xsel is the last focused selected text
-      #this is not necessarily the clipboard, usually ce que tu obtiens
-      
-      xsel --clipboard > file
-      xsel --clipboard < file
-      #actually uses the clipboard, which you probably got with Ctrl-V
-      
-      xsel --append < file
-      #appends to file
-      
-      xsel --follow < file#
-      #follows stardard input as it grows
-
   #key logging
   
     #writes all keypresses to a file
@@ -164,6 +169,23 @@ sudo aptitude install -y python-pip
 
     sudo logkeys -k
       #end
+
+
+  #ibus input methods
+
+    #for chinese, japanes, etc input
+
+    sudo aptitude install -y ibus-qt4
+      #how have I looked for this, but no one told me: ibus for qt apps!!!!
+
+  #alarm
+    sudo aptitude install -y alarm-clock-applet
+
+  #weather indicator
+    sudo add-apt-repository -y ppa:atareao/atareao
+    sudo apt-get update
+    sudo apt-get install my-weather-indicator
+
 #file compresssion
 
   #the performance parameters are:
@@ -336,191 +358,6 @@ sudo aptitude install -y python-pip
 
     #-o : output file. default: logkeys -s -m mylang.map -o ~/.secret/keys.log
 
-  #ibus input methods
-
-    #for chinese, japanes, etc input
-
-    sudo aptitude install -y ibus-qt4
-      #how have I looked for this, but no one told me: ibus for qt apps!!!!
-
-  #alarm
-    sudo aptitude install -y alarm-clock-applet
-
-  #weather indicator
-    sudo add-apt-repository -y ppa:atareao/atareao
-    sudo apt-get update
-    sudo apt-get install my-weather-indicator
-
-#compresssion
-
-  #the performance parameters are:
-    #compression ratio
-    #compression time
-    #can see and extracting single files
-    #support across OS
-    #ability to break into chunks
-    #keep file metadata such as permissions, hidden (windows), etc.
-
-  #zip
-    #most widely supported
-    #not so high compression
-      #compresses dir one file by one it seems
-    #easy to view and extract single files
-    sudo aptitude install -y zip unzip
-
-    zip -r "$F".zip "$F"
-    #zip file or directory
-      #-r : add dir recursivelly. otherwise, adds only the top dir! useless
-
-    zip -er "$F".zip "$F"
-    #-e : encrypts
-      #you can still see filenames!! but not extract them
-
-    unzip -l "$F".zip
-    #list all files (recursive)
-
-    unzip "$F".zip
-    #extracts from zip
-      #if has password, asks for it
-
-    unzip "$F".zip -d out
-    #to a dir
-
-    for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
-    #zip every file in cur dir to file.zip
-
-  #tar tar.gz tgz tar.bz2 tb2
-    #tar only turns dir into file, but no compression
-    #this is why it is often coupled with gz and bz2: those are files compressers
-    #gz gives similar compression to .zip
-    #gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
-    #tgz == tar.gz and tb2 == tar.bz2
-
-    #create
-      tar cf "$F".tar "$F" 
-      tar czf "$F".tgz "$F" 
-      tar cjf "$F".tbz "$F" 
-      #c: create
-      #f: to file given as next arg, not to stdout
-      #z: gzip
-      #j: bzip2
-      #v: verbose
-
-    #extract
-      tar xf "$F".tar
-      tar xzf "$F".tgz
-      tar xjf "$F".tbz
-      #f: from file given as next arg, not stdin
-
-  #rar
-    #proprietary Roshal ARchive
-    #can do split archive
-      #split archive extensions:
-        #.part\d+.rar
-        #.r\d+
-
-    unrar x a.rar
-    #extract contents of a.rar to ./
-    #
-    #a.rar
-    #  /dir1/
-    #  /dir1/f1
-    #  /dir1/f2
-    #
-    #===============
-    #
-    #a.rar
-    #dir1/f1
-    #dir1/f2
-
-    unrar x a.rar out
-    #out to ./out/, creates this folders if necessary
-
-    unrar x a.r00
-    unrar x a.part1.rar
-    #extract multipart rar
-
-    unrar e a.rar
-    #recursivelly finds all files in a.rar, and outputs them to current dir
-    #with old basename possible name conflicts
-    #
-    #a.rar
-    #  /dir1/
-    #  /dir1/f1
-    #  /dir1/f2
-    #
-    #===============
-    #
-    #a.rar
-    #f1
-    #f2
-
-  #7zip
-    #microsoft proprietary program
-    #can do lots of formats:
-      #7z format
-      #rar with p7zip-rar installed
-      #zip
-    #but *use only for 7z*, which it was made for
-    #with 7zip, you can open .exe files to extract their inner data
-
-    sudo aptitude install -y p7zip-full
-
-  sudo aptitude install -y sharutils
-    #shell archives
-
-  sudo aptitude install -y unace
-    #ace files
-
-  sudo aptitude install -y uudeview
-    #uuencode, xxencode, BASE64, quoted printable, BinHex
-
-  sudo aptitude install -y mpack
-    #mime messages
-
-  sudo aptitude install -y lha
-    #lzh, used on DOS, legacy
-
-  sudo aptitude install -y arj
-    #.arj files
-
-  sudo aptitude install -y cabextract
-    #microsoft cabinet format
-
-  sudo aptitude install -y file-roller
-    #gui app to view inside archives and extrac them
-
-#encryption
-
-  gpg -c "$F"
-  #will create a "$F".gpg encrypted file
-  #good combo with tar.gz
-
-  cat "$F" | gpg -o "$F".gpg -c
-  #create from stdin
-
-  gpg "$F".gpg
-  #decrypts to F
-
-  gpg -d "$F".gpg
-  #decrypt to stdout
-
-  gpg -o "$F" -d "$F".gpg
-  #decrypts to F
-
-  cat "$F".gpg | gpg -o "$F" -d 
-  #decrypts from stdin
-
-  #combos
-
-    E=tgz.gpg
-    tar cz "$F" | gpg -o "$F"."$E" -c && rm -rf "$F"
-    #targz encrypt "$F" to F.tgz.gpg, remove original
-
-    gpg -d "$F" | tar xz && rm "$F"
-    #targz decrypt "$F"
-
-
 #dictionnary
 
   sudo aptitude install -y goldendict
@@ -565,9 +402,12 @@ sudo aptitude install -y python-pip
   sudo aptitude install -y mencoder totem-mozilla icedax tagtool lame libmad0 mpg321 mpg123libjpeg-progs
     #TODO understand/remove
 
-#music
+#sound
 
-  #id3tool get id3 tags info (for mp3 for example)
+  #id3tool
+  
+    #get id3 tags info (for mp3 for example)
+
     sudo aptitude install -y id3tool
 
     TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
@@ -592,19 +432,57 @@ sudo aptitude install -y python-pip
       shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
         #single ape and cue in dir, flac output, formatted as number, author, track
 
+  #sox
+
+    #record, play and modify files cli
+    #interactive front end for libSoX
+
+    sudo aptitude intall -y sox
+    sudo aptitude intall -y libsox-fmt-mp3
+      #installs mp3 support
+    apt-cache search libsox-fmt-
+      #to see all available formats
+
+    rec a.wav
+      #records from microphone into a.wav file
+      #ctrl+c : stop recording
+
+    play a.wav
+      #plays a.wav file
+      #terminates when over
+
+  #alsamixer
+
+    #ncurses interface to view/control sound parameters
+
+    alsamixer
+      #left/right : change active parameter
+      #up/down    : change active parameter value
+
+  #amixer
+
+    #cli for sound control
+
+    amixer scontrols 
+      #view available controls
+    amixer sset 'Master' 50%
+      #set master volume to 50%
+
 #image
-  #image formats
-  #http://www.wfu.edu/~matthews/misc/graphics/formats/formats.html
+
+  #image formats summary:
+    #<http://www.wfu.edu/~matthews/misc/graphics/formats/formats.html>
   #formats
     #btm: bit by bit, no compression
+    #PPM, PGM, PBM: linux, bitmap, netbpm project
     #gif: max mas 8 bit colors. obsolete
     #png: lossless, alpha layer,
     #tif: lossless or lossy, in practice lossless aplications only.
     #jpg: lossy, huge compression. removes fourrier transform high freqs I think.
     #svg: vector. image is described by mathematical formulas, not bits.
     #ps: a programming language! can have goto, branch, variables
-    #  levels refer to versions: 1, 2 and 3 exist up to today
-    #  cannot split page by page
+      #levels refer to versions: 1, 2 and 3 exist up to today
+      #cannot split page by page
     #eps:
     #djvu:
     #pdf: text layers, image layers, can be viewd page by page
@@ -1067,12 +945,15 @@ sudo aptitude install -y python-pip
 
           #-march cputype
 
-            #optimizes code to given cpu architecture
+            #optimizes code to given cpu (arch is for archtecture)
             #may use instructions only available to given cpu
-              gcc -march=native
-                #optimize for currrent compiling machine
-              gcc -march=i386
-                #simplest instruction set
+
+            gcc -march=native
+              #optimize for currrent compiling machine
+            gcc -march=i386
+              #80386 instruction set. old, compatible, used on almost all desktops and laptops
+            gcc -march=armv7
+              #Arm v.7, used on mobiles today
 
           #code optimization
 
@@ -1378,13 +1259,14 @@ sudo aptitude install -y python-pip
           #dec and hex : size of executable in dec and hex
 
         #pkg-config
-          #automatically gives you location of headers and libraries
-          #need to compile with a library downloaded with aptitude for example
 
-          #info is contained in .pc files located under: /usr/share/pkgconfig/ 
-          #in a makefile:
-            CFLAGS+=$(shell pkg-config opencv --cflags)
-            LIBS=$(shell pkg-config opencv --libs)
+          #info is contained in "$PKG_NAME.pc" files located mainly under:
+            #/usr/share/pkgconfig/ 
+            #/usr/lib/i386-linux-gnu/pkgconfig/
+
+          #usage in in a makefile:
+            CFLAGS=$(shell pkg-config --cflags pkgname)
+            LIBS=$(shell pkg-config --libs pkgname)
 
   #editors and ides
 
@@ -1439,12 +1321,14 @@ sudo aptitude install -y python-pip
   #version control
 
     #git
+
       sudo aptitude install -y git
       sudo aptitude install -y gitk	#a git graphic local branch viewer
       #not set it up to follow github
       #http://help.github.com/linux-set-up-git/
 
     #svn subversion
+
       sudo aptitude install -y subversion
 
   #diff
@@ -1614,11 +1498,6 @@ sudo aptitude install -y python-pip
   #autokey
     #sudo apt-add-repository ppa:cdekter/ppa
     #sudo aptitude install -y autokey-gtk
-
-  #xdotool
-    #can send clicks and manage window properties.
-
-    #sudo aptitude install -y xdotool
 
 #games
   sudo add-apt-repository -y "deb http://archive.ubuntugames.org ubuntugames main"
@@ -2528,8 +2407,7 @@ sudo aptitude install -y python-pip
     #lspci
 
       sudo lspci | less
-
-      #/VGA for graphics cards
+        #/VGA for graphics cards
 
     #hwinfo
 
@@ -2623,18 +2501,57 @@ sudo aptitude install -y python-pip
     renice 16 -p 13245
     #change priority of process
 
+  #flock
+
+    #puts an advisory file lock on given file while a command executes
+
+    touch a
+
+    flock a sleep 5
+
 #files
 
   #ls
 
     ls -l
-      #-rw-rw-r-- 1 athenaxh athenaxh   62 Jan 28 17:35 file-list
-      #  -rw-rw-r-- : permissions
-      #     first char:
-      #       l : symlink (not for hardlink)
-      #       d : dir
-      #       c : character file
-      #  1 : no of linked hardlinks
+      #linux permissions:
+      #-rw-rw-r-- 1 owner group   62 Jan 28 17:35 file-list
+      #   first char:
+      #     - : regular file
+      #     d : dir
+      #     l : symlink (not for hardlink)
+      #     p : named pipe TODO
+      #     s : unix socket TODO
+      #     c : character file TODO
+      #     d : block device file TODO
+      #   chars 234: owner
+      #     2 r -:
+      #       file: can read
+      #       dir:  can list contents
+      #     3 w -:
+      #       file: can write
+      #       dir:
+      #         can modify item list (add, rename, remove)
+      #         only if * x bit for is also on*
+      #         even if ``r`` is off!
+      #     4 x s -:
+      #       file: can execute
+      #       dir:
+      #         programs can cd into dir (every program has a current dir) even if ``r`` is off
+      #         can access items (read write exec)
+      #         can modify item list (add rename remove) *if w bit is also on*
+      #   chars 567: same for group
+      #   chars 8910: for other users (non owner, non group)
+      #     exception:
+      #       10 can also equal ``t`` and ``T``
+      #       t: sticky bit on and x on
+      #       T: sticky bit on and x off
+      #       sticky bit:
+      #         file: useless
+      #         dir:  if on, users can *only* rename/delete children nodes they own
+      #       sticky bit is a single bit:
+      #         it does not have owner/group/others versions, single version for all
+      #   1 : no of linked hardlinks
 
     ls | cat
       #ls is aware if its ouput goes to a pipe or not.
@@ -2671,16 +2588,61 @@ sudo aptitude install -y python-pip
 
   #chown
 
-    sudo chown $NEW_OWNER $FILES
+    sudo chown $new "$f1" "$f2"
       #-R : recursive
 
   #chmod
 
-    chmod +x f
-      #makes f executable
+    #chomod [ugoa][+-=][rwxXst]+
+      chmod +x "$f"
+      chmod a+x "$f"
+        #makes f executable for all (owner, group and other)
+        #a stands for "all"
+      chmod +r "$f"
+        #makes f readable for all
+      chmod +w "$f"
+        #makes f writable
+      chmod -x "$f"
+        #makes f not executable for all
+      chmod =r "$f"
+        #makes file readable by all
+        #makes file not executable and not writeble by all
+      chmod u+x "$f"
+        #makes f executable for owner
+      chmod go+x "$f"
+        #makes f executable for group and other
+      chmod +rw "$f"
+        #makes f readable and writible for all
+      chmod +w "$f"
+    chmod 777 "$f"
+      #chmod =rwx
 
-    chmod -x f
-      #makes f not executable
+    #sticky bit
+      chmod +t "$f"
+      chmod 1000 "$f"
+      chmod o+t "$f"
+        #sticky bit on
+      chmod u+t "$f"
+        #nothing happens
+
+  #umask
+
+    #shows/sets permissions that will be *removed* after any file is created
+    #if you want those set, chmod it
+
+    touch a
+    ls -l a
+      #rw-rw-r--
+    umask
+      #002
+      #ok the other w was removed
+      #the x are not set by touch by default
+    umask 0
+    touch b
+      #rw-rw-rw-
+    umask 777
+    touch c
+      #---------
 
   #ln
 
@@ -2748,34 +2710,216 @@ sudo aptitude install -y python-pip
   #shopt
 
     shopt
-    #show option
+      #show option
 
     shopt -s op
-    #set option
+      #set option
 
     shopt -u op
-    #unset option
+      #unset option
 
 #users and groups
+
+  #to play around with those in ubuntu, do ctrl+alt+f2, f3 ... f7
+  #and you will go into login shells
+  #so you can log with different users at the same time
+  #while logged on a different shell, process on the other shells continue to run? TODO
+    #totem stops
+    #simple shell scripts continue
+
+  cat /etc/passwd
+    #shows users
+    #includes special users
+    #format:
+      #ciro:x:1000:1000:ciro,,,:/home/ciro:/bin/bash
+      #ciro: user name
+      #x: password is encrypted and stored in /etc/shadow
+      #1000: user id. 0: root. 1-99: predefined. 100-999: reserved by system. 1000: first ``normal`` user
+      #1000: primary user group
+      #ciro,,, : comment field. used by finger command.
+      #/home/ciro : home dir
+      #/bin/bash : login shell
+
+  cat /etc/group
+    #show groups
+    #format:
+      #groupname:x:5:user1,user2,user3
+      #x: encrypted pass if any
+      #5: group id. ``regular`` groups start at 1000
+
+  cat /etc/default/useradd
+
+  #groups
+    
+     groups "$u"
+       #list groups of u 
+     groups
+       #list groups of cur user
+
+  who
+    #list who is logged on system
 
   whoami
     #print cur user name
 
+  #su
+
+    #become another user, such as root
+
+    su otheruser
+      #enter otheruser pass
+    whoami
+      #otheruser
+
+    #BAD
+      #never become root
+
+      sudo passwd root
+        #give root a pass so people can log into it
+        #this is disabled by defaut on some systems as ubuntu for security
+      su
+        #enter root pass
+      whoami
+        #root
+
+  #sudo
+
+    #do next single command as another user or super user
+
+    #safer than becoming root with su
+
+    #in order to see who can sudo what as who and with what pass
+      sudo cat /etc/sudoers
+
+    #ubuntu default:
+
+      #sudo group allows members to sudo whatever they want as root
+
+      groups
+        #sudo is in my groups!
+      sudo whoami
+        #root
+      sudo -u test whoami
+        #test
+        #TODO getting weird env error with -u only...
+
+    #shows id info (userid, not username, groupid not groupnames ...)
+
+    id "$u"
+      #for user u
+    id
+      #cur user
+
+  #hostname
+
+     hostname
+       #print hostname
+       #if in command prompt: ``ciro@ciro-Thinkpad-T430``
+       #hostname is ``ciro-Thinkpad-T430``
+
+     sudo hostname "$h"
+       #change hostname for cur session
+       #prompt is not changed immediatelly
+
+     sudo echo "$h" > /etc/hostname
+       #change hostname permanently
+
+  logout
+    #logs out
+    #can only be used on login shell
+
   #useradd
-    useradd $UNAME
-      #addes user, but useless because he has no pass
-    passwd $UNAME
-      #gives abc a pass
-    useradd -e 2000-00-00 $UNAME
-      #create user. password expires automatically at the given date.
-    useradd -f 5
-      #account disables 5 days after password expires if pass not changed.
+    
+    u=
+    sudo useradd -c '$fullname,$office,$office2,$homephone' -g 1000 -G 1001,1002 -m -s /bin/bash $u
+      #addes user username u
+      #-m makes home dir owned by him with permissions 707
+        #without -m:
+          #ubuntu won't be able to log in
+          #if he logs in on tty, he goes to /
+          #to correct this:
+            sudo mkdir /home/$u
+            sudo chmod 700 /home/$u $u
+            sudo chown /home/$u $u
+      #-p $p
+        #bad because visible
+        #without -p:
+          #user can't login
+          #to correct this:
+            sudo passwd $u
+              #sets passwd for u
+      #-s sets login shell
+        #without -s:
+          chsh -s /bin/bash $u
+            #for u
+          chsh -s /bin/bash
+            #cur user
+      #-g: set group he belongs to
+      #-G: add to other groups too
+        #if g missing, either create a group u and add user
+        #of add to a default group specified in some config file
+      #-c: comment field of /etc/passwd
+        #this format is used for ``finger`` command
 
-  cat /etc/passwd
-    #shows users
+    sudo useradd -e 2000-00-00 -f 5 $u 
+      #-e: password expires automatically at the given date.
+      #-f: account disables 5 days after password expires if pass not changed.
 
-  cat /etc/group
-    #show groups
+  #userdel
+   
+    #remove users
+    #cannot be used on logged in users
+
+    userdel $u
+      #delete user, keep home
+    userdel -r $u
+      #delete user and his home
+
+  #groupadd
+   
+    #create new groups
+
+    g=
+    sudo groupadd $g
+
+  #usermod
+
+    #add/remove users to groups
+
+    usermod -g $g $u
+      #change primary group of user u to g
+    g=1000,1001
+    usermod -G $g $u
+      #sets exactly the supplementary groups of user u
+      #remove from non listed ones
+    usermod -aG $g $u
+      #append (-a) groups g to supplementary groups of user u
+    usermod -d $d $u
+      #change home dir of user u to d
+      #the old contents are not moved
+    usermod -md $d $u
+      #also move his current dir contents to new dir
+
+  #passwd
+
+    #set user passws
+
+    passwd
+      #change passwd for cur user
+    sudo passwd "$u"
+      #change passwd for u
+      #if you are not u, you need sudo...
+    sudo passwd -d "$u"
+      #delete passwd for u, disabling his account
+
+  #chsh
+
+    #change login shell
+
+    less /etc/shells
+      #view available shells
+    chsh -s /bin/bash
+      #change your shell to bash
 
   #ac
 
@@ -2788,6 +2932,16 @@ sudo aptitude install -y python-pip
 
     ac -p
     #connection time for all users
+
+  #finger
+
+    #shows user info
+    #some data taken from /etc/passwd comment field
+
+    sudo aptitude install -y finger
+
+    finger "$u"
+      #shows info on user u
 
 #web
 
@@ -2900,8 +3054,15 @@ sudo aptitude install -y python-pip
     #-X DELETE : make a DELETE request. defaults to GET, if no -data nor ftp.
     #-z 21-Dec-11 : download iff it is modified after given time (sounds like crawlers!)
 
-  ifconfig
-  #shows local network ips
+  #ifconfig
+
+    ifconfig
+    #shows local network ips
+      #eth0  wired network 0
+      #wlan0 wifi card 0
+      #lo    loopback (local host)
+
+    #<http://www.thegeekstuff.com/2009/03/ifconfig-7-examples-to-configure-network-interface/>
 
   #nmap
     sudo aptitude install -y nmap
@@ -2977,11 +3138,252 @@ sleep 2
     env UBUNTU_MENUPROXY=0 golly 
       #oppens app without global menu
 
+#flash
+  sudo apt-add-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
+  sudo aptitude update && sudo aptitude install -y flashplugin-installer
+
+#java
+  sudo add-apt-repository -y ppa:webupd8team/java
+  sudo apt-get update
+  sudo apt-get install -y oracle-java7-installer
+
 #combos
 
   find . | sort -f | uniq -di
     #find files whose path differ from other files only by case
     #useful when copying from linux to a system that does not accept
     #files that differ only by case (the case for MacOS and Windows)
+
   find . | sort -f | uniq -di | xargs -I'{}' rm '{}'
     #remove them
+
+#x11
+
+  #x11 is the so called ``window system``
+    #upcoming alternative: wayland, not yet widely used
+  #it is an abstraction layer for things like:
+    #windows
+      #stack access order for alt tab
+    #key presses
+    #mouse position / presses
+    #screen backlight
+  #it is usually graphic accelerated
+    #this is why messing with gpu settings may break your desktop =)
+
+  #it does not include things like:
+
+    #a graphical login screen
+    #choice of window manager
+      #this is left to the ``x display management``
+      #some implementations:
+        #LightDM (lightweight), ubuntu
+        #KDM, kde
+        #GDM (gnome) fedora
+
+    #``x window manager``:
+      #functions:
+        #window switching (alt tab / visible list of open windows)
+        #program opening with button clicks
+          #dock
+          #dash
+        #multiple desktops
+      #implementations:
+        #metacity
+        #compiz
+
+    #sound management
+      #this has been taken up by several related projects:
+        #PulseAudio
+        #Advanced Linux Sound Architecture (ALSA)
+
+  #it uses a server/client mode
+  #client and server can be on different machines
+    #client:
+      #typically programs with a window
+      #clients give commands to the xserver and tell it to draw on screen
+      #clients respond to input events via callback functions 
+    #server:
+      #creates the image
+      #sends inputs events to clients who responds to it via callbacks
+      #a server has many displays
+      #a display has many screens, one mouse and one keyboard
+      #to set the display to use use the DISPLAY var:
+        export DISPLAY=localhost:0.0
+        DISPLAY=localhost:0.1 firefox & #single commena
+          #0.1 means: display 0, screen 1
+
+  #for higher level interfaces, use toolkits:
+    #gtk : primary for x11, but can be cross platform
+    #qt
+
+    #gtk
+
+      sudo aptitude install -y libgtk-3-dev libgtk-3-doc gtk2.0-examples
+
+      gtk-demo
+        #very nice demo of lots of 2.0 features with easy to see source code
+
+  startx
+    #starts x, somewhere
+
+  #xlsclients
+
+    #list x clients
+    #this allows you to see all windows
+
+    xlsclients
+    xlsclients -l
+      #more info
+
+  #xprop
+
+    #get window info
+
+    xprop -name Krusader
+      #-name: select by name
+      #-id: select by id 
+    xprop -spy -name Krusader
+
+  #xmodmap
+
+    #modify key maps
+
+    f=~/.Xmodmap
+    echo "! Swap caps lock and escape
+remove Lock = Caps_Lock
+keysym Escape = Caps_Lock
+keysym Caps_Lock = Escape
+add Lock = Caps_Lock
+" >> "$f"
+    xmodmap "$f"
+      #esc and caps lock are changed!
+
+    echo "xmodmap \"$f\"
+" >> ~/.xinitrc
+       #~/.xsession could also be used depending on system
+    chmod +x ~/.xinitrc
+      #now the change will happen every time at startup
+
+  #xdotool
+
+    #send clicks and manage window properties.
+
+    sudo aptitude install -y xdotool
+
+    #select window
+
+      #if no selector given, act on cur
+
+      id=
+      xdotool search --window "$id" key ctrl+c
+        #to a window id
+
+      n=
+      xdotool search --name "$n" key ctrl+c
+        #all windows with given name
+        #this is exactly what is shown on window titlebar
+
+    #keystrokes
+
+      xdotool key a
+        #send a to cur window
+      xdotool key a b
+        #send a then b to cur window
+      xdotool key F2
+        #send F2 to cur window
+      xdotool key Aacute
+        #send á to cur window
+      xdotool key ctrl+l
+        #send ctrl+l to cur window
+
+    #key:     up and down
+    #keydown: only down
+    #keyup:   only up
+
+      xdotool type 'ab cd'
+        #sends a then b then space then c then d
+      xdotool type --delay 1 'ab'
+        #key a, waits 1 ms then key b
+
+    #sync
+      google-chrome &
+      xdotool search --sync --onlyvisible --class "google-chrome"
+        #wait until results
+        #you can launch an app and send commands, making sure they will be received!
+
+  #xbacklight
+
+    #control screen brightness
+   
+    sudo aptitude install -y xbacklight
+
+    xbacklight -get
+      #see current
+    xbacklight -set 80
+      #set to 80%
+
+  #xsel
+
+    #manipulate the x selection (copy/paste area)
+
+    sudo aptitude install -y xsel
+
+    xsel > file
+      #put xsel into a file.
+    xsel < file
+      #xsel is the last focused selected text
+      #different from clipboard
+    
+    xsel --clipboard > file
+    xsel --clipboard < file
+    #uses the clipboard (ctrl+c) instead of selection
+    
+    xsel --append < file
+      #appends to file
+    
+    xsel --follow < file#
+      #follows stardard input as it grows
+
+  xeyes
+    #fun x11 test prog
+
+  #xwd
+
+    #take screenshots (x11 write dump)
+
+    xwd -root -out a.xwd
+      #take screenshot of all windows
+    xwd -out a.xwd
+      #wait for mouse click
+      #take screenshot of clicked window only
+    xwd | xwdtopnm | pnmtopng > Screenshot.png
+      #change format
+
+  #window manager
+
+    wmctrl -m
+      #detect
+
+  #display manager
+
+    cat /etc/X11/default-display-manager
+      #detect which
+
+    #lightdm
+
+      sudo service lightdm restart
+        #restart lightdm display manager used for Unity
+        #more drastic and possibly effective
+
+      echo $GDMSESSION
+        #tells option chosen from login screen
+
+#shutdown reboot
+
+  sudo shutdown -P now
+    #brings down the system and powers off afterwards
+    #``usual`` shutdown
+    #sends TODO signal to running processes and waits for their termination TODO?
+
+  sudo reboot now
+    #``usual`` restart computer

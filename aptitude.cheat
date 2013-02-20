@@ -102,7 +102,7 @@
 #get info on installed packages
 
   #dpkg
-  #{
+
     #info on installed packages
     
     dpkg -l | grep $EXPRESSION
@@ -113,7 +113,6 @@
 
     dpkg -L mysql
       #list files in installed package
-  #}
 
 #find new packages
 
@@ -206,12 +205,12 @@
 #common combos
 
   #to correct dep problems try:
-  PKG=gimp
-  sudo apt-get update
-  sudo apt-get purge $PKG
-  sudo apt-get autoremove
-  sudo apt-get autoclean
-  sudo apt-get clean
-  sudo apt-get autoremove
-  suto apt-get install $PKG
-  #also, if the package comes from a ppa, remove the ppa and try again
+    PKG=gimp
+    sudo apt-get update
+    sudo apt-get purge $PKG
+    sudo apt-get autoremove
+    sudo apt-get autoclean
+    sudo apt-get clean
+    sudo apt-get autoremove
+    suto apt-get install $PKG
+    #also, if the package comes from a ppa, remove the ppa and try again

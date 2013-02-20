@@ -143,6 +143,17 @@ echo glob
     #* matches ""
   echo [ab]*
     #start with a or b
+  whoami
+    #ciro
+  echo ~
+    #/home/ciro
+  echo ~test
+    #/home/test
+  echo ~root
+    #/root
+  echo ~idonthaveahome
+    #~idonthaveahome
+  
 
   for f in *; do echo "$f"; done
   for f in .*; do echo "$f"; done
@@ -174,8 +185,8 @@ echo array
     #a b
 
   for i in "${a[@]}"; do echo $i; done
-  #four lines. @ with quotes "" expands similary to "$@"
-  #quotes for each element are actually put on the terminal
+    #four lines. @ with quotes "" expands similary to "$@"
+    #quotes for each element are actually put on the terminal
 
   echo ${a[@]:1}
     #subarray
