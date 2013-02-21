@@ -799,23 +799,23 @@ firefoxdownloadfolder="~/nobackup/download"
 
     dropbox filestatus
     dropbox filestatus "$F" "$G"
-    #a: up to date
-    #b: unwatched
+        #a: up to date
+        #b: unwatched
 
     dropbox status
-    #idle
+      #idle
 
     dropbox ls
-    #ls on current dir
+      #ls on current dir
       #green: synced
 
     dropbox puburl "$F"
     echo "wget `dropbox puburl "$F"`" > xsel
-    #get public url of F
-    #must be inside Public folder
+      #get public url of F
+      #must be inside Public folder
 
     dropbox autostart y
-    #autostart dropbox
+      #autostart dropbox
 
     #ubuntu one
       #shows sync status on task bar
@@ -2299,7 +2299,7 @@ firefoxdownloadfolder="~/nobackup/download"
 
   #fuser
     fuser -m /dev/sdb1
-    #which processes are keeping device busy
+      #which processes are keeping device busy
     
 #system info
 
@@ -2417,6 +2417,22 @@ firefoxdownloadfolder="~/nobackup/download"
 
 #process
 
+  #pwd
+
+    #print working directory of process
+
+    #each program has a working directory set by the os
+
+    #processes inherit working directory of calling process
+
+    mkdir a
+    chmod 777 a
+    echo pwd > a/a
+    chmod 777 a/a
+    ./a/a
+      #``pwd``
+      #outside /a, the working directory of the caller (bash cwd)
+
   #ps
 
     sleep 100
@@ -2449,6 +2465,10 @@ firefoxdownloadfolder="~/nobackup/download"
       #time reversed (-)
       #pid
       #tty reversed (-)
+
+    p=
+    ps -p $p -o ppid=
+      #get pid of parent of process with pid p
 
   #kill
 
@@ -2515,7 +2535,12 @@ firefoxdownloadfolder="~/nobackup/download"
 
     ls -l
       #linux permissions:
-      #-rw-rw-r-- 1 owner group   62 Jan 28 17:35 file-list
+      #  <http://www.ibm.com/developerworks/linux/library/l-lpic1-v3-104-5/index.html>
+      #symbolic:
+      #  -rw-rw-r-- 1 owner group   62 Jan 28 17:35 file-list
+      #numeric:
+      #  12 bits, logically grouped into 4 groups of three
+      #  thus use of octal (3 bits per digit)
       #   first char:
       #     - : regular file
       #     d : dir
@@ -2534,16 +2559,24 @@ firefoxdownloadfolder="~/nobackup/download"
       #         can modify item list (add, rename, remove)
       #         only if * x bit for is also on*
       #         even if ``r`` is off!
-      #     4 x s -:
-      #       file: can execute
-      #       dir:
-      #         programs can cd into dir (every program has a current dir) even if ``r`` is off
-      #         can access items (read write exec)
-      #         can modify item list (add rename remove) *if w bit is also on*
+      #     4 x s S -:
+      #       x:
+      #         file: can execute
+      #         dir:
+      #           programs can cd into dir (every program has a current dir) even if ``r`` is off
+      #           can access items (read write exec)
+      #           can modify item list (add rename remove) *if w bit is also on*
+      #       s:
+      #         suid
+      #         implies x
+      #       S:
+      #         same as s, but implies not x
       #   chars 567: same for group
+      #         7 = s means sgid
+      #         same as suid, but group is set instead
       #   chars 8910: for other users (non owner, non group)
       #     exception:
-      #       10 can also equal ``t`` and ``T``
+      #       10 can equal ``t`` and ``T``, but not ``s`` and ``S``
       #       t: sticky bit on and x on
       #       T: sticky bit on and x off
       #       sticky bit:
@@ -2552,6 +2585,48 @@ firefoxdownloadfolder="~/nobackup/download"
       #       sticky bit is a single bit:
       #         it does not have owner/group/others versions, single version for all
       #   1 : no of linked hardlinks
+      #  user 0 (named root by default) is special and can do whatever regardless of permissions
+      #
+      #meaning:
+
+        #sticky bit
+
+          su a
+          mkdir a
+          chmod 1777 a
+          touch a/a
+          su b
+          rm a/a
+            #permission denied
+          chmod a-t a
+          rm a/a
+            #removed
+
+        #suid and sgid on executable
+
+          #DOES NOT WORK PROPERLY ON SCRIPTS: YOU MUST HAVE AN EXECUTABLE!!!!
+
+          echo '#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  printf( "uid : %llu\n", (long long unsigned)getuid () );
+  printf( "euid: %llu\n", (long long unsigned)geteuid() );
+  printf( "gid : %llu\n", (long long unsigned)getgid () );
+  printf( "egid: %llu\n", (long long unsigned)getegid() );
+  return(0);
+}' > a.c
+          gcc -o a.out a.c
+          chmod 777 a.out
+          chmod u-s a.out
+          ./a.out
+            #your uid and gid twice
+          sudo -u b ./a.out
+            #b's uid and gid twice
+          chmod u+s ./a.out
+            #same, except the effective id is b's, not yours!
+          chmod g+s ./a.out
+            #now effective group is also b's!
 
     ls | cat
       #ls is aware if its ouput goes to a pipe or not.
@@ -2594,14 +2669,21 @@ firefoxdownloadfolder="~/nobackup/download"
   #chmod
 
     #chomod [ugoa][+-=][rwxXst]+
-      chmod +x "$f"
       chmod a+x "$f"
         #makes f executable for all (owner, group and other)
-        #a stands for "all"
-      chmod +r "$f"
+      chmod a+r "$f"
         #makes f readable for all
-      chmod +w "$f"
-        #makes f writable
+      #a vs nothing: umask
+        umask 002
+        chmod +w "$f"
+        stat -c "%a" "$f"
+          #220
+        chmod a=w "$f"
+        stat -c "%a" "$f"
+          #222
+        chmod o=w "$f"
+        stat -c "%a" "$f"
+          #002
       chmod -x "$f"
         #makes f not executable for all
       chmod =r "$f"
@@ -2617,18 +2699,42 @@ firefoxdownloadfolder="~/nobackup/download"
     chmod 777 "$f"
       #chmod =rwx
 
-    #sticky bit
-      chmod +t "$f"
-      chmod 1000 "$f"
-      chmod o+t "$f"
-        #sticky bit on
-      chmod u+t "$f"
-        #nothing happens
+    #sticky bit, suid sgid bits
+      #sticky
+        chmod 1000 "$f"
+        chmod o=t "$f"
+        chmod a=t "$f"
+        stat -c "%A" "$f"
+          #---------T
+        chmod a-t "$f"
+        chmod u=t "$f"
+        chmod g=t "$f"
+        stat -c "%A" "$f"
+          #---------T
+      chmod =s "$f"
+      chmod 6000
+        #set suid and sgid
+      chmod u=s "$f"
+      chmod 4000
+        #set suid and sgid
+      chmod g=s "$f"
+      chmod 2000
+      #can't clear them on numeric mode! only symbolic!
+        chmod 7777 f
+        stat -c "%A" "$f"
+          #-rwsrwsrws
+        chmod 0 f
+        stat -c "%A" "$f"
+          #---S--S--T
+        chmod a-st f
+        stat -c "%A" "$f"
+          #----------
 
   #umask
 
-    #shows/sets permissions that will be *removed* after any file is created
-    #if you want those set, chmod it
+    #shows/sets permissions that will be *removed*
+    #this is system implemented, and interacts with certain system calls such as ``open``
+    #this also has direct effect on commands such as ``chmod`` and ``touch``
 
     touch a
     ls -l a
@@ -2671,22 +2777,58 @@ firefoxdownloadfolder="~/nobackup/download"
   file f
     #tries to guess the type of file f with magic lib
 
-  stat f
-    #last access, size, etc
-    # so this is where python and c commands come from...
+  #stat
+
+    #cli for sys_stat
+    
+    #get file/dir info such as:
+      #size
+      #owner
+      #group
+      #permissions
+      #last access date
+      #create date
+      #modify date
+
+      touch f
+      stat f
+        #lots of info
+
+      chmod 1234 f
+      stat -c "%a" f
+        #234
+
+      chmod a=rt f
+      stat -c "%A" f
+        #-r--r--r-T
+
+  #which
+
+    #prints full path of executable in path
+
+    which ls
+      #/bin/ls
+    which im-not-in-path
+      #
+    which im-not-executable
+      #
+    which cd
+      #
+      #cd is not a program! it is a bash builtin!
 
   #dirs
+
     #move between dirs in stack
 
     dirs
-    #show dir stack
-    # -v : verbose. one per line, with line numbers
+      #show dir stack
+      # -v : verbose. one per line, with line numbers
 
     pushd .
-    #push to dir stack
+      #push to dir stack
 
     popd
-    #pop fro dir stack and cd to it
+      #pop fro dir stack and cd to it
 
   #fdupes
     #fine command line tool for eliminating byte by byte duplicates
@@ -2697,10 +2839,10 @@ firefoxdownloadfolder="~/nobackup/download"
     sudo aptitude install -y fdupes
 
     fdupes -r .
-    # finds and prints dupes
+      #finds and prints dupes
 
     fdupes -rd .
-    # finds dupes, and prompt which to keep for each match
+      #finds dupes, and prompt which to keep for each match
 
 #shell options
 
@@ -2747,6 +2889,9 @@ firefoxdownloadfolder="~/nobackup/download"
       #x: encrypted pass if any
       #5: group id. ``regular`` groups start at 1000
 
+    getent group "$g"
+      #cat line of /etc/group for group g
+
   cat /etc/default/useradd
 
   #groups
@@ -2760,7 +2905,30 @@ firefoxdownloadfolder="~/nobackup/download"
     #list who is logged on system
 
   whoami
-    #print cur user name
+    #print effective user name
+
+  #id
+
+    #shows user and groups id and names
+
+    #whoami/groups superset
+
+    id "$u"
+      #for user u
+    id
+      #cur user
+    id -u
+      #effective userid
+    id -un
+      #effective username
+    id -ur
+      #real userid
+    id -urn
+      #real username
+    id -g
+      #groupid
+    id -gn
+      #groupname
 
   #su
 
@@ -2791,6 +2959,38 @@ firefoxdownloadfolder="~/nobackup/download"
     #in order to see who can sudo what as who and with what pass
       sudo cat /etc/sudoers
 
+      #syntax:
+
+        #Defaults:ALL timestamp_timeout=0
+          #passwords for all users timeout 0
+        #Defaults:ALL timestamp_timeout=15
+          #BAD
+          #after any user enters a pass, he can sudo without pass for 15 mins
+        #main lines:
+          #user   hostip=(runas)NOPASSWD ALL
+          #%group hostip=(runas)        :/bin/ls,/bin/cat
+            #user: who will get sudo premissions
+              #add '%' for group: ex: %group ...
+              #can be ALL
+            #runas: who can he sudo as
+            #NOPASSWD: if present, must enter target user's password
+            #/bin/ls,/bin/cat: list of comma separated bins he can run, or ALL
+        #aliases:
+          #user
+            #User_Alias FUSE_USERS = andy,ellz,matt,jamie
+            #FUSE_USERS ALL=(root):/usr/bin/the-application
+          #host:
+            #Host_Alias HOST = jaunty
+            #%admin HOST=(ALL)
+          #runas
+            #Runas_Alias USERS = root,andy,ellz,matt,jamie
+            #%admin  ALL=(USERS) ALL
+          #command
+            #Cmnd_Alias APT     = /usr/bin/apt-get update,/usr/bin/apt-get upgrade
+            #Cmnd_Alias USBDEV  = /usr/bin/unetbootin,/usr/bin/gnome-format
+            #ALL_PROGS = APT,USBDEV
+            #%admin  ALL=(ALL) ALL
+          
     #ubuntu default:
 
       #sudo group allows members to sudo whatever they want as root
@@ -2801,14 +3001,17 @@ firefoxdownloadfolder="~/nobackup/download"
         #root
       sudo -u test whoami
         #test
-        #TODO getting weird env error with -u only...
-
-    #shows id info (userid, not username, groupid not groupnames ...)
-
-    id "$u"
-      #for user u
-    id
-      #cur user
+      sudo -l
+        #find cur user sudo permissions
+      sudo env
+        #you don't have your cur users env anymore
+        #you are root now!
+      sudo env PATH=$PATH env
+        #use your user's path on sudo
+      #alias sudo='sudo env PATH=$PATH'
+        #tempting, but it will make options fail!
+        #sudo -L --> sudo env PATH=$PATH -l
+        #env thinks -l is his option
 
   #hostname
 
@@ -2942,6 +3145,55 @@ firefoxdownloadfolder="~/nobackup/download"
 
     finger "$u"
       #shows info on user u
+
+  #mseg write wall
+
+    #write messages to other users on the system
+
+    #enable/disable messages
+      mseg n
+      mseg
+        #n
+      mseg y
+      mseg
+        #y
+
+    #write to a user in a tty
+
+      write u tty3
+        #type you message
+        #type enter, and it is sent
+        #ctrl+d ends
+
+      sudo write u tty3
+        #with sudo, you can write even is mseg n
+
+    #write to all
+
+      wall
+        #type you message
+        #message is only sent after you ctrl+d
+      sudo wall
+        #sends to all even if disabled
+
+    #play with it:
+      #go to tty3. on ubuntu: ctrl+alt+f3
+      #login as user u
+      mesg y
+      #go to tty7 (xserver). on ubuntu: ctrl+alt+f7
+      sudo write u tty3
+      #write
+      #go to tty3
+      #your message is there!
+
+  #talk
+
+    #commandline chat program
+
+    sudo aptitude install talk
+    sudo aptitude install talkd
+
+    #TODO use it. lazy now.
 
 #web
 

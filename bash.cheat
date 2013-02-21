@@ -33,48 +33,74 @@ assert "\"a b\" = \"a b\""
 #assert "1 = 2"
   #ends program
 
+#execute outside path
+  
+  echo "echo a" > a
+  chmod 777 a
+  ./a
+    #a
+
 #special vars
 
   #echo $1
     #ERROR
     #possibly unbound
 
-  if [ $# -gt 0 ]; then
-    arg1="$1"
-      #argument 1
-    shift
-      #destroy arg 1
-  fi
+  #$#
 
-  if [ $# -gt 0 ]; then
-    arg2="$1"
-      #argument 2
-    shift
-      #destroy arg 2
-  fi
+    #number of cli args
 
-  DJVU_PATH="$*"
-    #List of all arguments separated by SPACES.
-    #Each argument is NOT quoted individually. 
+    if [ $# -gt 0 ]; then
+      arg1="$1"
+        #argument 1
+      shift
+        #destroy arg 1
+    fi
 
-  DJVU_PATH="$@"
-    #List of all arguments separated by SPACES.
-    #Each argument IS quoted individually.
+    if [ $# -gt 0 ]; then
+      arg2="$1"
+        #argument 2
+      shift
+        #destroy arg 2
+    fi
 
-  current_process="$$"
-    #returns current process name. Useful to create unique temporary files that have a recognizable component.
+  #$*
 
-  TFILE="/tmp/$(basename $0).$$.tmp"
-    #APPLICATION
-    #create temp filename
+    DJVU_PATH="$*"
+      #List of all arguments separated by SPACES.
+      #Each argument is NOT quoted individually. 
 
-  #$? exit status
+  #$@
+
+    DJVU_PATH="$@"
+      #List of all arguments separated by SPACES.
+      #Each argument IS quoted individually.
+
+  #$?
+  
+    #exit status of last program run
+
     echo a | grep a
     echo $?
       #0
     echo a | grep b
     echo $?
       #1
+
+  #$$
+
+    current_process="$$"
+      #returns current process name. Useful to create unique temporary files that have a recognizable component.
+
+    TFILE="/tmp/$(basename $0).$$.tmp"
+      #APPLICATION
+      #create temp filename
+
+  #PPID
+
+    echo $PPID
+      #id of parent process
+      #linux processes contain this info
 
 echo variable
 
@@ -254,6 +280,62 @@ echo string
       #and
     if [ a = b ] || [ b = b ]; then echo true; fi
       #or
+
+  #true false
+
+    which true
+      #/bin/true
+      #it is a program that does one thing: ``exit(1);`` !
+
+  #&& and ||
+
+    #&& only execute next command if previous command gives status = 1
+    #||                                                            = 0
+
+    #if they don't execute, status is unchanged
+
+    true && echo a
+      #a
+    false && echo a
+      #
+    true || echo a
+      #
+    false || echo a
+      #a
+
+  #test
+
+    #compare values and check files, answer on exit status
+
+    #has built-in form in bash since it is so useful for bash: [ ]
+
+    #but test is a program!
+
+    which test
+      #/bin/test
+
+    #value compare
+      test a = a && echo a
+        #a
+      test a = b && echo a
+        #
+
+    #file ops
+      rm -rf a
+      touch a
+      test -f && echo a
+        #a
+
+    #logical
+      test ! a = a        && echo a
+        #
+      test a = a -a b = b && echo a
+        #a
+      test a = a -a a = b && echo a
+        #
+      test a = a -o a = b && echo a
+        #a
+      test a = b -o a = b && echo a
 
 echo for while
 
@@ -449,6 +531,7 @@ echo for while
 
 
 #list available commands
+
   #commands: programs in path
   #aliases: alias a="b"
     #can only be run on interctive section, not on scripts
