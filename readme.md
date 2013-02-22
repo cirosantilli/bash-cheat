@@ -2,7 +2,7 @@
 
 scripts that you may like follow. the others may be useless.
 
-## linux.cheatsheet
+## cheat/linux
 
 my most important file.
 
@@ -49,6 +49,7 @@ bash is evil:
 - lacks good libraries
 - slow
 
-bash has 3 good things:
+bash has 2 good things:
+
 - pipes
 - calling methods

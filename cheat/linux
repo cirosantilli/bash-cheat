@@ -1860,16 +1860,12 @@ firefoxdownloadfolder="~/nobackup/download"
 
     ls | tee file
       #ls to stdou and file
-
     ls | tee file 1>&2
       #ls to
-
     ls -l | tee file | sort
       #ls to file and sort
-
     ls | tee –a file
       #ls append to file
-
     ls | tee –a f1 f2 f3
       #ls to multple files
 
@@ -2628,12 +2624,75 @@ int main(int argc, char** argv)
           chmod g+s ./a.out
             #now effective group is also b's!
 
+        #sgid on directory
+
+          a=
+          b=
+            #two existing users
+          ga=`id -gn "$a"`
+          gb=`id -gn "$b"`
+          su "$a"
+
+          #not-sgid
+
+            mkdir not-sgid
+            chmod 777 not-sgid
+            chmod a-st not-sgid
+            sudo -u "$b" touch not-sgid/f
+            stat -c "%G" not-sgid/f
+              #"$gb"
+            test -g not-sgid/f && echo g
+              #
+            sudo -u "$b" mkdir not-sgid/d
+            stat -c "%G" not-sgid/d
+              #"$gb"
+            test -g not-sgid/d && echo g
+              #
+
+          #sgid
+
+            mkdir sgid
+            chmod 2777 sgid
+            chmod u-s sgid
+            chmod o-t sgid
+            sudo -u "$b" touch sgid/f
+            stat -c "%G" sgid/f
+              #"$ga"
+              #inherits the group of parent dir!
+            test -g sgid/f && echo g
+              #
+            sudo -u "$b" mkdir sgid/d
+            stat -c "%G" sgid/d
+              #"$ga"
+            test -g sgid/d && echo g
+              #g
+              #subdirs also get sgid!
+
     ls | cat
       #ls is aware if its ouput goes to a pipe or not.
       #if yes, automatically newline separates it!
-
     ls -1
       #one per line
+    #ls a file
+      touch a
+      assert [ "$(ls a)" = "a" ]
+    #ls a dir
+      mkdir d
+      touch d/a d/b
+      assert [ "$(ls d)" = "$(echo -e 'a\nb')" ]
+    #ls many dirs
+      mkdir d
+      touch d/a d/b
+      mkdir e
+      touch e/a e/b
+      ls d e
+        #nice listing of both
+    #-d: list dirnames only
+      mkdir d
+      touch d/a d/b
+      mkdir e
+      touch e/a e/b
+      assert [ "$(ls -d d e)" = "$(echo -e 'd\ne')" ]
 
     #-lL : when showing symlinks, shows info to what is linked to
 

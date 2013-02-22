@@ -15,23 +15,8 @@ set -u # error on undefined variable1&>2
 set -e # stop execution if one command return != 0
 
 OUT="./_out/"
-rm -fr "$OUT"
-mkdir "$OUT"
+mkdir -p "$OUT"
 cd "$OUT"
-
-function assert {
-  if [ ! $1 ]; then
-    echo "assertion failed:"
-    echo "$1"
-    exit 1
-  fi
-}
-
-assert '1 = 1'
-assert '"a b" = "a b"'
-assert "\"a b\" = \"a b\""
-#assert "1 = 2"
-  #ends program
 
 #execute outside path
   
@@ -42,27 +27,56 @@ assert "\"a b\" = \"a b\""
 
 #special vars
 
+  #$0
+
+    #path of cur scrip relative to cd
+
+    echo '#!/bin/bash
+echo "$0"' > a
+    chmod +x a
+    ./a
+      #./a
+
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+      #for the full path
+
   #echo $1
-    #ERROR
-    #possibly unbound
+
+    echo '#!/bin/bash
+echo "$1"
+echo "$2"' > a
+  ./a a b
+    #a
+    #b
 
   #$#
 
     #number of cli args
 
-    if [ $# -gt 0 ]; then
-      arg1="$1"
-        #argument 1
-      shift
-        #destroy arg 1
-    fi
+    echo '#!/bin/bash
+echo "$#"' > a
+    ./a a b
+      #2
+    ./a a b c d
+      #4
 
-    if [ $# -gt 0 ]; then
-      arg2="$1"
-        #argument 2
-      shift
-        #destroy arg 2
-    fi
+    #usage
+
+      #safe opt arg getting with shift
+
+      if [ $# -gt 0 ]; then
+        arg1="$1"
+          #argument 1
+        shift
+          #destroy arg 1
+      fi
+
+      if [ $# -gt 0 ]; then
+        arg2="$1"
+          #argument 2
+        shift
+          #destroy arg 2
+      fi
 
   #$*
 
@@ -80,10 +94,10 @@ assert "\"a b\" = \"a b\""
   
     #exit status of last program run
 
-    echo a | grep a
+    if echo a | grep a ; then : ; fi
     echo $?
       #0
-    echo a | grep b
+    if echo a | grep b ; then : ; fi
     echo $?
       #1
 
@@ -102,35 +116,65 @@ assert "\"a b\" = \"a b\""
       #id of parent process
       #linux processes contain this info
 
-echo variable
+#variables
 
   a="abc"
-  assert "$a = abc"
+  assert [ $a = abc ]
 
   a="abc"
-  assert "0${a}1 = 0abc1"
+  assert [ "0${a}1" = "0abc1" ]
 
-  a="echo b"
-  $a
-    #b
-  a='echo b'
-  $a
+  #you can use vars as commands
 
-#eval expression
+    a="echo b"
+    $a
+      #b
+    assert [ $a = b ]
+    assert [ `$a` = b ]
+    assert [ $(a) = b ]
+    assert [ "$a" = "echo b" ]
 
-  assert "$(echo abc) = abc"
-  echo "`echo abc`"
+  #vars expand recursivelly
+  
+    a='$b'
+    b=c
+    assert [ $a = c ]
+    b=d
+    assert [ $a = d ]
+    assert [ "$a" = d ]
+    assert [ '$a' = '$b' ]
 
-echo string
+##quoting
 
+  a="a b"
+  assert "$a = \"a b\""
+
+#() parenthesis
+
+  #spawn subshell
+
+  cd; pwd
+    #changes current dir
+  ( cd; pwd )
+    #does not  change current dir
+    #but still prints home
+
+  #equivalent to
+    bash -c 'cd; pwd'
+  #EXCEPT you don't have to do escaping or quoting!
+
+##$() eval expression
+
+  assert [ "$(echo abc)" = "abc" ]
+  assert [ "`echo abc`"  = "abc" ]
+
+##string
+
+  s=$'\n'
+    #newline to var
+  s=$'\0'
+    #null to var
   s='abcd'
-
-  s1=$'\n'
-  #newline to var
-
-  s1=$'\0'
-  #null to var
-
   echo ${#s}
     #4
       #string length
@@ -143,12 +187,17 @@ echo string
   echo ${s:2}
     #cd
 
-  #posix shell glob pattern ops
+  ##string shell glob operations
+
     s='abcd'
     echo ${s#pattern}
     echo ${s##pattern}
     echo ${s%pattern}
     echo ${s%%pattern}
+
+    ##applications
+     
+      #get/remove file extension
 
   s='a/b.ext'
   echo ${s%.*}
@@ -156,6 +205,7 @@ echo string
       #simple remove ext
 
 echo glob
+
   #simple regex like expanded before command is evaluated
 
   echo *
@@ -180,10 +230,11 @@ echo glob
   echo ~idonthaveahome
     #~idonthaveahome
   
-
-  for f in *; do echo "$f"; done
-  for f in .*; do echo "$f"; done
-
+  #combos:
+    #for f in *; do echo "$f"; done
+    #for f in .*; do echo "$f"; done
+    #for f in * .*; do echo "$f"; done
+    
 echo array
 
   #declare
@@ -198,10 +249,9 @@ echo array
   a[0]=1
   a[1]=2
   a[2]=3
-
-  echo ${a[1]}
-  echo ${a[2]}
-  echo ${a[3]}
+  assert [ ${a[0]} = 1 ]
+  assert [ ${a[1]} = 2 ]
+  assert [ ${a[2]} = 3 ]
     #{} is obligatory here
 
   is=( a b "a b" )
@@ -271,22 +321,6 @@ echo string
     if [ 1 -le 2 ]; then echo true; fi
     if [ 2 -ge 2 ]; then echo true; fi
 
-  #logical
-
-    a=true
-    if [ ! a = b ]; then echo true; fi
-      #not
-    if [ a = a ] && [ b = b ]; then echo true; fi
-      #and
-    if [ a = b ] || [ b = b ]; then echo true; fi
-      #or
-
-  #true false
-
-    which true
-      #/bin/true
-      #it is a program that does one thing: ``exit(1);`` !
-
   #&& and ||
 
     #&& only execute next command if previous command gives status = 1
@@ -302,6 +336,28 @@ echo string
       #
     false || echo a
       #a
+
+  #logical
+
+    a=true
+    if [ ! a = b ]; then echo true; fi
+      #not
+    if [ a = a ] && [ b = b ]; then echo true; fi
+      #and
+        #actually, if first is true do seconde
+        #else skip
+        #this has same effect as and
+    if [ a = b ] || [ b = b ]; then echo true; fi
+      #or
+        #actually, if first is true, skip
+        #else do second
+        #this has same effect as or
+
+  #true false
+
+    which true
+      #/bin/true
+      #it is a program that does one thing: ``exit(1);`` !
 
   #test
 
@@ -343,7 +399,7 @@ echo for while
     #a b
       #separtes at line sep
 
-  for f in `ls -A`; do echo $f; done
+  #for f in `ls -A`; do echo $f; done
 
   for i in `seq 1 10`; do echo $i; done
 
@@ -388,6 +444,12 @@ echo for while
   #0: stdin
   #1: stdout
   #2: stderr
+
+  #applications
+
+    #echo to stderr
+
+    echo "to stderr" 1>&2
 
   M=1
   N=2
@@ -463,7 +525,7 @@ echo for while
 
 #background
 
-  jobs
+  #jobs
     #shows jobs running on background of cur bash
     #
     #%N	Job number [N]
@@ -480,10 +542,10 @@ echo for while
     #  status : runnning, stopped, done
     #  invocation : exact program call, including command line args. Ex: ``ls ~``
 
-  ls &
-  sleep 100 &
-  sleep 100 &
-  sleep 100 &
+  #ls &
+  #sleep 100 &
+  #sleep 100 &
+  #sleep 100 &
     #runs on background
     #
     #[1] 12345678
@@ -547,10 +609,16 @@ echo for while
       #if, do, for, while, end*
     #source:
       #http://tldp.org/LDP/abs/html/internal.html
-  compgen -c #commands
-  compgen -a #aliases
-  compgen -ac #both
-  compgen -b #built-ins
-  compgen -k #keywords
-  compgen -A function #functions
-  compgen -A function -abck #all above at once
+
+  #compgen -c #commands
+  #compgen -a #aliases
+  #compgen -ac #both
+  #compgen -b #built-ins
+  #compgen -k #keywords
+  #compgen -A function #functions
+  #compgen -A function -abck #all above at once
+
+echo '
+##################################################
+# ALL ASSERTS PASSED!
+##################################################'
