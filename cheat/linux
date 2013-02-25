@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#cur !/usr/bin/env bash
 
 #------------------------------------------------------------
 #
@@ -17,15 +17,34 @@
 #
 #------------------------------------------------------------
 
-#linux directory structure
-  #http://www.tuxfiles.org/linuxhelp/linuxdir.html
+#sources
+
+  #http://linux.die.net/
+    #linux man pages
+    #dive into python
+    #advanced bash scripting
+
+  #almost official pages:
+    #<http://www.kernel.org/>
+    #<http://git.kernel.org/>
+      #the git
+
+  #<http://www.tldp.org/>
+    #many tutorials
+
+  #<http://www.thegeekstuff.com>
+    #short tutorials with lots of examles
+
+  #linux man pages
+    #check ##man
+
+    #standard directory structure and important files:
+  #<http://www.tuxfiles.org/linuxhelp/linuxdir.html>
   #
   #/bin : executables in path
   #/sbin : executables used only for admin taks
   #/lib : .so shared libraries/python modules
   #/include : c header files
-  #/share : system independent data (not compiled for an specific system type)
-    #documentations
   #/etc : linux configuration files
     #/etc/default : default values of some configs
   #/src : c source files
@@ -36,9 +55,36 @@
   #/media : automatically mounted stuff
   #/mnt : manually mounted stuff
   #/var : data that changes when system runs
+  #/var/log/
+    #program outputs
+    #some important ones: <http://www.thegeekstuff.com/2011/08/linux-var-log-files/>
+      #/var/log/messages
+        #global system messages
+        #mail, cron, daemon, kern, auth
+        #ubuntu uses /var/log/syslog
+      #/var/log/auth.log
+        #user logins, including sudo
+      #/var/log/dpkg.log
+        #package install
+      #/var/log/kern.log
+        #kernel messages
+      #/var/log/mail.log
+      #/var/log/Xorg.x.log
+      #failed login attempts:
+        #/var/log/btmp 
+        #/var/log/faillog
+      #/var/log/wtemp
+        #login information
+        #used by who and last
   #/root : root user home
   #/usr : user installed/distribuiton installed/managed by package manager
-    #/usr/share/doc : where library documentation goes usually
+    #/usr/share
+      #system independent data (not compiled for an specific system type)
+
+      #/usr/share/doc
+        #where library documentation
+      #/usr/share/sounds
+        #sounds!
   #/usr/local : user installed, managed either by package managers (pip) or manually
 
   #home dir
@@ -57,6 +103,50 @@
 
 #run levels
 
+##POSIX
+
+  #is an operating system standardization by IEEE and ``the open group``.
+
+  #posix.1-2008, Single UNIX Specification, Version 4. formal name:``IEEE Std 1003.1-2008`` <http://pubs.opengroup.org/onlinepubs/9699919799/>
+
+  #linux and mac OS X are largely posix compliant, but not certified
+  #windows is not
+
+  #for example, many linux system calls have very close interfaces
+  #to the required posix ``system interfaces``
+  #example: ``pipe`` in posix, and ``pipe``, ``pipe2`` system calls
+
+  #posix stabilishes things such as:
+
+    #shell command language
+
+      #bash is compliant, with extensions
+
+    #utilities
+
+      #programs in path/shell builtins that every shell should have
+
+      #examples:
+        #- cd
+        #- ls
+        #- cat
+        #- mkdir
+        #etc.
+
+    #system interface
+
+      #standard c interfaces (header files)
+
+      #they allow for operations such as:
+          #- threads
+          #- ipc
+          #- filesystem operations
+          #- user/group info
+
+  #it does not specify:
+
+    #the exact system calls
+
 firefoxdownloadfolder="~/nobackup/download"
 
 #package management
@@ -71,6 +161,54 @@ firefoxdownloadfolder="~/nobackup/download"
     #remove added ppas
   sudo aptitude install -y python-pip
     #python package manager
+
+##man man
+
+  #the manuals
+
+  #search
+
+    man -k password
+      #search for commands with password word on summary
+    apropos password
+      #same
+    man -k .
+      #list all manual pages
+      #pages whose summaries match '.' reges: anychar)
+    man -k . | grep '(8)'
+      #list manual section
+    
+  #show
+
+    #sections:
+
+      man 2 intro
+        #read intro about section 2
+      #1: commands (executables in path)
+        #is the default section
+        man 1 passwd
+      #2: system calls (c interface)
+        man 2 write
+          #write system call
+        man 1 write
+          #write command
+      #3: library. system call wrappers.
+      #4: special files
+        man 4 mouse
+      #5: file formats
+        man 5 passwd
+          #/etc/passwd file syntax
+        man 5 elf
+          #elf executable format
+      #6: games
+      #8: system administration
+        man 8 adduser
+          #commands that mostly only root can to
+
+  #whatis
+
+    whatis ls
+      #show short description of ls
 
 #in order to upgrade from 11.10 or 12.04
 
@@ -178,15 +316,23 @@ firefoxdownloadfolder="~/nobackup/download"
     sudo aptitude install -y ibus-qt4
       #how have I looked for this, but no one told me: ibus for qt apps!!!!
 
-  #alarm
+  ##alarm
     sudo aptitude install -y alarm-clock-applet
+
+  ##bc
+
+    #command line "calculator"
+
+    #useless: not worth learning curve. use python instead.
+
+    #posix 8
 
   #weather indicator
     sudo add-apt-repository -y ppa:atareao/atareao
     sudo apt-get update
     sudo apt-get install my-weather-indicator
 
-#file compresssion
+##compresssion
 
   #the performance parameters are:
     #compression ratio
@@ -404,69 +550,95 @@ firefoxdownloadfolder="~/nobackup/download"
 
 #sound
 
-  #id3tool
-  
-    #get id3 tags info (for mp3 for example)
+  #players
 
-    sudo aptitude install -y id3tool
+    #cplay
 
-    TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
-    ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-    ALBUM="`id3tool "$1" | grep '^Album:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-    YEAR="`id3tool "$1" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
-    TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
+      sudo aptitude install -y cplay
 
-    install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
+      cplay
+        #file browser
 
-  #cut up flac cue into multiple files
+  #operations
 
-    #via flacon GUI
-      sudo add-apt-repository -y ppa:flacon
-      sudo aptitude update
-      sudo aptitude install -y flacon
+    #id3tool
+    
+      #get id3 tags info (for mp3 for example)
 
-    #cuetools command line
-      sudo aptitude install -y cuetools shntool
-      sudo aptitude install -y flac wavpack
+      sudo aptitude install -y id3tool
 
-      shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
-        #single ape and cue in dir, flac output, formatted as number, author, track
+      TITLE="`id3tool "$1" | grep '^Song Title:' | awk '{ for (i=3;i<=NF;i++) { printf $i; printf " " } }'`"
+      ARTIST="`id3tool "$1" | grep '^Artist:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+      ALBUM="`id3tool "$1" | grep '^Album:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+      YEAR="`id3tool "$1" | grep '^Year:' | awk '{ for (i=2;i<=NF;i++) { printf $i; printf " " } }'`"
+      TRACKNUM="`id3tool "$1" | grep '^Year:' | awk '{ print $2 }'`"
 
-  #sox
+      install -D "$1" /music/mp3/"$ARTIST-$ALBUM-$YEAR"/"$TRACKNUM-$ARTIST-$TITLE".mp3
 
-    #record, play and modify files cli
-    #interactive front end for libSoX
+    #cut up flac cue into multiple files
 
-    sudo aptitude intall -y sox
-    sudo aptitude intall -y libsox-fmt-mp3
-      #installs mp3 support
-    apt-cache search libsox-fmt-
-      #to see all available formats
+      #via flacon GUI
+        sudo add-apt-repository -y ppa:flacon
+        sudo aptitude update
+        sudo aptitude install -y flacon
 
-    rec a.wav
-      #records from microphone into a.wav file
-      #ctrl+c : stop recording
+      #cuetools command line
+        sudo aptitude install -y cuetools shntool
+        sudo aptitude install -y flac wavpack
 
-    play a.wav
-      #plays a.wav file
-      #terminates when over
+        shntool split -f *.cue -o flac *.ape -t '%n - %p - %t'
+          #single ape and cue in dir, flac output, formatted as number, author, track
 
-  #alsamixer
+    #sox
 
-    #ncurses interface to view/control sound parameters
+      #record, play and modify files cli
 
-    alsamixer
-      #left/right : change active parameter
-      #up/down    : change active parameter value
+      #interactive front end for libSoX
 
-  #amixer
+      sudo aptitude intall -y sox
+      sudo aptitude intall -y libsox-fmt-mp3
+        #installs mp3 support
+      apt-cache search libsox-fmt-
+        #to see all available formats
 
-    #cli for sound control
+      rec a.wav
+        #records from microphone into a.wav file
+        #ctrl+c : stop recording
 
-    amixer scontrols 
-      #view available controls
-    amixer sset 'Master' 50%
-      #set master volume to 50%
+      play a.wav
+        #plays a.wav file
+        #terminates when over
+
+  #system parameters
+
+    #alsamixer
+
+      #ncurses interface to view/control sound parameters
+
+      alsamixer
+        #left/right : change active parameter
+        #up/down    : change active parameter value
+
+    #amixer
+
+      #cli for sound control
+
+      amixer scontrols 
+        #view available controls
+      amixer sset 'Master' 50%
+        #set master volume to 50%
+
+  #rip
+
+    #abcde
+
+      #cli
+
+      sudo aptitude install -y abcde
+
+      abcde
+        #already starts ripping correctly on most systems!!
+        #creates dir in cur dir and saves rip out as .ogg in it
 
 #image
 
@@ -836,437 +1008,442 @@ firefoxdownloadfolder="~/nobackup/download"
     #your share and download dirs to somewhere above user so that people cannot
     #see your username
 
-#programming tools
+##programming
 
-  #compiling
+  sudo aptitude install -y build-essential
+    #building tools
 
-    sudo aptitude install -y build-essential
-      #building tools
-
-    sudo aptitude install -y automake
-      #makefile macros
-      #generates makefiles
+  sudo aptitude install -y automake
+    #makefile macros
+    #generates makefiles
 
-    sudo aptitude install -y libtool
-      #helps generatin libraries for c, c++, fortran and java
+  sudo aptitude install -y libtool
+    #helps generatin libraries for c, c++, fortran and java
+
+  sudo aptitude install -y cmake
+    #make advanced
 
-    sudo aptitude install -y cmake
-      #make advanced
+  #nasm assembler
 
-    #nasm assembler
-
-      sudo aptitude install -y nasm
+    sudo aptitude install -y nasm
 
-      nasm -w+all -f elf -o a.o a.asm
-        #-w+all : enable all warnings
-        #-f ouptut format
+    nasm -w+all -f elf -o a.o a.asm
+      #-w+all : enable all warnings
+      #-f ouptut format
+
+    nasm -w+all -f elf -o a.o a.asm
 
-      nasm -w+all -f elf -o a.o a.asm
+  #make
 
-    #gcc/g++
+    make
+      #uses Makefile in cur dir
+    make -C /some/dir
+      #changes current dir
 
-      #Gnu Compiler Collection: NOT c compiler
-      #does: C, C++, Objective-C, Fortran, Java, Ada, and Go
-      #large frontend to severl subprograms such as ``as``, ``cpp`` and so on
+  #gcc/g++
+
+    #Gnu Compiler Collection: NOT c compiler
+    #does: C, C++, Objective-C, Fortran, Java, Ada, and Go
+    #large frontend to severl subprograms such as ``as``, ``cpp`` and so on
+
+    #g++:
+      #http://stackoverflow.com/questions/172587/what-is-the-difference-between-g-and-gcc
+      #most important:
+        #1) g++ treats both .c and .cpp files as c++
+        #2) g++ links to (but does not include) stdlib automatically, gcc does not!
+
+    #http://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html#
+    #http://www.adp-gmbh.ch/cpp/gcc/create_lib.html
+
+    #compilation steps
 
-      #g++:
-        #http://stackoverflow.com/questions/172587/what-is-the-difference-between-g-and-gcc
-        #most important:
-          #1) g++ treats both .c and .cpp files as c++
-          #2) g++ links to (but does not include) stdlib automatically, gcc does not!
-
-      #http://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html#
-      #http://www.adp-gmbh.ch/cpp/gcc/create_lib.html
-
-      #compilation steps
+      cpp a.c > a.i
+      cpp b.c > b.i
+      #expanded macros
+      #c pre processor
+
+      gcc -S a.i -o a.s
+      gcc -S b.i -o b.s
+        #generate human readable assembly code
+        #default format: att
+      gcc -masm=att -S a.c -o a.s
+      gcc -masm=intel -S a.c -o a.s
+        #specify format
+
+      as -o a.o a.s
+      as -o b.o b.s
+        #make machine code
+
+      gcc -c a.c -o a.o
+      gcc -c b.c -o b.o
+        #all above steps in one
+
+      ld -o ab.out a.o b.o
+        #link object files into single executable
 
-        cpp a.c > a.i
-        cpp b.c > b.i
-        #expanded macros
-        #c pre processor
+      gcc a.c b.c -o ab.out
+        #does all above steps in one
+        #if you use make, it is faster to genterate ``.o``
+        #and keep them, since if the source does not change,
+        #make will not recompile the corresponding ``.o``
 
-        gcc -S a.i -o a.s
-        gcc -S b.i -o b.s
-          #generate human readable assembly code
-          #default format: att
-        gcc -masm=att -S a.c -o a.s
-        gcc -masm=intel -S a.c -o a.s
-          #specify format
+    #compilation flags
 
-        as -o a.o a.s
-        as -o b.o b.s
-          #make machine code
+      #YOU SHOULD ALWAYS USE
 
-        gcc -c a.c -o a.o
-        gcc -c b.c -o b.o
-          #all above steps in one
+        gcc -Wall
+          #enables all warnings
+          #ALWAYS USE IT
+        gcc -Wall -Wno-unused-variable
+          #enables all warnings, except ``unused-variable
 
-        ld -o ab.out a.o b.o
-          #link object files into single executable
+        #std
+        #specifies version os the language to be used
+        #{
+          #disable gcc extensions that conflict with c standrad
+          gcc -std=c90
+          gcc -std=c99
+          gcc -std=1x
+            #current most modern
+          gcc -std=c11
+            #not yet available
+            #will be when implementation complete
 
-        gcc a.c b.c -o ab.out
-          #does all above steps in one
-          #if you use make, it is faster to genterate ``.o``
-          #and keep them, since if the source does not change,
-          #make will not recompile the corresponding ``.o``
+          gcc -ansi
+            #changes with time, currently equals ``-std=c90``
+            #don't use it
 
-      #compilation flags
+        gcc -std=c1x -pedantic 
+          #give warnings for code that does not comply with c1x standard
+          #this does not mean *FULL* complience, but greatly increases complience
+          #there is currently no full complience check in ``gcc``
+        gcc -std=c1x -pedantic-errors
+          #give errors instead of warnings
 
-        #YOU SHOULD ALWAYS USE
+        #-march cputype
 
-          gcc -Wall
-            #enables all warnings
-            #ALWAYS USE IT
-          gcc -Wall -Wno-unused-variable
-            #enables all warnings, except ``unused-variable
+          #optimizes code to given cpu (arch is for archtecture)
+          #may use instructions only available to given cpu
 
-          #std
-          #specifies version os the language to be used
-          #{
-            #disable gcc extensions that conflict with c standrad
-            gcc -std=c90
-            gcc -std=c99
-            gcc -std=1x
-              #current most modern
-            gcc -std=c11
-              #not yet available
-              #will be when implementation complete
+          gcc -march=native
+            #optimize for currrent compiling machine
+          gcc -march=i386
+            #80386 instruction set. old, compatible, used on almost all desktops and laptops
+          gcc -march=armv7
+            #Arm v.7, used on mobiles today
 
-            gcc -ansi
-              #changes with time, currently equals ``-std=c90``
-              #don't use it
+        #code optimization
 
-          gcc -std=c1x -pedantic 
-            #give warnings for code that does not comply with c1x standard
-            #this does not mean *FULL* complience, but greatly increases complience
-            #there is currently no full complience check in ``gcc``
-          gcc -std=c1x -pedantic-errors
-            #give errors instead of warnings
+          gcc -Q -O --help=optimizers
+          #shows optimizations for -O
 
-          #-march cputype
+          #-O0 : no speed optimization. This is the default
+          #-O : -O1 basic speed optimization
+          #-O2 : more than O1
+          #-O3 : more than O2
+          #-Og : optimize for debugging
+          #-Os : optimize for size
+          #-Ofast : optimize for speed more than O3, *even if it breaks standards*
 
-            #optimizes code to given cpu (arch is for archtecture)
-            #may use instructions only available to given cpu
+          gcc -O3 a.c -o a.out
+          #compile with optimization
 
-            gcc -march=native
-              #optimize for currrent compiling machine
-            gcc -march=i386
-              #80386 instruction set. old, compatible, used on almost all desktops and laptops
-            gcc -march=armv7
-              #Arm v.7, used on mobiles today
-
-          #code optimization
-
-            gcc -Q -O --help=optimizers
-            #shows optimizations for -O
-
-            #-O0 : no speed optimization. This is the default
-            #-O : -O1 basic speed optimization
-            #-O2 : more than O1
-            #-O3 : more than O2
-            #-Og : optimize for debugging
-            #-Os : optimize for size
-            #-Ofast : optimize for speed more than O3, *even if it breaks standards*
-
-            gcc -O3 a.c -o a.out
-            #compile with optimization
-
-          #summary
-            #for production code always use:
-              gcc -std=c99 -pedantic-errors -Wall -03 -march=native a.c
-
-        #other flags
-          gcc -std=gnu90
-            #c90 + gcc extensions
-
-      #preprocessor
-        #define command line
-
-          gcc -DLINELENGTH=80 -DDEBUG c.c -o c
-          #same as adding
-          #define LINELENGTH 80 
-          #define DEBUG
-          #to top of file
-
-        #include
-
-          cpp -v
-          #will show include search paths
-          #done by the c pre processor
-
-          CPATH="/add/to/include"
-          export CPATH
-
-          gcc a.c -I/path/dir/ -I/path/dir2/
-          #-I: search in given dir for .h files
-            #must be *full path*, that is, will not look realtive to existing search path
-
-        #output preprocessed file
-          #learing purposes only
-          gcc -E c.c -o c
-
-      #libs
-
-        #create
-
-          gcc -c a.c
-          gcc -c b.c
-          ar rcs a.a a.o b.o
-            #.a is nothing but a compressed form of several .o
-
-          gcc -c -fPIC a.c
-            #compile for .so
-
-        #use
-
-          gcc -static b.c -L. -la -o b_static.out
-            #static link
-
-          gcc -print-search-dirs
-            #where the linker looks for .so and .a files
-
-          export LIBRARY_PATH="/path/to/link"
-          export LD_LIBRARY_PATH="/path/to/link"
-            #where to load libraries at runtime
-
-          gcc a.c -o a.out -lm
-          #-l : link to library libm.so in path
-          #PUT -l AFTER ALL COMMANDS!!!!!!!!!!
-          #the name must be EXACTLY!!!!!! libm.so,
-            #libm.1.so for example will link as m.1!!!!!!
-
-          gcc -v a.c -o a.out -L/path/to/link -llib
-            #-L : append path to link search path
-            #-v : will show link search paths
-
-      #debug
-
-        #gdb
-          
-          gcc -ggdb3 a.c
-          #adds debug information to executable such as line numbers,
-          #and symbol names (normally exceutables contain only memory adresses)
-          #makes exec larger
-          #-g : generate debug info for gdb
-          #-ggdb : adds more info
-          #-ggdb3 : adds max info. default if 2 when ggdb is used.
-
-          gdb a.out
-          gdb a.out $pid
-            #attach to a running process
-            #pauses the process
-            #on quit, process continues
-
-            #r
-              #run prog
-              #if already runnin, kill and rerun.
-              #keeps breakpoints, etc
-            #r 1 2
-              #start running with arguments
-              #next r calls will use those args
-            #set args
-              #removes args
-
-            #k
-              #kill program
-              #keeps breakpoints, etc
-
-            #b
-              #b 10
-              #b func
-              #b c.c:10
-              #b c.c:func
-              #b +2
-                #two lines down from cur
-              #b -2
-                #two lines down from cur
-
-            #i b
-              #view breakpoints
-
-            #dis 1
-              #disable breakpoint 1.
-              #1 is gotten from ``i b``
-
-            #en 1
-              #enable breakpoint 1.
-              #1 is gotten from ``i b``
-
-            #d
-              #delete all breakpoints
-            #d 1
-              #delete breakpoint 1
-
-            #cl 10
-            #cl func
-            #cl file:func
-            #cl file:10
-              #delete breakpoint at line 10
-
-            #w 
-              #set watchpoint
-              #stop prog when var or expr changes value
-
-            #c
-              #set catchpoint
-              #TODO ?
-
-            #s
-              #step exec next line
-              #if func call, step inside funv
-            #n  
-              #setp next. if func call
-              #run entire func now
-            #whe
-              #where, print line number
-
-            #ba
-              #show backtrace of stack at current point
-
-            #f
-              #show cur frame number
-            #f 1
-              #go to frame 1
-
-            #l
-              #list next 10 lines of code.
-              #l again, lists next 10.
-            #l -
-              #previous
-            #l 20
-              #list 10 lines around line 20
-            #l 5,20
-            #l ,20
-            #l 5,
-            #l func
-            #l c.c
-            #l c.c:12
-            #l c.c:func
-            #set listsize 5
-
-            #p
-              #p x
-                #print value of variable x in current frame
-                #vars in other frames cannot be seen
-              #p x+1
-              #p x*2
-              #p func(1)
-              #p array
-              #p array[3]@5
-                #print 3 vals or array, starting at elem 5
-              #p myStruct
-              #p myStruct.key
-              #set print pretty
-
-              #format
-                #(gdb) p mychar    #default
-                #$33 = 65 'A'
-                #(gdb) p /o mychar #octal
-                #$34 = 0101
-                #(gdb) p /x mychar #hex
-                #$35 = 0x41
-                #(gdb) p /d mychar 
-                #$36 = 65
-                #(gdb) p /u mychar #unsigned decimal
-                #$37 = 65
-                #(gdb) p /t mychar #binary
-                #$38 = 1000001
-                #(gdb) p /f mychar #float
-                #$39 = 65
-                #(gdb) p /a mychar 
-                #$40 = 0x41
-              
-              #p &mychar
-                #addres of mychar
-                #p *(&mychar)
-
-              #pt x
-                #print type of var x
-
-            #attach
-              #links to a running process
-
-            #q
-              #quit
-
-            #gdbinit
-              #~/.gdbinit
-              #somedir/.gdbinit
-
-      #profiling
+        #summary
+          #for production code always use:
+            gcc -std=c99 -pedantic-errors -Wall -03 -march=native a.c
+
+      #other flags
+        gcc -std=gnu90
+          #c90 + gcc extensions
+
+    #preprocessor
+      #define command line
+
+        gcc -DLINELENGTH=80 -DDEBUG c.c -o c
+        #same as adding
+        #define LINELENGTH 80 
+        #define DEBUG
+        #to top of file
+
+      #include
+
+        cpp -v
+        #will show include search paths
+        #done by the c pre processor
+
+        CPATH="/add/to/include"
+        export CPATH
+
+        gcc a.c -I/path/dir/ -I/path/dir2/
+        #-I: search in given dir for .h files
+          #must be *full path*, that is, will not look realtive to existing search path
+
+      #output preprocessed file
+        #learing purposes only
+        gcc -E c.c -o c
+
+    #libs
+
+      #create
+
+        gcc -c a.c
+        gcc -c b.c
+        ar rcs a.a a.o b.o
+          #.a is nothing but a compressed form of several .o
+
+        gcc -c -fPIC a.c
+          #compile for .so
+
+      #use
+
+        gcc -static b.c -L. -la -o b_static.out
+          #static link
+
+        gcc -print-search-dirs
+          #where the linker looks for .so and .a files
+
+        export LIBRARY_PATH="/path/to/link"
+        export LD_LIBRARY_PATH="/path/to/link"
+          #where to load libraries at runtime
+
+        gcc a.c -o a.out -lm
+        #-l : link to library libm.so in path
+        #PUT -l AFTER ALL COMMANDS!!!!!!!!!!
+        #the name must be EXACTLY!!!!!! libm.so,
+          #libm.1.so for example will link as m.1!!!!!!
+
+        gcc -v a.c -o a.out -L/path/to/link -llib
+          #-L : append path to link search path
+          #-v : will show link search paths
+
+    #debug
+
+      #gdb
         
-        #gprof
-          
-          #shows time spent into each call of individual functions
-          #also shows average times per function
-          #sorts from most to least time consuming
+        gcc -ggdb3 a.c
+        #adds debug information to executable such as line numbers,
+        #and symbol names (normally exceutables contain only memory adresses)
+        #makes exec larger
+        #-g : generate debug info for gdb
+        #-ggdb : adds more info
+        #-ggdb3 : adds max info. default if 2 when ggdb is used.
 
-          #you could get all those infos from <time.h> clock() func
-          #but this automates all for you in the case you want to measure functions
+        gdb a.out
+        gdb a.out $pid
+          #attach to a running process
+          #pauses the process
+          #on quit, process continues
 
-          gcc -p -pg -c a.c -o a.o
-          gcc -p -pg a.o -o a.out
-          #generates extra profiling code for ``prof`` and ``gprof`` programs
-          #must be used only both link and compile steps if separate
+          #r
+            #run prog
+            #if already runnin, kill and rerun.
+            #keeps breakpoints, etc
+          #r 1 2
+            #start running with arguments
+            #next r calls will use those args
+          #set args
+            #removes args
 
-          ./a.out
-          #will generate ``gmon.out`` with gprof data in *cur dir*, not bin dir 
+          #k
+            #kill program
+            #keeps breakpoints, etc
 
-          gprof a.out gmon.out
-          #-b : remove large output explanation
-          #-p : only flat profile
-          #-pfunc1 : only flat profile of ``func1``
-          #-q : only call graph
-          #-qfunc1 : only call graph for ``func1``
+          #b
+            #b 10
+            #b func
+            #b c.c:10
+            #b c.c:func
+            #b +2
+              #two lines down from cur
+            #b -2
+              #two lines down from cur
 
-      #utils
+          #i b
+            #view breakpoints
 
-        nm a.o
-        #symbol table for a.o
+          #dis 1
+            #disable breakpoint 1.
+            #1 is gotten from ``i b``
 
-        ldd a.out
-        #required shared libraries
+          #en 1
+            #enable breakpoint 1.
+            #1 is gotten from ``i b``
 
-        readelf --syms liba.so
-        #shows symtable (defined stuff) of elf .so
+          #d
+            #delete all breakpoints
+          #d 1
+            #delete breakpoint 1
 
-        readelf --relocs a.o
-        #TODO ?
+          #cl 10
+          #cl func
+          #cl file:func
+          #cl file:10
+            #delete breakpoint at line 10
 
-        objdump --disassemble a.o
-        objdump -h a.o
-        #see memory structure
+          #w 
+            #set watchpoint
+            #stop prog when var or expr changes value
 
-        time ./a.out
-        #profiles a.out.
-        #bash builtin, different from /usr/bin/time
-        #
-        #real: wall clock time
-        #user: program cpu time usage
-        #sys: system call time used for program
+          #c
+            #set catchpoint
+            #TODO ?
 
-        /usr/bin/time -f "\t%U user,\t%S system,\t%x status" test.py
-        #time without path is the bash built-in
-        #does memorym iom etc profiles besides time profiles
+          #s
+            #step exec next line
+            #if func call, step inside funv
+          #n  
+            #setp next. if func call
+            #run entire func now
+          #whe
+            #where, print line number
 
-        #size
-          gcc -c a.c
-          gcc a.o
-          size a.out a.o
-          #shows size of each memory part of a program
-          #text : instructions
-          #data : init and uinit data
-          #dec and hex : size of executable in dec and hex
+          #ba
+            #show backtrace of stack at current point
 
-        #pkg-config
+          #f
+            #show cur frame number
+          #f 1
+            #go to frame 1
 
-          #info is contained in "$PKG_NAME.pc" files located mainly under:
-            #/usr/share/pkgconfig/ 
-            #/usr/lib/i386-linux-gnu/pkgconfig/
+          #l
+            #list next 10 lines of code.
+            #l again, lists next 10.
+          #l -
+            #previous
+          #l 20
+            #list 10 lines around line 20
+          #l 5,20
+          #l ,20
+          #l 5,
+          #l func
+          #l c.c
+          #l c.c:12
+          #l c.c:func
+          #set listsize 5
 
-          #usage in in a makefile:
-            CFLAGS=$(shell pkg-config --cflags pkgname)
-            LIBS=$(shell pkg-config --libs pkgname)
+          #p
+            #p x
+              #print value of variable x in current frame
+              #vars in other frames cannot be seen
+            #p x+1
+            #p x*2
+            #p func(1)
+            #p array
+            #p array[3]@5
+              #print 3 vals or array, starting at elem 5
+            #p myStruct
+            #p myStruct.key
+            #set print pretty
+
+            #format
+              #(gdb) p mychar    #default
+              #$33 = 65 'A'
+              #(gdb) p /o mychar #octal
+              #$34 = 0101
+              #(gdb) p /x mychar #hex
+              #$35 = 0x41
+              #(gdb) p /d mychar 
+              #$36 = 65
+              #(gdb) p /u mychar #unsigned decimal
+              #$37 = 65
+              #(gdb) p /t mychar #binary
+              #$38 = 1000001
+              #(gdb) p /f mychar #float
+              #$39 = 65
+              #(gdb) p /a mychar 
+              #$40 = 0x41
+            
+            #p &mychar
+              #addres of mychar
+              #p *(&mychar)
+
+            #pt x
+              #print type of var x
+
+          #attach
+            #links to a running process
+
+          #q
+            #quit
+
+          #gdbinit
+            #~/.gdbinit
+            #somedir/.gdbinit
+
+    #profiling
+      
+      #gprof
+        
+        #shows time spent into each call of individual functions
+        #also shows average times per function
+        #sorts from most to least time consuming
+
+        #you could get all those infos from <time.h> clock() func
+        #but this automates all for you in the case you want to measure functions
+
+        gcc -p -pg -c a.c -o a.o
+        gcc -p -pg a.o -o a.out
+        #generates extra profiling code for ``prof`` and ``gprof`` programs
+        #must be used only both link and compile steps if separate
+
+        ./a.out
+        #will generate ``gmon.out`` with gprof data in *cur dir*, not bin dir 
+
+        gprof a.out gmon.out
+        #-b : remove large output explanation
+        #-p : only flat profile
+        #-pfunc1 : only flat profile of ``func1``
+        #-q : only call graph
+        #-qfunc1 : only call graph for ``func1``
+
+    #utils
+
+      nm a.o
+      #symbol table for a.o
+
+      ldd a.out
+      #required shared libraries
+
+      readelf --syms liba.so
+      #shows symtable (defined stuff) of elf .so
+
+      readelf --relocs a.o
+      #TODO ?
+
+      objdump --disassemble a.o
+      objdump -h a.o
+      #see memory structure
+
+      time ./a.out
+      #profiles a.out.
+      #bash builtin, different from /usr/bin/time
+      #
+      #real: wall clock time
+      #user: program cpu time usage
+      #sys: system call time used for program
+
+      /usr/bin/time -f "\t%U user,\t%S system,\t%x status" test.py
+      #time without path is the bash built-in
+      #does memorym iom etc profiles besides time profiles
+
+      #size
+        gcc -c a.c
+        gcc a.o
+        size a.out a.o
+        #shows size of each memory part of a program
+        #text : instructions
+        #data : init and uinit data
+        #dec and hex : size of executable in dec and hex
+
+      #pkg-config
+
+        #info is contained in "$PKG_NAME.pc" files located mainly under:
+          #/usr/share/pkgconfig/ 
+          #/usr/lib/i386-linux-gnu/pkgconfig/
+
+        #usage in in a makefile:
+          CFLAGS=$(shell pkg-config --cflags pkgname)
+          LIBS=$(shell pkg-config --libs pkgname)
 
   #editors and ides
 
@@ -1318,46 +1495,73 @@ firefoxdownloadfolder="~/nobackup/download"
       sudo aptitude install -y vim
       sudo aptitude install -y vim-gtk #gvim, runs outside command line, and thus gets around many command line limitations such as reserved shortcuts
 
-  #version control
+  ##version control
 
-    #git
+    ##git
 
       sudo aptitude install -y git
-      sudo aptitude install -y gitk	#a git graphic local branch viewer
-      #not set it up to follow github
-      #http://help.github.com/linux-set-up-git/
+      sudo aptitude install -y gitk
+        #gui local branch viewer
+        #http://help.github.com/linux-set-up-git/
 
-    #svn subversion
+    ##svn subversion
 
       sudo aptitude install -y subversion
 
-  #diff
+  ##diff
+
+    ##diff
     
-    #compare files *and* directory contents
+      #compare files *and* directory contents
 
-    #files
-      echo -e "0\na\n1\n2\n3\n4\n5" > a
-      echo -e "0\n1\n2\nb\n3\n5" > b
-      nl a
-      nl b
+      #files
+        echo -e "0\na\n1\n2\n3\n4\n5" > a
+        echo -e "0\n1\n2\nb\n3\n5" > b
+        nl a
+        nl b
 
-      diff a b
+        diff a b
 
-      diff -u a b
-      #gitlike diff (unified format)
+        diff -u a b
+        #gitlike diff (unified format)
 
-    #directories
-      mkdir a
-      touch a/a
-      touch a/c
-      mkdir b
-      touch b/b
-      touch b/c
-      diff a b
+      #directories
 
-    #patch
+        mkdir a
+        touch a/a
+        touch a/c
+        mkdir b
+        touch b/b
+        touch b/c
+        diff a b
+
+    ##comm
+
+      #ultra simple diff
+
+      #useless
+
+      #posix 8
+
+      cd "`mktemp -d`"
+      echo -e "a\nc" > a
+      echo -e "b\nc" > b
+      comm a b
+        #a
+        #    b
+        #        c
+
+        #3 cols:
+          #lines only in a
+          #           in b
+          #      in both
+
+        #tab separated columns
+          #long lines look horrible
+
+    ##patch
     
-    #wdiff
+    ##wdiff
 
       #word oriented diff
 
@@ -1371,7 +1575,7 @@ firefoxdownloadfolder="~/nobackup/download"
 
       kdiff3 f1 f2 -o fout
 
-  #ack
+  ##ack
 
     #finds and greps
     #nice filename/line/match highlight output
@@ -1404,7 +1608,6 @@ firefoxdownloadfolder="~/nobackup/download"
 
     ack --thpppt
     #bill the cat
-
 
   #libs
 
@@ -1452,15 +1655,37 @@ firefoxdownloadfolder="~/nobackup/download"
 
     #test phpmyadmin and mysql
       firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
+  
+  ##exuberant-ctags
+
+    #generate tags for given file
+
+    #this makes it possible for external applications to find symbols defined in this file
+    #such as functions, variables, macros, etc
+
+    #supports 55 languages
+
+    sudo aptitude install -y exuberant-ctags
+
+    exuberant-ctags a.c
+    less tags
 
 #file management
 
   #krusader
+    
+    #great file manager
+
+    #features:
+      #useractions
+      #give shortcuts to useractions
+
     sudo aptitude install -y krusader
     sudo aptitude install -y konqueror #needs to manage bookmarks. (otherwise, button does nothing)
     sudo aptitude install -y konsole   #needs to terminal emulator. (otherwise, button does nothing)
 
   #filezilla
+
     sudo aptitude install -y filezilla
 
 #terminal emulators
@@ -1499,7 +1724,8 @@ firefoxdownloadfolder="~/nobackup/download"
     #sudo apt-add-repository ppa:cdekter/ppa
     #sudo aptitude install -y autokey-gtk
 
-#games
+#games and fun
+
   sudo add-apt-repository -y "deb http://archive.ubuntugames.org ubuntugames main"
 
   sudo aptitude install -y nethack-console
@@ -1520,7 +1746,18 @@ firefoxdownloadfolder="~/nobackup/download"
     env UBUNTU_MENUPROXY=0 golly 
       #because the global menu does not work
 
-#rename
+  gnomine
+    #minesweeper clone
+
+  #gnotski
+
+    #knotski clone
+
+    sudo aptitude install -y gnotski
+
+    gnotski
+
+##rename
 
   rename -n 's/^([0-9]) /0$1 /g' *.mp3 
     #does not make changes to all .mp3 files
@@ -1528,20 +1765,19 @@ firefoxdownloadfolder="~/nobackup/download"
   rename 's/^([0-9]) /0$1 /g' *.mp3
     #makes changes
 
-#cpio
+##cpio
 
   find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
   #cfind selected files to destination, building and keeping their relative directory structure
 
-#find
+##find
 
   #consider ack-grep instead for searching code
-  #read from stdin
 
-  while IFS= read -r -u3 -d $'\0' FILE; do
+  while IFS= read -r -u3 -d '' FILE; do
     echo "$FILE"
-  done 3< <(find /tmp -type f -print0)
-  #the only thing tha breaks this is having programs that use 3<. godlike
+  done 3< <(find . -type f -print0)
+    #the only thing tha breaks this is having programs that use 3<. godlike
 
   while IFS= read -r -u3 -d $'\0' FILE; do
     echo "$FILE"
@@ -1558,32 +1794,34 @@ firefoxdownloadfolder="~/nobackup/download"
   #%h	display name of directory file is in, filename isn't included.
   #%u	username of the owner of the file
 
-#xargs
+##xargs
+
+  #posix 8
 
   find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
-  #xargs find print0 combo.
-  #prints: 
-  #asdf pdf1
-  #asdf pdf2
-  #...
-  #
-  #print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
-  #
-  #this executes echo asdf 'pdf1', ..., for EACH pdf file found
+    #xargs find print0 combo.
+    #asdf pdf1
+    #asdf pdf2
+    #...
+    #
+    #print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
+    #
+    #this executes echo asdf 'pdf1', ..., for EACH pdf file found
 
   find . -name '*.pdf' -print0 | xargs -0 echo asdf
-  #prints:
-  #asdf pdf1 pdf2 pdf3 ...
-  #
-  #echo is called only once.
-  #each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
+    #asdf pdf1 pdf2 pdf3 ...
+    #
+    #echo is called only once.
+    #each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
 
   find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
-  #xargs with multiple commands. must use bash.
-  #only use this for very simple commands, or you are in for an escaping hell!
-  #use the next pattern instead: TODO
+    #xargs with multiple commands. must use bash.
+    #only use this for very simple commands, or you are in for an escaping hell!
+    #use the next pattern instead: TODO
 
-#tput modify terminal output
+##tput
+
+  #modify terminal output
 
   #multiple commands single tput
   #tput -S
@@ -1661,30 +1899,23 @@ firefoxdownloadfolder="~/nobackup/download"
     #cyan 	6
     #white 	7o
 
-#PS1 variable: controls the format of the terminal prompt
-#PS2: second line. default '>'
-
-#mktemp
-
-  TFILE="$(mktemp)"
-  echo "$TFILE"
-  #creates a temporary file and returs its name
-
 #time and date
 
-  cal
-  #a calendar!!!
+  ##cal
 
-  #date
+    cal
+      #cout a calendar!!!
+
+  ##date
     sudo date
-    #get system date
+      #get system date
 
     sudo date -s "1 JUN 2012 09:30:00"
     #set system date
 
     TIMESTAMP=`date +%Y-%m-%d-%H-%M-%S`
 
-  #hwclock
+  ##hwclock
 
     sudo hwclock --show
     #see hardware clock
@@ -1700,24 +1931,15 @@ firefoxdownloadfolder="~/nobackup/download"
     $TIMEZONE_NAME=
     cp $TIMEZONE_LOCATION/$TIMEZONE_NAME /etc/localtime
 
-#man man
-
-  man -k password
-  #search for commands with password word on summary
-
-  man 2 write
-  #write system call
-  #2 : man section fir system calls. default 1 for commands in path.
-  #  firefox http://en.wikipedia.org/wiki/Man_page#Manual_sections
-  #  firefox http://docs.cs.up.ac.za/programming/asm/derick_tut/syscalls.html
-
-#office suite
+##libreoffice
 
   sudo aptitude install -y libreoffice-base
 
-#text
+##text
 
-  #echo
+  ##echo
+
+    #posix 8
 
     echo a
     #a\n
@@ -1738,7 +1960,9 @@ firefoxdownloadfolder="~/nobackup/download"
         #if configured to do so, your terminal will emmit beep sound
         #appplication: warn when a lengthy process has ended
 
-  #grep
+  ##grep
+
+    #posix 8
 
     #select lines from stdin or files
 
@@ -1769,27 +1993,55 @@ firefoxdownloadfolder="~/nobackup/download"
       #asdf
       #qwer
 
-  #less
+  #tac: cat reversed
 
-    #file pager (viewer)
-    #loads faster than vim
-    #vimlike commands
+    tac "$f"
 
-    #/ : search forward
-    #n : repeat last search
-    #d : down one page
-    #u : up one page
-    #g : top of document
-    #G : bottom of document
-    #g : top of document
-    #<ENTER> : down one line
+  #pagers
+
+    #less
+
+      #file pager (viewer)
+      #loads faster than vim
+      #vimlike commands
+
+      #/ : search forward
+      #n : repeat last search
+      #d : down one page
+      #u : up one page
+      #g : top of document
+      #G : bottom of document
+      #g : top of document
+      #<ENTER> : down one line
 
     less "$F"
     echo -e "ab\ncd" | less
 
-  #sort
+    #more
+
+      #worse than less
+
+      echo a | more
+
+    #pg
+
+      #worse than more
+
+      echo a | pg
+
+    #pr
+
+      #break file into pages with a certain number of lines
+      #and print to stdout
+
+      ( for i in `seq 200`; do echo a; done ) | pr
+
+  ##sort
 
     #sort linewise
+    
+    #uses External R-Way merge
+    #this algorithm allows to sort files that are larger than memory
 
     sort f1 f2
       # sort f1, f2 together linewise
@@ -1808,17 +2060,16 @@ firefoxdownloadfolder="~/nobackup/download"
       # -m : supposesing f1 and f2 are already sorted, making merge faster
       # -c : check if is sorted
 
-  #uniq
+  ##uniq
 
     #ajacent dupe line operations
-    #sort combo detected
 
     echo -e 'a\nb' | uniq
-    #a
-    #b
+      #a
+      #b
 
     echo -e 'a\na' | uniq
-    #a
+      #a
 
     echo -e 'a\nb\na' | uniq
     #a
@@ -1826,19 +2077,21 @@ firefoxdownloadfolder="~/nobackup/download"
     #a
     #not adjacent
 
-    echo -e 'a\nb\na' | sort | uniq
-    #a
-    #b
+    #sort combo detected
+
+      echo -e 'a\nb\na' | sort | uniq
+      #a
+      #b
 
     echo -e 'a\na' > a
     uniq a
-    #a
+      #a
 
     # -u : only show lines that have no dupe
     # -d : dupe lines only
     # -c : counts how many dupes
 
-  #read
+  ##read
 
     while read l; do
       echo "$l";
@@ -1856,7 +2109,7 @@ firefoxdownloadfolder="~/nobackup/download"
     done < <( echo -e "a : b\nc : d" )
       #delimiers
 
-  #tee
+  ##tee
 
     ls | tee file
       #ls to stdou and file
@@ -1869,7 +2122,7 @@ firefoxdownloadfolder="~/nobackup/download"
     ls | tee –a f1 f2 f3
       #ls to multple files
 
-  #tr
+  ##tr
 
     #charwise text operations
 
@@ -1895,7 +2148,7 @@ firefoxdownloadfolder="~/nobackup/download"
     tr -cd "[:print:]"
     #removes non printable chars
 
-  #cut
+  ##cut
 
     #field and char wise operations
 
@@ -1908,7 +2161,7 @@ firefoxdownloadfolder="~/nobackup/download"
     cut -c 1-8 "$F"
       #first 8 bytes from F
 
-  #wc
+  ##wc
 
     #count things
     #mnemonic: Word Count
@@ -1928,19 +2181,16 @@ firefoxdownloadfolder="~/nobackup/download"
       #-L max line lenght only
       #-w words only
 
+  ##printf
 
-  #printf
+    #posix 8
 
     printf "%1.2d" 1
       #01
     printf "%1.2f" 1.23
       #1.23
 
-  #tac: cat reversed
-
-    tac "$f"
-
-  #head
+  ##head
 
     head "$f"
       #shows 10 first lines of f
@@ -1948,7 +2198,7 @@ firefoxdownloadfolder="~/nobackup/download"
     head -n3 "$f"
       #shows 3 first lines of f
 
-  #tail
+  ##tail
 
     tail "$f"
       #shows last 10 lines of f
@@ -1956,7 +2206,7 @@ firefoxdownloadfolder="~/nobackup/download"
     tail -n3 "$f"
       #shows last 3 lines of f
 
-  #split
+  ##split
 
     #split files into new smaller files
 
@@ -1970,23 +2220,61 @@ firefoxdownloadfolder="~/nobackup/download"
     #-b: bytes per file
     #-n: number of files
 
-  #nl
+  ##nl
 
     #number lines
 
     nl "$f"
       #cat lines, number non-empty ones
 
-  #hexdump: view bytes in hexa
+  ##hexdump
+  
+    #view bytes in hexa
 
     hexdump -C $F
-    # -C : see bytes in hexadecimal
-    # -n32 : only 32 bytes
-    # -s32 : start at byte 32
-    # -v : show duplicate lines
-    # -e '1/1 " %02X"' : complicated format string
+      # -C : see bytes in hexadecimal
+      # -n32 : only 32 bytes
+      # -s32 : start at byte 32
+      # -v : show duplicate lines
+      # -e '1/1 " %02X"' : complicated format string
 
-  #seq
+  ##od
+
+    #posix 8
+
+    #view bytes in octal
+
+    od "$f"
+
+  ##paste
+
+    #useless
+
+    #posix 8
+
+    echo -e "a a a a a a a a a a a a a a\na" > a
+    echo -e "b b\nb b"                       > b
+    echo -e "c c\nc c\nc"                    > c
+    paste a b c
+      #shows files side by side line by line
+      #default separator: tab
+      #long lines will make this unreadable
+
+  ##expand
+
+    #useless
+
+    #posix 8
+
+    #expand tabs to spaces
+
+    echo -e "a\tb" | expand
+
+    ##unexpand
+
+      #contrary
+
+  ##seq
 
     seq 1
     seq 1 3
@@ -2023,7 +2311,10 @@ firefoxdownloadfolder="~/nobackup/download"
     sudo aptitude install -y realpath
       #transforms relative paths into absolute paths
 
-  #sed
+  ##sed
+    
+    #posix 8
+
     #just use perl lape/pie instead
     find . -type f -iname '*.py' -print0 | xargs -0 sed -n 's/django_cheatsheet/project0/gp' #replaces, and prints replaced lines only
     find . -type f -iname '*.py' -print0 | xargs -0 sed -i 's/django_cheatsheet/project0/g' #replaces in the file
@@ -2201,7 +2492,7 @@ firefoxdownloadfolder="~/nobackup/download"
     #make sure the db exists/you want to overwrite it
     #copy db to new name
 
-#cron jobs
+#cron
 
   crontab -e
   #edit user cron jobs in vim
@@ -2242,6 +2533,59 @@ firefoxdownloadfolder="~/nobackup/download"
     #@hourly	Run once an hour, "0 * * * *".
     #
     #can use instead of the 5 fields
+
+  ##at
+
+    #schedule job at a single specified time
+
+    #not for a periodic job!
+
+    cd "`mktemp -d`"
+    echo "touch a" | at now + 1 minutes
+      #in one minute ``test -f a``
+    echo "echo a" | at now + 1 minutes
+      #nothing happens!
+      #of course, job does not run in current shell
+    echo "xeyes" | at now + 1 minutes
+      #nothing happens
+      #TODO you can't launch graphical applications!
+
+    atq
+      #list jobs
+
+    atrm 1
+      #remove job with id 1
+      #id can be found on atq output
+
+    #inner workings
+
+      echo "touch a" | at now + 10 minutes
+      d=/var/spool/cron/atjobs
+      sudo cat "$d/$(sudo ls "$d" | head -n 1)"
+        #note how the entire environment
+        #and current dir are saved and restored
+
+      sudo cat /usr/lib/cron/at.allow
+        #if exists, only listed users can ``at``
+      sudo cat /usr/lib/cron/at.deny
+        #if allow exists, this is ignored!
+        #if not, denies only to listed users
+
+  ##batch
+
+    #posix 8
+
+    #superset of ``at``
+
+    #execute only when system load average goes below 1.5
+    #starting from now!
+
+    cd "`mktemp -d`"
+    echo "touch a" | batch
+
+    echo "touch a" | at -q b now
+      #same, but with at you can change to any time
+    
 
 #memory
 
@@ -2298,6 +2642,42 @@ firefoxdownloadfolder="~/nobackup/download"
       #which processes are keeping device busy
     
 #system info
+
+  #kernel
+
+    uname -r
+      #get kernel version
+
+    sudo sysctl –a
+      #view/config kernel parameters at runtime
+
+    ##modules
+
+      #.ko
+        #extension used instead of .o
+        #also contain module information
+
+      lsmod
+        #list kernel modules
+
+      cat /proc/modules
+        #kernel modules info
+
+      m=a.ko
+      modinfo $m
+        #get info about given .ko module file
+
+      sudo insmod
+        #loads the module
+        #does not check for dependencies
+
+      sudo modproble
+        #loads the module
+        #checks for dependencies
+
+      m=a
+      sudo rmmod $m
+        #get info about given .ko module file
 
   #find your linux distro
   cat /etc/*-release
@@ -2363,9 +2743,6 @@ firefoxdownloadfolder="~/nobackup/download"
         #Id field: Idle time.
         #Wa field: Time spent waiting for the IO
 
-  sudo sysctl –a
-    #kernel parameters
-
   #sar
 
     #long term performance statistics
@@ -2385,12 +2762,6 @@ firefoxdownloadfolder="~/nobackup/download"
     sar -n DEV | more
     sar -n SOCK |more
       #network stats
-
-  uname -r
-    #get kernel version
-
-  sudo X -version
-    #get xserver version
 
   #hardware info
 
@@ -2428,6 +2799,11 @@ firefoxdownloadfolder="~/nobackup/download"
     ./a/a
       #``pwd``
       #outside /a, the working directory of the caller (bash cwd)
+
+  #pwd
+
+    
+    pwdx $pid
 
   #ps
 
@@ -2488,11 +2864,11 @@ firefoxdownloadfolder="~/nobackup/download"
     kill -CONT $ID
       #continues stopped process
 
-  #killall
+  ##killall
 
     #kill all process by name
 
-  #top
+  ##top
 
     #ncurses constantly updated process list
 
@@ -2500,6 +2876,35 @@ firefoxdownloadfolder="~/nobackup/download"
     #f: field add/remove/sort
     #k: kill process
     #arrow keys: move view
+
+    ##uptime
+
+      #echo first line of top
+
+      #sample
+        #23:00:13 up 12:00,  3 users,  load average: 0.72, 0.66, 0.6
+        #^^^^^^^^ up ^^^^^,  ^ users,  load average: ^^^^, ^^^^, ^^^
+        #1           2       3                       4     5     6
+        #
+        #1: cur time
+        #2: how long the system has been up for
+        #3: how many users are logged
+        #4: load average for past 1  minute
+        #5:                       5  minute
+        #6:                       15 minutes       
+
+      ##load average
+
+        #0.75: 0.75  as many scheduled tasks as your cpu can run
+          #rule of thumb maximum good value
+        #1   :       as many scheduled tasks as your cpu can run
+          #break even point
+          #risky, a littly more and you are behind schedule
+        #5   : 5x
+          #system critically overloaded
+
+        #does not take into account how many cores you have!
+        #ex: for a dual core, breakeven at 2.0!
     
   #nice
     #-20: high priority, 20 low priority
@@ -2541,7 +2946,12 @@ firefoxdownloadfolder="~/nobackup/download"
       #     - : regular file
       #     d : dir
       #     l : symlink (not for hardlink)
-      #     p : named pipe TODO
+      #     p : named pipe (fifo)
+      #          used on ipc
+      #          like a pipe, but appears on filesystem
+      #          any process with permissions may access it then
+      #          advantage over file: faster because nor disk rw
+      #          disdvantage        : limited memory capacity
       #     s : unix socket TODO
       #     c : character file TODO
       #     d : block device file TODO
@@ -2720,6 +3130,29 @@ int main(int argc, char** argv)
       #creates file if does not exist.
       #updates modify date to present if exists
 
+  #mkdir
+
+    #make a dir
+
+    mkdir "$d"
+      #make a dir
+    mkdir -p "$d"
+      #make a dir
+      #no error if existant
+
+  #mkfifo
+
+    #make a fifo (named pipe)
+
+    mkfifo f
+    echo a > f &
+      #echo is still running
+    cat f
+      #a
+      #echo stops running
+
+      #TODO understand this!
+
   #chown
 
     sudo chown $new "$f1" "$f2"
@@ -2819,6 +3252,26 @@ int main(int argc, char** argv)
     ln -s from to
       #symlink
 
+  #realpath
+
+    #resolve all symbolic links and '.' and '..' entries of a path
+
+    sudo aptitude install -y realpath
+
+    mkdir a
+    ln -s a b
+    cd b
+    touch a
+    ln -s a b
+    cd ..
+    realpath ./b/b
+      #= "``pwd``/a/a"
+
+    #readlink -f
+
+      readlink ./b/b
+        #same
+
   #cmp 
 
     cmp "$F" "$G"
@@ -2874,6 +3327,18 @@ int main(int argc, char** argv)
     which cd
       #
       #cd is not a program! it is a bash builtin!
+
+  #temp
+
+    #mktemp
+
+      f="$(mktemp)"
+      echo "$f"
+      assert test -f "$f"
+        #creates a temporary file and returs its name
+
+      d="$(mktemp -d)"
+        #dir instead of file
 
   #dirs
 
@@ -2960,8 +3425,17 @@ int main(int argc, char** argv)
      groups
        #list groups of cur user
 
-  who
+  #who
+
     #list who is logged on system
+
+    who
+
+  #last
+    
+    #list last user logins on system
+
+    last
 
   whoami
     #print effective user name
@@ -3008,6 +3482,10 @@ int main(int argc, char** argv)
         #enter root pass
       whoami
         #root
+
+    #login
+      
+      #TODO login vs su?
 
   #sudo
 
@@ -3090,7 +3568,12 @@ int main(int argc, char** argv)
     #logs out
     #can only be used on login shell
 
-  #useradd
+  #faillog
+    
+    faillog -a
+      #TODO understand output
+
+  ##useradd
     
     u=
     sudo useradd -c '$fullname,$office,$office2,$homephone' -g 1000 -G 1001,1002 -m -s /bin/bash $u
@@ -3112,9 +3595,9 @@ int main(int argc, char** argv)
               #sets passwd for u
       #-s sets login shell
         #without -s:
-          chsh -s /bin/bash $u
+          sudo chsh -s /bin/bash $u
             #for u
-          chsh -s /bin/bash
+          sudo chsh -s /bin/bash
             #cur user
       #-g: set group he belongs to
       #-G: add to other groups too
@@ -3122,6 +3605,12 @@ int main(int argc, char** argv)
         #of add to a default group specified in some config file
       #-c: comment field of /etc/passwd
         #this format is used for ``finger`` command
+
+        #chfn
+          sudo chfn -f full_name -r room_no -w work_ph -h home_ph -o other $u
+
+          #changes this info
+          
 
     sudo useradd -e 2000-00-00 -f 5 $u 
       #-e: password expires automatically at the given date.
@@ -3275,7 +3764,7 @@ int main(int argc, char** argv)
     wget -R *.pdf -R *.zip -R *.rar -E -k -l inf -np -p -r $u
       #don't take pdfs, zips and rars
     wget -A *.html -A *.css -A *.php -A *.gif -A *.png -A *.jpg -E -k -l inf -np -p -r $u
-      #only take, html, css, etc
+      #only take, html, css, and images
 
     wget -r -np -nH -A.au,.mp3 $u
       #get all files of a given types
@@ -3308,7 +3797,6 @@ int main(int argc, char** argv)
       #-X : exclude dir
       #-I : include dir
     #-N : timestamping. only down if newer than already downloaded
-    
 
   #curl
 
@@ -3409,22 +3897,51 @@ int main(int argc, char** argv)
       #listen those ports on given interfaces
 
   #telnet
+
     #connect to external servers throught the telnet protocol. (no encryption I think)
-    #fun games MUD there!
+    #fun MUD games!
 
     telnet google.com 80
-    #type:
-    #  GET / googl.com 80
-    #  Host: www.google.com
-    #  From: me@me.com
-    #  User-Agent: fingers
-    #  <enter>
-    #
-    #connet to google at port 80 (classical HTTP server port)
-    #make a GET request
-    #and GET the google page
-    #Host is the only required field, since there can be multiple hosts per ip
-    #connexion is closed
+      #type:
+      #  GET / googl.com 80
+      #  Host: www.google.com
+      #  From: me@me.com
+      #  User-Agent: fingers
+      #  <enter>
+      #
+      #connet to google at port 80 (classical HTTP server port)
+      #make a GET request
+      #and GET the google page
+      #Host is the only required field, since there can be multiple hosts per ip
+      #connexion is closed
+
+  #mail
+
+    #TODO
+      #get any of this to work =)
+
+    #MTA mail transfer agent
+      #examples:
+        #sendmail
+        #postfix
+
+    #mail
+
+      #sudo aptitude install -y sendmail
+      #sudo aptitude install -y mailutils
+
+      echo -e "the message\n\nend of it" | mail -s "subject" -r "from@gmail.com" "to@gmail.com"
+      mail -s "subject" -r "from@gmail.com" "to@gmail.com"
+        #you type
+        #mail ends in line with '.' only or ctrl+d
+
+    #mutt
+
+      #mail with attachment
+
+      #curses inteface
+
+      sudo aptitude install -y mutt
 
 #boot
 
@@ -3449,6 +3966,23 @@ sleep 2
     env UBUNTU_MENUPROXY=0 golly 
       #oppens app without global menu
 
+  #some important ones
+    echo $HOME
+      #home dir. /home/ciro/
+    echo $USER
+      #cur username. ciro
+    echo $SHELL
+      #cur default shell. /bin/bash
+    echo $PWD
+      #cur working dir. ``pwd``
+    echo $OLDPWD
+      #last working dir. ``pwd``
+    echo $PS1
+      #is printed on every terminal line
+      #very large due to coloring
+    echo $PS2
+      #second line terminal. default '>' !
+
 #flash
   sudo apt-add-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
   sudo aptitude update && sudo aptitude install -y flashplugin-installer
@@ -3468,7 +4002,7 @@ sleep 2
   find . | sort -f | uniq -di | xargs -I'{}' rm '{}'
     #remove them
 
-#x11
+##x11
 
   #x11 is the so called ``window system``
     #upcoming alternative: wayland, not yet widely used
@@ -3533,6 +4067,9 @@ sleep 2
 
       gtk-demo
         #very nice demo of lots of 2.0 features with easy to see source code
+
+  sudo X -version
+    #get xserver version
 
   startx
     #starts x, somewhere

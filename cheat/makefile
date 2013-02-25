@@ -52,6 +52,7 @@
 		@mv out $(DIRINPATH)
 
 #variables
+
 	CC=gcc 
 	CXX=$(CC)
 	FLAGS=-Wall -Wno-unused-variable -Wno-unused-but-set-variable
@@ -159,7 +160,10 @@
 			%: %$(INEXT)
 				$(CC) $(CFLAGS) -o $@$(OUTEXT) $<
 
-#silent @
+#@
+
+	#silent
+
 	#normally build shows the commands it does
 	#with @, it omits the commands
 	#BUT the stdout/err of the command still shows!
@@ -217,15 +221,16 @@ all: $(SRC)
 
 #conditionals
 
-#A=defined
-all: a.out
-ifdef A
-	echo $(A)
-else
-	echo undefined
-endif
+	A=defined
+	all: a.out
+	ifdef A
+		echo $(A)
+	else
+		echo undefined
+	endif
 
 #builtin funcs
+
 	$(subst from,to,text) 	Replace from with to in text.
 	$(patsubst pattern,replacement,text) 	Replace words matching pattern with replacement in text.
 	$(strip string) 	Remove excess whitespace characters from string.
@@ -256,6 +261,20 @@ endif
 	$(call var,param,...) 	Evaluate the variable var replacing any references to $(1),$(2) with the first, second, etc. param values.
 
 	$(eval X := $(AUX_DIR)$* ) define a variable inside a rule
+
+#submake
+
+	mkdir a
+
+echo -e 'a=b
+all:
+\t@echo $(a)
+\t@$(MAKE) -C a all' > Makefile
+
+	echo -e 'all:
+\t@$(MAKE) $(a)' > a/Makefile
+
+	make
 
 #recipes
 

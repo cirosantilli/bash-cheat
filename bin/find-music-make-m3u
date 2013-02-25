@@ -10,42 +10,30 @@ usage()
 {
   echo 'Usage: find-music-make-m3u [options] find-root...
 
+  finds music recursivelly and makes m3u
+
 DEPENDENCIES
 
-  sudo apt-get install realpath
+  cd ~/bin/
   wget https://github.com/cirosantilli/bash/blob/48dd9d10f7d094291b246b02a6b08fc650e81e2d/find-music
 
 SAMPLE CALLS
 
   find-music-make-m3u .
-  find-music-make-m3u /tmp /bin
+    #recurses, making all.m3u playlists
   find-music-make-m3u -o out.m3u .
+    #change ouptut names to out.m3u
   find-music-make-m3u -a .
-  find-music-make-m3u -r -o all.m3u .
+    #output absolute paths
+  find-music-make-m3u -R .
+    #dont recurse
 
-  finds music under given input dir based on file extension,
-  makes an m3u list out of them.
-
-  If no music files are found, no m3u is created.
+  If no music files are found under dir, no m3u is created.
 
 OPTIONS
 
-  * -a: Absolute. If given paths on m3u are absolute, otherwise
-  paths are relative by default. Obviously, if you plan on moving
-  your m3u around YOUR system, you have to give it absolute paths.
-  but if you plan on giving them to someone else, relative paths 
-  are the way to go.
-
-  * -o: Specify output relative or absolute. If ommited in non
-  recursive mode, the output is put on standard output. If in re
-  cursive mode, the output always goes to a file, and 
-  this allows to change the default filename all.m3u.
-
-  * -r: Recursive. If specified, for each directory makes an
-  m3u of all the music under that directory. If the output name
-  is not given, then the music lists are saved to default name
-  'all.m3u'. The output is always put inside a files, never to
-  standard output.
+  -a: absolute output paths.
+  -R: not recursive.
 
 LIMITATIONS
 
@@ -69,13 +57,12 @@ if -n which find-music &> /dev/null; then
     exit 1
 fi
 
-# default vals
-RECURSE=false
-FILE_OUTPUT=false
-OUTPUT_PATH="all.m3u"
+#default vals
 ABSOLUTE=false
+RECURSE=true
+OUTPUT_PATH="all.m3u"
 
-while getopts ao:r OPT; do
+while getopts aho:R OPT; do
   case "$OPT" in
     a)
       ABSOLUTE=true
@@ -86,10 +73,9 @@ while getopts ao:r OPT; do
       ;;
     o)
       OUTPUT_PATH=$OPTARG
-      FILE_OUTPUT=true
       ;;
-    r)
-      RECURSE=true
+    R)
+      RECURSE=false
       ;;
     \?)
       usage
@@ -107,40 +93,46 @@ if [ $# -eq 0 ]; then
 fi
 
 if $RECURSE; then
+
+  if $ABSOLUTE; then
+    ABSOLUTE=-a
+  else
+    ABSOLUTE=""
+  fi
+
   for ROOT in "$@"; do
     ABS_ROOT="$( realpath "$ROOT")"
     find "$ROOT" -type d -print0 | while read -d '' DIR
     do
       cd "$DIR"
-      find-music-make-m3u -o "$OUTPUT_PATH" . 
+      find-music-make-m3u $ABSOLUTE -R -o "$OUTPUT_PATH" . 
       cd "$ABS_ROOT"
     done 
   done
+
 else
 
+  tmpout="`mktemp`"
   if $ABSOLUTE; then
     ABS_PATHS=()
     for REL_PATH in "$@"; do
       ABS_PATHS+=( "$( realpath "$REL_PATH" )" )
     done
-    OUTPUT="$(find-music "${ABS_PATHS[@]}" | xargs -0 -I '{}' echo "{}")"
+    find-music "${ABS_PATHS[@]}" > "$tmpout"
   else
-    OUTPUT="$(find-music "$@" | xargs -0 -I '{}' echo "{}")"
+    find-music "$@" > "$tmpout"
   fi
 
   # don't make empty m3u
-  if [ ! -z "$OUTPUT" ]; then
+  if [ -s "$tmpout" ]; then
 
-    # sort
-    OUTPUT="$( echo "$OUTPUT" | sort )"
-
-    if $FILE_OUTPUT; then
-      echo "$OUTPUT" > "$OUTPUT_PATH"
-    else
-      echo "$OUTPUT"
-    fi
+    tmpoutsort="`mktemp`"
+    sort "$tmpout" > "$tmpoutsort"
+    mv "$tmpoutsort" "$OUTPUT_PATH"
 
   fi
+
+  rm "$tmpout"
 
 fi
 

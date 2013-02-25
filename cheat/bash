@@ -14,9 +14,16 @@
 set -u # error on undefined variable1&>2
 set -e # stop execution if one command return != 0
 
-OUT="./_out/"
-mkdir -p "$OUT"
-cd "$OUT"
+function init_test {
+  wd="`pwd`"
+  tmp="`mktemp -d`"
+  cd $tmp
+}
+
+function cleanup_test {
+  cd "$wd"
+  rm -r "$tmp"
+}
 
 #execute outside path
   
@@ -144,6 +151,12 @@ echo "$#"' > a
     assert [ "$a" = d ]
     assert [ '$a' = '$b' ]
 
+  #unset
+
+    a=b
+    unset a
+    assert [ -z "`echo $a`" ]
+
 ##quoting
 
   a="a b"
@@ -170,10 +183,18 @@ echo "$#"' > a
 
 ##string
 
-  s=$'\n'
-    #newline to var
-  s=$'\0'
-    #null to var
+  ##interpret scapes
+
+    echo $'$a\nb'
+      #no $ expansion
+    #echo $"a\nb"
+      #does not exist
+    a=b
+    echo -e "$a\nb"
+      #solution
+    assert [ $'$\0' = '' ]
+      #short null notation
+
   s='abcd'
   echo ${#s}
     #4
@@ -197,7 +218,7 @@ echo "$#"' > a
 
     ##applications
      
-      #get/remove file extension
+      #get file extension or path without extension
 
   s='a/b.ext'
   echo ${s%.*}
@@ -353,13 +374,13 @@ echo string
         #else do second
         #this has same effect as or
 
-  #true false
+  ##true false
 
     which true
       #/bin/true
       #it is a program that does one thing: ``exit(1);`` !
 
-  #test
+  ##test
 
     #compare values and check files, answer on exit status
 
@@ -377,10 +398,23 @@ echo string
         #
 
     #file ops
-      rm -rf a
-      touch a
-      test -f && echo a
-        #a
+
+      #-f
+
+        #exists and is regular file
+
+        init_test
+        touch a
+        assert test -f a
+        cleanup_test
+
+      #-s
+
+        #exists and has size > 0
+
+        rm -rf a
+        touch a
+        assert test -f a
 
     #logical
       test ! a = a        && echo a
@@ -392,6 +426,12 @@ echo string
       test a = a -o a = b && echo a
         #a
       test a = b -o a = b && echo a
+
+  #:
+
+    #do nothing
+
+    if true; then : ; fi
 
 echo for while
 
@@ -407,6 +447,9 @@ echo for while
   while [ $i -lt 10 ]; do
       echo $i
       let i=i+1 
+      if [ $i -eq 5 ]; then
+        break
+      fi
   done
 
 #arithmetic
@@ -617,6 +660,22 @@ echo for while
   #compgen -k #keywords
   #compgen -A function #functions
   #compgen -A function -abck #all above at once
+
+##alias
+
+  alias echo="echo a"
+  assert [ `echo` = a ]
+  assert [ `echo b` = "a b" ]
+
+  ##command
+
+    assert [ `command echo b` = b ]
+      #ignores aliases
+
+  ##unalias
+
+    unalias echo
+    assert [ `command echo a` = a ]
 
 echo '
 ##################################################
