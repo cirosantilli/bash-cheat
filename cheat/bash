@@ -32,98 +32,7 @@ function cleanup_test {
   ./a
     #a
 
-#special vars
-
-  #$0
-
-    #path of cur scrip relative to cd
-
-    echo '#!/bin/bash
-echo "$0"' > a
-    chmod +x a
-    ./a
-      #./a
-
-    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-      #for the full path
-
-  #echo $1
-
-    echo '#!/bin/bash
-echo "$1"
-echo "$2"' > a
-  ./a a b
-    #a
-    #b
-
-  #$#
-
-    #number of cli args
-
-    echo '#!/bin/bash
-echo "$#"' > a
-    ./a a b
-      #2
-    ./a a b c d
-      #4
-
-    #usage
-
-      #safe opt arg getting with shift
-
-      if [ $# -gt 0 ]; then
-        arg1="$1"
-          #argument 1
-        shift
-          #destroy arg 1
-      fi
-
-      if [ $# -gt 0 ]; then
-        arg2="$1"
-          #argument 2
-        shift
-          #destroy arg 2
-      fi
-
-  #$*
-
-    DJVU_PATH="$*"
-      #List of all arguments separated by SPACES.
-      #Each argument is NOT quoted individually. 
-
-  #$@
-
-    DJVU_PATH="$@"
-      #List of all arguments separated by SPACES.
-      #Each argument IS quoted individually.
-
-  #$?
-  
-    #exit status of last program run
-
-    if echo a | grep a ; then : ; fi
-    echo $?
-      #0
-    if echo a | grep b ; then : ; fi
-    echo $?
-      #1
-
-  #$$
-
-    current_process="$$"
-      #returns current process name. Useful to create unique temporary files that have a recognizable component.
-
-    TFILE="/tmp/$(basename $0).$$.tmp"
-      #APPLICATION
-      #create temp filename
-
-  #PPID
-
-    echo $PPID
-      #id of parent process
-      #linux processes contain this info
-
-#variables
+##variables
 
   a="abc"
   assert [ $a = abc ]
@@ -136,10 +45,9 @@ echo "$#"' > a
     a="echo b"
     $a
       #b
-    assert [ $a = b ]
     assert [ `$a` = b ]
     assert [ $(a) = b ]
-    assert [ "$a" = "echo b" ]
+    assert [ "$a"   = "echo b" ]
 
   #vars expand recursivelly
   
@@ -151,11 +59,115 @@ echo "$#"' > a
     assert [ "$a" = d ]
     assert [ '$a' = '$b' ]
 
-  #unset
+  ##unset
 
     a=b
     unset a
     assert [ -z "`echo $a`" ]
+
+  ##readonly
+
+    a=b
+    readonly a
+    #a=c
+      #error: a is readonly
+
+  ##special vars
+
+    ##$0
+
+      #path of cur scrip relative to cd
+
+      echo '#!/bin/bash
+  echo "$0"' > a
+      chmod +x a
+      ./a
+        #./a
+
+      DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+        #for the full path
+
+    ##$1
+
+      echo '#!/bin/bash
+  echo "$1"
+  echo "$2"' > a
+    ./a a b
+      #a
+      #b
+
+    ##$#
+
+      #number of cli args
+
+      echo '#!/bin/bash
+  echo "$#"' > a
+      ./a a b
+        #2
+      ./a a b c d
+        #4
+
+      #usage
+
+        #safe opt arg getting with shift
+
+        if [ $# -gt 0 ]; then
+          arg1="$1"
+            #argument 1
+          shift
+            #destroy arg 1
+        fi
+
+        if [ $# -gt 0 ]; then
+          arg2="$1"
+            #argument 2
+          shift
+            #destroy arg 2
+        fi
+
+    ##$*
+
+      DJVU_PATH="$*"
+        #List of all arguments separated by SPACES.
+        #Each argument is NOT quoted individually. 
+
+    ##$@
+
+      DJVU_PATH="$@"
+        #List of all arguments separated by SPACES.
+        #Each argument IS quoted individually.
+
+    #$?
+    
+      #exit status of last program run
+
+      if echo a | grep a ; then : ; fi
+      echo $?
+        #0
+      if echo a | grep b ; then : ; fi
+      echo $?
+        #1
+
+    ##$$
+
+      current_process="$$"
+        #returns current process name. Useful to create unique temporary files that have a recognizable component.
+
+      TFILE="/tmp/$(basename $0).$$.tmp"
+        #APPLICATION
+        #create temp filename
+
+    ##PPID
+
+      echo $PPID
+        #id of parent process
+        #linux processes contain this info
+
+    ##LINENO
+
+      #cur line number!
+
+      echo $LINENO
 
 ##quoting
 
@@ -427,21 +439,25 @@ echo string
         #a
       test a = b -o a = b && echo a
 
-  #:
+  #colon
 
     #do nothing
 
     if true; then : ; fi
 
-echo for while
+##for while
 
-  for f in "a b"; do echo $f; done
-    #a b
-      #separtes at line sep
-
-  #for f in `ls -A`; do echo $f; done
+  for f in a b; do echo "$f"; done
+    #'a b'
+  for f in 'a  b'; do echo "$f"; done
+    #'a  b'
 
   for i in `seq 1 10`; do echo $i; done
+
+  echo {1..5..2}
+    #'1 3 5'
+  for i in {1..5..2}; do echo $i; done
+    #$'1\n3\n5\n'
 
   i=0
   while [ $i -lt 10 ]; do
@@ -660,6 +676,10 @@ echo for while
   #compgen -k #keywords
   #compgen -A function #functions
   #compgen -A function -abck #all above at once
+
+  ##set
+
+    #list all vars and functions
 
 ##alias
 

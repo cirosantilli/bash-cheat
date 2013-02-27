@@ -272,7 +272,7 @@ all:
 \t@$(MAKE) -C a all' > Makefile
 
 	echo -e 'all:
-\t@$(MAKE) $(a)' > a/Makefile
+\t@echo $(a)' > a/Makefile
 
 	make
 
