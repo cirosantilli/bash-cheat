@@ -38,96 +38,13 @@
   #linux man pages
     #check ##man
 
-  ##files and dirs
-  
-    #standard way for dir functions is called: standard directory architecture
-    
-    #like any classifications, many conventions are debatable
-  
-    #/bin : executables in path
-    #/sbin : executables used only for admin taks
-    #/lib : .so shared libraries/python modules
-    #/src : c source files
-    #/include : c header files
-    #/doc : documentation
-    #/tmp : temporary files
-    #/media : automatically mounted stuff
-    #/mnt : manually mounted stuff
-    #/etc : linux configuration files
-      #/etc/default : default values of some configs
-    #/dev
-      #devices
-      #represent hardware
-      #/dev/input/by-id
-        #now remove you mouse
-        #mouse files dissapear!
-    #/proc
-      #processes and sys info
-      #<http://www.thegeekstuff.com/2010/11/linux-proc-file-system/>
-      #numbered folders:
-        #represent processes!
-      #you can ``sudo cat`` all files, even if they say size 0!
-    #/root : root user home
-    #/usr : user installed/distribuiton installed/managed by package manager
-      #/usr/share
-        #system independent data (not compiled for an specific system type)
-        #/usr/share/doc
-          #documentation for libraries and executables
-        #/usr/share/sounds
-          #system sounds like beeps and warnings
-        #/usr/src/linux-headers-X.Y.Z-WW
-          #kernel
-    #/usr/local : user installed, managed either by package managers (pip) or manually
-    #/var
-      #data that changes while system runs
-      #/var/log/
-        #program outputs
-        #some important ones: <http://www.thegeekstuff.com/2011/08/linux-var-log-files/>
-          #/var/log/messages
-            #global system messages
-            #mail, cron, daemon, kern, auth
-            #ubuntu uses /var/log/syslog
-          #/var/log/auth.log
-            #user logins, including sudo
-          #/var/log/dpkg.log
-            #package install
-          #/var/log/kern.log
-            #kernel messages
-          #/var/log/mail.log
-          #/var/log/Xorg.x.log
-          #failed login attempts:
-            #/var/log/btmp 
-            #/var/log/faillog
-          #/var/log/wtemp
-            #login information
-            #used by who and last
-    #/lost+found : files recovered after system crash
-    #/sys
-      #non official
-      #ubuntu: devices
+##the standards
 
-    #~
-      #~/.profile
-        #sourced when root bash starts
-        #consequences:
-          #variables will be acessible to programs, even if opened from desktop shortcuts/dash menu
-      #~/.bashrc
-        #sourced when each bash starts
-      #~/.bash_logout
-        #sourced when each bash ends
-      #~/.xinitrc
-        #xserver initi files
-        #applications:
-          #remap keys
-    
-    ##*.d
+  #linux is based on the following:
 
-      #many theories, a plausible one:
-      #differentiate ``a.conf file`` from ``a.conf.d`` dir
-      #normally, all files in the ``a.conf.d`` dir will be sourced
-      #as if they wre inside ``a.conf``
-
-##run levels
+  ##posix <#posix>
+  ##linux standard base (lsb) <#lsb>
+  ##filesystem hierarchy standard: <#fhs>
 
 ##POSIX
 
@@ -219,6 +136,130 @@
         
           #``(.*)\1``
 
+##lsb
+    
+    #maintained by the linux foundation
+
+    #link: <http://www.linuxfoundation.org/collaborate/workgroups/lsb/download>
+    
+    #it specifies things like:
+    
+      ##core
+      
+        #core c libraries
+        #elf files
+      
+      ##c++
+      
+      ##interpreted languages
+      
+        #python
+        #perl
+      
+      ##desktop
+
+        #x11
+        #gtk+
+        #qt
+        #jpeg, png
+        #alsa
+
+##fhs
+
+  #filesystem hierarchy standard
+
+  #maintained by the linux foundation
+
+  #standard way for dir functions is called: standard directory architecture
+  
+  #like any classifications, many conventions are debatable
+
+  #/bin : executables in path
+  #/sbin : executables used only for admin taks
+  #/lib : .so shared libraries/python modules
+  #/src : c source files
+  #/include : c header files
+  #/doc : documentation
+  #/tmp : temporary files
+  #/media : automatically mounted stuff
+  #/mnt : manually mounted stuff
+  #/etc : linux configuration files
+    #/etc/default : default values of some configs
+  #/dev
+    #devices
+    #represent hardware
+    #/dev/input/by-id
+      #now remove you mouse
+      #mouse files dissapear!
+    #/dev/tcp/localhost/25
+      #check ports open/close
+      #(echo >/dev/tcp/localhost/25) &>/dev/null && echo "TCP port 25 open" || echo "TCP port 25 close"
+  #/proc
+    #processes and sys info
+    #<http://www.thegeekstuff.com/2010/11/linux-proc-file-system/>
+    #numbered folders:
+      #represent processes!
+    #you can ``sudo cat`` all files, even if they say size 0!
+  #/root : root user home
+  #/usr : user installed/distribuiton installed/managed by package manager
+    #/usr/share
+      #system independent data (not compiled for an specific system type)
+      #/usr/share/doc
+        #documentation for libraries and executables
+      #/usr/share/sounds
+        #system sounds like beeps and warnings
+      #/usr/src/linux-headers-X.Y.Z-WW
+        #kernel
+  #/usr/local : user installed, managed either by package managers (pip) or manually
+  #/var
+    #data that changes while system runs
+    #/var/log/
+      #program outputs
+      #some important ones: <http://www.thegeekstuff.com/2011/08/linux-var-log-files/>
+        #/var/log/messages
+          #global system messages
+          #mail, cron, daemon, kern, auth
+          #ubuntu uses /var/log/syslog
+        #/var/log/auth.log
+          #user logins, including sudo
+        #/var/log/dpkg.log
+          #package install
+        #/var/log/kern.log
+          #kernel messages
+        #/var/log/mail.log
+        #/var/log/Xorg.x.log
+        #failed login attempts:
+          #/var/log/btmp 
+          #/var/log/faillog
+        #/var/log/wtemp
+          #login information
+          #used by who and last
+  #/lost+found : files recovered after system crash
+  #/sys
+    #non official
+    #ubuntu: devices
+
+  #~
+    #~/.profile
+      #sourced when root bash starts
+      #consequences:
+        #variables will be acessible to programs, even if opened from desktop shortcuts/dash menu
+    #~/.bashrc
+      #sourced when each bash starts
+    #~/.bash_logout
+      #sourced when each bash ends
+    #~/.xinitrc
+      #xserver initi files
+      #applications:
+        #remap keys
+  
+  ##*.d
+
+    #many theories, a plausible one:
+    #differentiate ``a.conf file`` from ``a.conf.d`` dir
+    #normally, all files in the ``a.conf.d`` dir will be sourced
+    #as if they wre inside ``a.conf``
+
 ##licences
 
   ##gpl
@@ -230,6 +271,8 @@
   
     #like gpl
     #except you *can* use in commercial projects
+
+##run levels
 
 ##packages
 
@@ -772,134 +815,209 @@
         #already starts ripping correctly on most systems!!
         #creates dir in cur dir and saves rip out as .ogg in it
 
-#image
+##image
 
-  #image formats summary:
+  ##image formats
+  
     #<http://www.wfu.edu/~matthews/misc/graphics/formats/formats.html>
-  #formats
-    #btm: bit by bit, no compression
-    #PPM, PGM, PBM: linux, bitmap, netbpm project
-    #gif: max mas 8 bit colors. obsolete
-    #png: lossless, alpha layer,
-    #tif: lossless or lossy, in practice lossless aplications only.
-    #jpg: lossy, huge compression. removes fourrier transform high freqs I think.
-    #svg: vector. image is described by mathematical formulas, not bits.
-    #ps: a programming language! can have goto, branch, variables
-      #levels refer to versions: 1, 2 and 3 exist up to today
-      #cannot split page by page
-    #eps:
-    #djvu:
-    #pdf: text layers, image layers, can be viewd page by page
-    #mobi: mobipocket company, free format
-    #rtf: proprietary microsoft
+    
+    ##listof
+    
+      #btm: bit by bit, no compression
+      ##netpbm
+        #PBM: black and white (1 or 0!)
+        #PGM: gray scale
+        #PPM: color
+        #mainly linux
+        #not compressed
+      #gif: max mas 8 bit colors. obsolete
+      #png: lossless, alpha layer,
+      #tif: lossless or lossy, in practice lossless aplications only.
+      #jpg: lossy, huge compression. removes fourrier transform high freqs I think.
+      #svg: vector. image is described by mathematical formulas, not bits.
+      ##ps
+        #a programming language! can have goto, branch, variables
+        #levels refer to versions: 1, 2 and 3 exist up to today
+        #cannot split page by page
+      #eps:
+      #djvu:
+      #pdf: text layers, image layers, can be viewd page by page
+      #mobi: mobipocket company, free format
+      #rtf: proprietary microsoft
+  
+  ##editors
 
-  #gimp
-    sudo aptitude install -y gimp
+    ##gimp
+    
+      #huge amount of functions
 
-  #inkscape
-    sudo aptitude install -y inkscape
+      sudo aptitude install -y gimp
 
-  #imagemagick
+    ##inkscape
+    
+      #svg
+    
+      sudo aptitude install -y inkscape
+
+  ##viewers
+  
+    ##eog
+    
+      #eyes of gnome
+    
+      #lightweight
+      
+      eog a.jpg
+
+    ##caca-utils
+    
+      sudo aptitude install -y caca-utils
+
+      ##img2txt
+      
+        #stdout output
+
+        img2txt a.jpg
+        img2txt -W `tput cols` a.jpg
+          #-W: width
+          #fit to terminal
+      
+      ##caca view
+      
+        cacaview a.pjg
+          #img2text on x window
+
+    ##aview
+    
+      #converts image to ascii art!!!
+      
+      #aview is only for p.m formats
+      
+      #bw only?
+    
+      sudo aptitude install -y aview
+
+      asciiview a.jpg
+
+      #I CANT CHANGE THE WIDTH!!!
+        #asciiview -width a.jpg
+      
+
+  ##imagemagick
+
     #tons of image conversion
 
     sudo aptitude install -y imagemagick
 
     identify -list format
-    #supported formats
+      #supported formats
 
     convert a.pdf a.jpg
-    #open jpg per page, named a-1.jpg, a-2.jpg
-    #-monochrome : monochrome image. == -depth 1? but not in practice =)
-    #-depth : number of bits per pixel.
-    #-density : pdfs are fixed width for printers, not pixel data,
-    #  so you have to say how many dpi you want to take
-    #  300 for ocr
-    #does not do:
-    #  djvu
+      #open jpg per page, named a-1.jpg, a-2.jpg
+      #-monochrome : monochrome image. == -depth 1? but not in practice =)
+      #-depth : number of bits per pixel.
+      #-density : pdfs are fixed width for printers, not pixel data,
+      #  so you have to say how many dpi you want to take
+      #  300 for ocr
+      #does not do:
+      #  djvu
 
-  #exactimage
+  ##exactimage
+    
     #concurrence to imagemagick, supposedly faster. c++ template api
+
     sudo aptitude install -y exactimage
 
-#book
+##book
 
-  #okular + djvu in extra backends
-    sudo aptitude install -y okular okular-extra-backends
+  ##readers
 
-  #free mobi reader
-    sudo aptitude install -y fbreader
+    ##okular
 
-  #calibre
-      sudo aptitude install -y calibre
-      mkdir ~/calibre
-      #set library there: Cntr p > ...
+      sudo aptitude install -y okular okular-extra-backends
 
-  #pdftotext
-    #extracts text layer from pdf
-    pdftotext a.pdf
-    #generates file a.txt
+    ##fbreader
+      
+      #mobi reader
 
-  #pdftk
-    #manipulate pdfs
-    sudo aptitude install -y pdftk
-    #Merge Two or More PDFs into a New Document
-        pdftk 1.pdf 2.pdf 3.pdf cat output 123.pdf
-    #or (Using Handles):
-        pdftk A=1.pdf B=2.pdf cat A B output 12.pdf
-    #or (Using Wildcards):
-        pdftk *.pdf cat output combined.pdf
-    #slice pdf: get pagets 1 to 7 only
-        pdftk A="$f.pdf" cat A1-7 output "$f.pdf"
-    #Split Select Pages from Multiple PDFs into a New Document
-        pdftk A=one.pdf B=two.pdf cat A1-7 B1-5 A8 output combined.pdf
-    #Rotate the First Page of a PDF to 90 Degrees Clockwise
-        pdftk in.pdf cat 1E 2-end output out.pdf
-    #Rotate an Entire PDF Document’s Pages to 180 Degrees
-        pdftk in.pdf cat 1-endS output out.pdf
-    #Encrypt a PDF using 128-Bit Strength (the Default) and Withhold All Permissions (the Default)
-        pdftk mydoc.pdf output mydoc.128.pdf owner_pw foopass
-    #Same as Above, Except a Password is Required to Open the PDF
-        pdftk mydoc.pdf output mydoc.128.pdf owner_pw foo user_pw baz
-    #Same as Above, Except Printing is Allowed (after the PDF is Open)
-        pdftk mydoc.pdf output mydoc.128.pdf owner_pw foo user_pw baz allow printing
-    #Decrypt a PDF
-        pdftk secured.pdf input_pw foopass output unsecured.pdf
-    #Join Two Files, One of Which is Encrypted (the Output is Not Encrypted)
-        pdftk A=secured.pdf mydoc.pdf input_pw A=foopass cat output combined.pdf
-    #Uncompress PDF Page Streams for Editing the PDF Code in a Text Editor
-        pdftk mydoc.pdf output mydoc.clear.pdf uncompress
-    #Repair a PDF’s Corrupted XREF Table and Stream Lengths (If Possible)
-        pdftk broken.pdf output fixed.pdf
-    #Burst a Single PDF Document into Single Pages and Report its Data to doc_data.txt
-        pdftk mydoc.pdf burst
-    #Report on PDF Document Metadata, Bookmarks and Page Labels
-        pdftk mydoc.pdf dump_data output report.txt
+      sudo aptitude install -y fbreader
 
-  #djvulibre-bin
+  ##calibre
+  
+    #library management
 
-      sudo aptitude install -y djvulibre-bin
+    sudo aptitude install -y calibre
+    mkdir ~/calibre
+    #set library there: Cntr p > ...
+  
+  ##manipulation
 
-      #ddjvu
-        #formats: pbm, pgm, ppm, pnm, rle, tiff, and pdf
+    ##pdftotext
 
-      ddjvu -format=pdf "$djvu" "$pdf"
-      #loses text layer
+      #extracts text layer from pdf
 
-  #ps2pdf
+      pdftotext a.pdf
+      less a.txt
 
-    ps2pdf a.ps
-    #produces a.pdf
+    ##pdftk
 
-    ps2pdf a.ps b.pdf
-    #produces b.pdf
+      sudo aptitude install -y pdftk
 
-    ps2pdf -dUseFlateCompression=true a.ps
-    #compressed pdf
+      #Merge Two or More PDFs into a New Document
+          pdftk 1.pdf 2.pdf 3.pdf cat output 123.pdf
+      #or (Using Handles):
+          pdftk A=1.pdf B=2.pdf cat A B output 12.pdf
+      #or (Using Wildcards):
+          pdftk *.pdf cat output combined.pdf
+      #slice pdf: get pagets 1 to 7 only
+          pdftk A="$f.pdf" cat A1-7 output "$f.pdf"
+      #Split Select Pages from Multiple PDFs into a New Document
+          pdftk A=one.pdf B=two.pdf cat A1-7 B1-5 A8 output combined.pdf
+      #Rotate the First Page of a PDF to 90 Degrees Clockwise
+          pdftk in.pdf cat 1E 2-end output out.pdf
+      #Rotate an Entire PDF Document’s Pages to 180 Degrees
+          pdftk in.pdf cat 1-endS output out.pdf
+      #Encrypt a PDF using 128-Bit Strength (the Default) and Withhold All Permissions (the Default)
+          pdftk mydoc.pdf output mydoc.128.pdf owner_pw foopass
+      #Same as Above, Except a Password is Required to Open the PDF
+          pdftk mydoc.pdf output mydoc.128.pdf owner_pw foo user_pw baz
+      #Same as Above, Except Printing is Allowed (after the PDF is Open)
+          pdftk mydoc.pdf output mydoc.128.pdf owner_pw foo user_pw baz allow printing
+      #Decrypt a PDF
+          pdftk secured.pdf input_pw foopass output unsecured.pdf
+      #Join Two Files, One of Which is Encrypted (the Output is Not Encrypted)
+          pdftk A=secured.pdf mydoc.pdf input_pw A=foopass cat output combined.pdf
+      #Uncompress PDF Page Streams for Editing the PDF Code in a Text Editor
+          pdftk mydoc.pdf output mydoc.clear.pdf uncompress
+      #Repair a PDF’s Corrupted XREF Table and Stream Lengths (If Possible)
+          pdftk broken.pdf output fixed.pdf
+      #Burst a Single PDF Document into Single Pages and Report its Data to doc_data.txt
+          pdftk mydoc.pdf burst
+      #Report on PDF Document Metadata, Bookmarks and Page Labels
+          pdftk mydoc.pdf dump_data output report.txt
 
-    ps2pdf -dOptimize=true report.ps
-    #allows to see one page at a time (good for web)
+    ##djvulibre-bin
 
-#ocr
+        sudo aptitude install -y djvulibre-bin
+
+        #ddjvu
+          #formats: pbm, pgm, ppm, pnm, rle, tiff, and pdf
+
+        ddjvu -format=pdf "$djvu" "$pdf"
+        #loses text layer
+
+    ##ps2pdf
+
+      ps2pdf a.ps
+        #produces a.pdf
+      ps2pdf a.ps b.pdf
+        #produces b.pdf
+      ps2pdf -dUseFlateCompression=true a.ps
+        #compressed pdf
+      ps2pdf -dOptimize=true report.ps
+        #allows to see one page at a time (good for web)
+
+##ocr
 
   #possibilities:
   #  gocr, ocrad, tesseract or cuneiform.
@@ -910,20 +1028,20 @@
       #https://help.ubuntu.com/community/OCR#OCR_on_a_Multi_Page_PDF
       #http://blog.konradvoelkel.de/2010/01/linux-ocr-and-pdf-problem-solved/
 
-  #pdfs
+  ##pdfs
 
     #before you go about extracting pdfs, you must use the right command to convert!
     #some good options are:
     convert -density 300 -monochrome -normalize a.pdf a.png
     convert -depth 1 -density 300 -normalize a.pdf a.png
 
-  #tesseract
+  ##tesseract
 
     sudo aptitude install -y tesseract-ocr
     apt-cache search tesseract-ocr- #to find available languages
     sudo aptitude install -y tesseract-ocr-eng #english
 
-    #chinese hack
+    ##chinese hack
       sudo aptitude install -y tesseract-ocr-chi-sim #simplified chinese
       cd /usr/share/tesseract-ocr/tessdata
       sudo ln -s chi_sim.traineddata zho.traineddata
@@ -934,16 +1052,16 @@
     tesseract -l eng -psm 3 a.png a hocr
     #-psm 1 : detects pages *and* script automatically. most magic mode.
 
-  #cuneiform
+  ##cuneiform
     #sudo aptitude install -y cuneiform
     cuneiform -l eng -f text -o "$f.txt" "$f.png"
     #-f: html, hocr
     #-l: lang, see man cuneirform
 
-  #hocr2pdf from the ExactImage package.
+  ##hocr2pdf from the ExactImage package.
     hocr2pdf -i "$f.png" -s -o "$f.pdf" < "$f.hocr"
 
-#video
+##video
 
   #*ripping* is taking the dvd from the dvd to files in computer
   #*trancoding*, is encoding the dvd on some smaller format.
@@ -961,7 +1079,8 @@
 
   sudo aptitude install -y vlc
     
-  #handbrake
+  ##handbrake
+
     #transcode
     #containers: mkv, mpeg4
     #first check this for some good info:
@@ -1020,17 +1139,20 @@
       #final size: 2Gb
       #quality: same as original
 
-  #acidrip
+  ##acidrip
     #containers: avi, mpg
     #gtk interface
 
-  #dvdrip
+  ##dvdrip
+
     sudo aptitude install -y dvdrip
 
-  #k9copy
+  ##k9copy
+
     sudo aptitude install -y k9copy
 
-  #mkvtools
+  ##mkvtools
+
     sudo aptitude install -y mkvtools
 
     mkvinfo 1.mkv
@@ -1045,7 +1167,8 @@
     #the type is that contained in the tracks, not necessarily srt,
       #maybe vobsub idx + sub if you want srt from vobsub, try obsub2srt
 
-  #vobsub2srt
+  ##vobsub2srt
+
     #uses tesseract for the ocr: this means you must install tesseract lanugages
     #for chinese, must symlink 
     #see: #tesseract for installing the languages
@@ -1063,7 +1186,8 @@
     #  simplified and traditional chinese, both of which get zh
     #output goes to a.str. don't forget to rename it as a.eng.srt before going to the next language
 
-  #srtmerge
+  ##srtmerge
+
     #https://github.com/wistful/srtmerge
     sudo pip install srtmerge
     srtmerge a b ab
@@ -1072,12 +1196,13 @@
     #newline separated
     #perfect for dual sub language learning
 
-  #guvcview
+  ##guvcview
+
     sudo aptitude install -y guvcview
     #record video/audio with webcam
     #click on the bottom video icon to record, click again to stop
 
-#chat messaging video and video
+##chat messaging voice video
 
   sudo add-apt-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
   sudo aptitude update
@@ -1140,8 +1265,88 @@
     sudo aptitude install -y talk
 
     #TODO use it. lazy now.
+  
+  ##irc
+  
+    #internet relay chat 
+    
+    #servers have channels
+    
+    #log into a server, join a channel
+    
+    #messages can be seen
 
-  #mail
+      #- by all people on channel
+      #- certain people you write to only
+    
+    #you cannot see read old messages
+    #sent when you were not logged in!!
+    
+    #it is also possible to send files to people
+    
+    ##commands
+    
+      #intro: <http://www.irchelp.org/irchelp/irctutorial.html>
+
+      #full list: <http://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands>
+
+      #/connect <server>
+        
+      ##ubuntu channel
+      
+          ##register
+          
+            xdotool type "/msg nickserv register $password $email"
+        
+          ##verify registration
+            
+            #go to your email and get the registration code
+            
+            regcode=
+            xdotool type "/msg nickserv verify register $uname $regcode"
+    
+    ##clients
+    
+      ##pidgin
+      
+        #good because integrates with other ims
+          
+        ##create account
+          
+          #irc server + username on that server == a pidgin account
+
+          #add account > irc
+          
+          #enter server username and pass
+
+        ##join/create channel:
+      
+          #an irc channel == a pidgin chat
+          
+          #chats appear on the buddy list like buddies
+        
+          #buddies > join a chat > choose server, enter a #channel_name
+          
+          #if you don't know the name and want to list the available channels,
+          #enter any #name, and then /list there
+          
+          #a chat window appear, mapping to the chosen channel on chosen sever
+          
+          #if you close the chat window, it will not be on your buddy list anymore
+    
+        ##add channel to buddy list permanently:
+        
+          #buddies > add a group. name it "irc".
+          
+          #buddies > show > empty groups
+          
+          #buddies > add a chat. choose type irc, server, channel.
+          
+    ##irssi
+    
+      #ncurses
+
+  ##mail
 
     #TODO
       #get any of this to work =)
@@ -1913,6 +2118,10 @@
 
       readelf --relocs a.o
         #TODO ?
+    
+    ##elfedit
+    
+      #TODO
 
     ##objdump
     
@@ -2119,27 +2328,67 @@ int main(void)
     ack --thpppt
     #bill the cat
 
-  #web design lamp (Linux Apache + Mysqp + PHP)
+  ##lamp
+
+    #(Linux Apache + Mysqp + PHP)
 
     #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
 
-    #apache
-      sudo aptitude install -y apache2
-      firefox http://localhost/ & #test apache
+    ##apache
 
-    #php
+      sudo aptitude install -y apache2
+      firefox http://localhost/ &
+        #test apache
+
+      ##understand apache
+
+        ##directories
+        
+          #"web subdirs" map directly to local dirs
+
+          cd /var/www
+            #default root for serving files
+          mkdir test
+            #going to a dir on the web browser opens the contained index.html file by default
+          echo "<h1>Test subdir!</h1>" > test/index.html
+          firefox http://127.0.0.1/test
+          firefox http://127.0.0.1/test/index.html
+            #same result
+          
+        ##configuration
+
+          sudo vim /etc/apache2/httpd.conf
+
+          DocumentRoot "/var/www"
+            #sets apache serve root at given dir
+
+          Listen 80
+          Listen 8000
+            #listen those ports on all interfaces?
+
+          Listen 192.0.2.1:80
+          Listen 192.0.2.5:8000
+            #listen those ports on given interfaces
+
+
+    ##php
+
       sudo aptitude install -y php5 libapache2-mod-php5
       sudo /etc/init.d/apache2 restart
-      #test php
+        #test php
       echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null
       firefox http://localhost/testphp.php &
 
-    #mysql server
+    ##mysql server
+
       sudo aptitude install -y mysql-server
       #he will ask you for the password, fill it in
       #mysql -u root #the tutorial said do that, but I didn't need to. This would be for the password.
 
-    #phpmyadmin
+    ##phpmyadmin
+
+      #php interface for mysql
+
       sudo aptitude install -y libapache2-mod-auth-mysql php5-mysql phpmyadmin
       #gksudo gedit /etc/php5/apache2/php.ini
         #according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
@@ -2149,7 +2398,8 @@ int main(void)
       #  Include /etc/phpmyadmin/apache.conf
       sudo /etc/init.d/apache2 restart
 
-    #test phpmyadmin and mysql
+    ##test phpmyadmin and mysql
+
       firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
   
   ##exuberant-ctags
@@ -2214,26 +2464,80 @@ int main(void)
       #rename cur tab
       #no good for -s: only renames on gui
 
-#keyboard and mouse automation 
-
-  #autokey
-    #sudo apt-add-repository ppa:cdekter/ppa
-    #sudo aptitude install -y autokey-gtk
-
-#games and fun
+##games and fun
 
   sudo add-apt-repository -y "deb http://archive.ubuntugames.org ubuntugames main"
 
-  sudo aptitude install -y nethack-console
-    #nethack dungeon rpg
+  ##console
 
-  sudo aptitude install -y netrek-client-cow
-    #netrek space ship click and shoot
+    ##fortune
+  
+      #tells you fortune to stdout!
 
-  sudo aptitude install -y urban-terror
-    #counter strike fps clone 
+      sudo aptitude install -y fortune
+      
+      fortune
+      fortune
 
-  #golly
+    ##cowsay
+    
+      #an ascii art cow echoes stdin
+
+      sudo aptitude install -y cowsay
+      
+      fortune | cowsay
+      fortune | cowsay
+
+    ##moon-buggy
+    
+      #simple, jump over obstacles
+
+      moon-buggy
+
+    ##robotfindskitten
+    
+      #cute!
+
+      sudo aptitude install -y robotfindskitten
+
+      robotfindskitten
+  
+    sudo aptitude install -y nethack-console
+      #nethack dungeon rpg
+    
+    ##bsdgames
+  
+      #lots of console games!
+      
+      afsh bsdgames | grep /usr/games/
+        #get a list
+      
+      sudo aptitude install -y bsdgames
+
+      ##battlestar
+        #MUD
+      ##backgammon
+    
+    ##greed
+      
+      sudo aptitude install -y greed
+
+    ##ninvaders
+
+      sudo aptitude install -y ninvaders
+
+  ##netreck
+  
+    #2d plane classic
+
+    sudo aptitude install -y netrek-client-cow
+
+  ##urban terror
+
+    sudo aptitude install -y urban-terror
+      #counter strike clone 
+
+  ##golly
 
     #conways game of life simulator
 
@@ -2245,7 +2549,7 @@ int main(void)
   gnomine
     #minesweeper clone
 
-  #gnotski
+  ##gnotski
 
     #knotski clone
 
@@ -2253,154 +2557,49 @@ int main(void)
 
     gnotski
 
-##rename
+  ##dosbox
+  
+    #some good games there
+    
+    sudo aptitude install -y dosbox
+    cd
+    mkdir dos
+    dosbox game.exe
+      #there are also ``.bat`` and ``.com`` executables
 
-  rename -n 's/^([0-9]) /0$1 /g' *.mp3 
-    #does not make changes to all .mp3 files
+    ##inside the emulator
+    
+      mount c /home/$USER/dos
+      c:
+      dir
+        #ls
+      cd game
+      game.exe
+        #.exe and .bat are the extensions
+    
+    ##avoid mouting every time
+    
+      echo -e "mount c /home/$USER/dos\nc:" >> ~/.dosbox/dosbox-*.conf
+        #should be under the [autoexec] section
+    
+    ##get the sound working
+    
+      #TODO 0
 
-  rename 's/^([0-9]) /0$1 /g' *.mp3
-    #makes changes
+      sudo aptitude install -y pmidi
+      pmidi -l
+      vim ~/.dosbox/dosbox-*.conf
+      #put the port in:
+        #[midi]
+        #midiconfig=14:0
 
-##cpio
-
-  find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
-  #cfind selected files to destination, building and keeping their relative directory structure
-
-##find
-
-  #consider ack-grep instead for searching code
-
-  while IFS= read -r -u3 -d '' FILE; do
-    echo "$FILE"
-  done 3< <(find . -type f -print0)
-    #the only thing tha breaks this is having programs that use 3<. godlike
-
-  while IFS= read -r -u3 -d $'\0' FILE; do
-    echo "$FILE"
-  done 3< <(find /tmp -type f -print0 | sort -rz)
-  #this reverses find order of the find output, allowing you to rename directories also (with this, directories)
-  #will come last and be renamed last. -r is for 'reverse, and -z is for null terminated
-
-  find . -printf '%f'
-
-  #%p	filename, including name(s) of directory the file is in
-  #%m	permissions of file, displayed in octal.
-  #%f	displays the filename, no directory names are included
-  #%g	name of the group the file belongs to.
-  #%h	display name of directory file is in, filename isn't included.
-  #%u	username of the owner of the file
-
-##xargs
-
-  #posix 7
-
-  find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
-    #xargs find print0 combo.
-    #asdf pdf1
-    #asdf pdf2
-    #...
-    #
-    #print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
-    #
-    #this executes echo asdf 'pdf1', ..., for EACH pdf file found
-
-  find . -name '*.pdf' -print0 | xargs -0 echo asdf
-    #asdf pdf1 pdf2 pdf3 ...
-    #
-    #echo is called only once.
-    #each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
-
-  find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
-    #xargs with multiple commands. must use bash.
-    #only use this for very simple commands, or you are in for an escaping hell!
-    #use the next pattern instead: TODO
-
-##tput
-
-  #modify terminal output
-
-  #multiple commands single tput
-  #tput -S
-  #clear
-  #cup 2 4
-
-  #colors
-    CLEAR_TERMINAL=`tput clear`
-
-    SET_CURSOR_POSITION=`tput cup 2 3`
-    tput sc #saves current position
-    tput rc #restore previously saved cursor position
-
-    NCOLS=`tput cols`
-    NLINES=`tput lines`
-
-    CLEAR_FORMAT=`tput sgr0`
-
-    HIDE_CURSOR=`tput civis`
-    SHOW_CURSOR=`tput cnorm`
-
-    BOLD=`tput bold`
-
-    UNDERLINE_ON=`tput smul`
-    UNDERLINE_OFF=`tput rmul`
-
-    LINE_WRAP_OFF=`tput rmam`
-    LINE_WRAP_ON=`tput smam`
-
-    Black="$(tput setaf 0)"
-    BlackBG="$(tput setab 0)"
-
-    Red="$(tput setaf 1)"
-    RedBG="$(tput setab 1)"
-
-    Green="$(tput setaf 2)"
-    GreenBG="$(tput setab 2)"
-
-    Brown="$(tput setaf 3)"
-    BrownBG="$(tput setab 3)"
-
-    Blue="$(tput setaf 4)"
-    BlueBG="$(tput setab 4)"
-
-    Purple="$(tput setaf 5)"
-    PurpleBG="$(tput setab 5)"
-
-    Cyan="$(tput setaf 6)"
-    CyanBG="$(tput setab 6)"
-
-    White="$(tput setaf 7)"
-    WhiteBG="$(tput setab 7)"
-
-    echo "${GreyBG}${Red}gray on red${CLEAR_FORMAT}no format"
-    tput bold; tput setaf 7; tput setab 1; echo "gray on red"; tput sgr0; echo "no format"
-
-    #colors
-    #Set background color 	tput setab color
-    #Set foreground color 	tput setaf color
-    #Set bold mode 	tput bold
-    #Set half-bright mode 	tput dim
-    #Set underline mode 	tput smul
-    #Exit underline mode 	tput rmul
-    #Reverse mode 	tput rev
-    #Set standout mode 	tput smso
-    #Exit standout mode 	tput rmso
-    #Reset all attributes 	tput sgr0
-    #Color 	Code
-    #black 	0
-    #red 	1
-    #green 	2
-    #yellow 	3
-    #blue 	4
-    #purple 	5
-    #cyan 	6
-    #white 	7o
-
-#time and date
+##time date
 
   ##cal
+  
+    #cout a calendar!!!
 
     cal
-      #cout a calendar!!!
 
   ##date
     sudo date
@@ -2419,7 +2618,8 @@ int main(void)
     sudo hwclock --systohc
     #sync hardware clock to system clock
 
-  #set you time zone
+  ##set you time zone
+
     #on dual boot with windows there are conflicts because Windows uses local time, and Linux UTC (more logical...). you must either tell Linux to use local, or better, Windows to use UTC
     $TIMEZONE_LOCATION=/usr/share/zoneinfo
     cd $TIMEZONE_LOCATION
@@ -2518,8 +2718,14 @@ int main(void)
     ##or
     
       echo -e 'a\nb' | grep -e 'a' -e 'b'
+        #-e: multiple criteria or
+        #patters are BRE
+      echo -e 'a\nb' | grep -E -e 'a' -e 'b'
+        #patters are ERE
       echo -e 'a\nb' | grep -F $'a\nb'
-        #$'a\nb'
+        #multiple searche, separated by newline
+        #or
+        #literal match
     
     ##regexp
     
@@ -3057,32 +3263,6 @@ int main(void)
       #convert contents of F from BIG-FIVE to UTF-8
       #no changes made: only outputs to stdout
 
-##prompt user
-
-  ##while read case method
-
-  #ask for user input, break into cases
-  #if none of the cases is met, print error message and ask again.
-  while true; do
-      read -p "Which case do you want? case a [a], case b [b], case c [c])" c 
-      case "$c" in
-        "a" ) echo "Action for case a"; break;;
-        "b" ) echo "Action for case b"; break;;
-        "c" ) echo "Action for case c"; break;;
-        * ) echo "Does not match any of the possible cases. Try again."
-      esac
-  done
-
-  #same as above, but for the ultra common case of yes [Y] no [n] case 
-  while true; do
-      read -p "Yes or no? [Y/n]" yn
-      case "$yn" in
-          Y ) ; break;;
-          n ) ; break;;
-          * ) echo "Please enter either 'Y' or 'n'.";;
-      esac
-  done
-
 ##mysql
 
   ##mysql command line
@@ -3263,19 +3443,19 @@ int main(void)
       #same, but with at you can change to any time
     
 
-#memory
+##hd
 
-  free -m
-  #shows RAM and swap memory in Megabytes
-  # -t totals at bottom
-  # -sN : repeat every N seconds
+  #hd, mount partitions and filesystem
 
-  du -sh * | sort -hr
-  #disk usage per file/dir
-  # s: summarize: only for dirs in *
-  # h: human readable: G, M, b
+  ##du
 
-  #df
+    du -sh * | sort -hr
+      #disk usage per file/dir
+        #s: summarize: only for dirs in *
+        #h: human readable: G, M, b
+
+  ##df
+
     #show partitions, total and free space of each
 
     df -h
@@ -3283,37 +3463,106 @@ int main(void)
 
     df -h | sort -hrk2
     #sort by total size
+  
+  ##paritions
+    
+    #you should unmount partitions before making change to them!
+    
+    ##parition devices
+    
+      #each hd gets a device
+      
+      #each partition gets a device
+    
+      #you can only have 4 primary partitions
+      
+      #each one can be divided into logical partitions
+      
+      #primary partitions get numbers from 1 to 4
 
-  #gparted
+      #logical partitions get numbers starting from 5
+    
+      ls -l /dev | grep -E ' (sd|hd)..?$'
+        #hda
+        #hda1
+        #hda2
+        #hda5
+        #sdb
+        #sdb1
+        #sdb2
+        #sdb3
+        #hdc
+        #hdc1
+        #^^^^
+        #1 23
+        #1: partition type. hd: IDE (older). sb: SCSI (newer)
+        #2: hard disk identifier.
+        #3: parition number inside hard disk.
+        #
+        #example above:
+        #3 hds: had, sdb and hdc
+          #1 and 3 are hd
+          #2 is sd
+        #1 has 3 partitions
+        #...
+
+  ##fdisk
+  
+    #prompt interface to view/edit partitions
+
+    sudo fdisk -l /dev/sda
+      #show partition table of hd
+    sudo fdisk /dev/sda
+      #view/edit partitions for hd sda
+
+    #a primary parition that is split into logical paritions is called ``extended``
+    
+    #logical partitions are limited to 16 scsi and 53 ide total.
+  
+  ##label
+  
+    sudo e2label /dev/sda new_label
+      #sets new label for partition
+    
+    #each partition may have a label up to 16 chars length.
+    #if it does, th partition will get that name when mounted.
+
+  ##gparted
+  
+    #gui to fdisk
+    
+    #really easy to use and informative
+
     sudo aptitude install -y gparted
-    #gparted. create/delete/change partition size. In order to reduce you windows partition
-    #you need first to reduce it in windows, and then use this.
+      #gparted. create/delete/change partition size. In order to reduce you windows partition
+      #you need first to reduce it in windows, and then use this.
 
-    #to format hd:
-      #erase partition table and create new one. gpt seems to be a good choice of partition table type.
-      #create a partiion on the hd. ntfs seems to be best cross platform choice now.
+    ##format an external hd:
+      #erase partition table and create new one.
+      #gpt seems to be a good choice of partition table type.
+      #create a partiion on the hd.
+      #ntfs seems to be best cross platform choice now.
       #give a label. it will be mounted like that. I choose 300g for my 300 Gb hd.
       #all ops are very quick!
-
-  #umount
-
-    umount /media/OS
-    #unmount what is mounted on this folder
-
-  #fdisk
-
-    fdisk -l /dev/dsb
-    #show partition table of dir
 
   #get uid for devices
     ls -l /dev/disk/by-uuid
 
-  #fstab: automatic mount info
+  ##fstab
+
+    #automatic mount info
+
     sudo cp /etc/fstab /etc/fstab.bak
     sudo vim /etc/fstab
     sudo mount -a #acknowledge changes
 
-  #fuser
+  ##umount
+
+    umount /media/OS
+      #unmount what is on this dir
+
+  ##fuser
+
     fuser -m /dev/sdb1
       #which processes are keeping device busy
     
@@ -3500,6 +3749,15 @@ int main(void)
     #-u user : by given user
   
   ##performance
+
+    ##free
+    
+      #ram and swap memory usage
+
+      free -m
+        #shows RAM and swap memory in Megabytes
+        # -t totals at bottom
+        # -sN : repeat every N seconds
 
     #vmstat
 
@@ -3771,7 +4029,7 @@ int main(void)
 
 ##files
 
-  #ls
+  ##ls
   
     #list files in dirs
     
@@ -3977,13 +4235,13 @@ int main(int argc, char** argv)
       pwd
         #~/a
 
-  #touch
+  ##touch
 
     touch f
       #creates file if does not exist.
       #updates modify date to present if exists
 
-  #mkdir
+  ##mkdir
 
     #make a dir
 
@@ -3993,7 +4251,20 @@ int main(int argc, char** argv)
       #make a dir
       #no error if existant
 
-  #mkfifo
+  ##rename
+
+    rename -n 's/^([0-9]) /0$1 /g' *.mp3 
+      #does not make changes to all .mp3 files
+
+    rename 's/^([0-9]) /0$1 /g' *.mp3
+      #makes changes
+
+  ##cpio
+
+    find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
+    #cfind selected files to destination, building and keeping their relative directory structure
+
+  ##mkfifo
 
     #make a fifo (named pipe)
 
@@ -4006,12 +4277,12 @@ int main(int argc, char** argv)
 
       #TODO understand this!
 
-  #chown
+  ##chown
 
     sudo chown $new "$f1" "$f2"
       #-R : recursive
 
-  #chmod
+  ##chmod
 
     #chomod [ugoa][+-=][rwxXst]+
       chmod a+x "$f"
@@ -4075,7 +4346,7 @@ int main(int argc, char** argv)
         stat -c "%A" "$f"
           #----------
 
-  #umask
+  ##umask
 
     #shows/sets permissions that will be *removed*
     #this is system implemented, and interacts with certain system calls such as ``open``
@@ -4095,9 +4366,9 @@ int main(int argc, char** argv)
     touch c
       #---------
 
-  #ln
+  ##ln
 
-    #hardlinks and symlinks
+    #make hardlinks and symlinks
 
     ln from to
       #hardlink
@@ -4105,7 +4376,7 @@ int main(int argc, char** argv)
     ln -s from to
       #symlink
 
-  #realpath
+  ##realpath
 
     #resolve all symbolic links and '.' and '..' entries of a path
 
@@ -4125,7 +4396,7 @@ int main(int argc, char** argv)
       readlink ./b/b
         #same
 
-  #cmp 
+  ##cmp 
 
     cmp "$F" "$G"
     #compares F and G byte by byte, until first difference
@@ -4139,7 +4410,7 @@ int main(int argc, char** argv)
         echo eq
     fi
 
-  #stat
+  ##stat
 
     #cli for sys_stat
     
@@ -4163,6 +4434,64 @@ int main(int argc, char** argv)
       chmod a=rt f
       stat -c "%A" f
         #-r--r--r-T
+
+  ##find
+
+    #consider ack-grep instead for searching code
+
+    while IFS= read -r -u3 -d '' FILE; do
+      echo "$FILE"
+    done 3< <(find . -type f -print0)
+      #the only thing tha breaks this is having programs that use 3<. godlike
+
+    while IFS= read -r -u3 -d $'\0' FILE; do
+      echo "$FILE"
+    done 3< <(find /tmp -type f -print0 | sort -rz)
+      #this reverses find order of the find output, allowing you to rename directories also (with this, directories)
+      #will come last and be renamed last. -r is for 'reverse, and -z is for null terminated
+
+    find . -printf '%f'
+      #%p	filename, including name(s) of directory the file is in
+      #%m	permissions of file, displayed in octal.
+      #%f	displays the filename, no directory names are included
+      #%g	name of the group the file belongs to.
+      #%h	display name of directory file is in, filename isn't included.
+      #%u	username of the owner of the file
+
+    ##xargs
+
+      #posix 7
+      
+      #two downsides:
+        #max number of arguments
+        #escaping madness for multiple commands
+        
+        #better use the while read technique:
+      
+        while read f; do
+          echo "$f";
+        done < <(find .)
+
+      find . -name '*.pdf' -print0 | xargs -0 -I '{}' echo asdf '{}'
+        #xargs find print0 combo.
+        #asdf pdf1
+        #asdf pdf2
+        #...
+        #
+        #print0 makes list null terminated (\0), and null is illegal in filenames, while the deafult newline '\n' is legal
+        #
+        #this executes echo asdf 'pdf1', ..., for EACH pdf file found
+
+      find . -name '*.pdf' -print0 | xargs -0 echo asdf
+        #asdf pdf1 pdf2 pdf3 ...
+        #
+        #echo is called only once.
+        #each pdf is passed to echo as "pdf1" "pdf2", so don't worry about escaping
+
+      find . -name '*.pdf' -print0 | xargs -0 -I '{}' bash -c "echo asdf '{}'; echo qwer '{}'"
+        #xargs with multiple commands. must use bash.
+        #only use this for very simple commands, or you are in for an escaping hell!
+        #use the next pattern instead: TODO
   
   ##file
   
@@ -4211,7 +4540,7 @@ int main(int argc, char** argv)
     fuser -v -n tcp 5000
       #check process using tcp/udp ports
     
-  #which
+  ##which
 
     #prints full path of executable in path
 
@@ -4225,19 +4554,22 @@ int main(int argc, char** argv)
       #
       #cd is not a program! it is a bash builtin!
 
-  #temp
+  ##temp
 
-    #mktemp
+    ##mktemp
 
       f="$(mktemp)"
       echo "$f"
       assert test -f "$f"
+      rm "$f"
         #creates a temporary file and returs its name
 
       d="$(mktemp -d)"
+      assert test -d "$d"
+      rm -r "$d"
         #dir instead of file
 
-  #dirs
+  ##dirs
 
     #move between dirs in stack
 
@@ -4251,7 +4583,8 @@ int main(int argc, char** argv)
     popd
       #pop fro dir stack and cd to it
 
-  #fdupes
+  ##fdupes
+
     #fine command line tool for eliminating byte by byte duplicates
     #you can either
       #pick one by one
@@ -4265,12 +4598,20 @@ int main(int argc, char** argv)
     fdupes -rd .
       #finds dupes, and prompt which to keep for each match
 
-#shell options
+##shell
 
-  #show options
+  ##clear
+  
+    #clear terminal screen
+  
+    clear
+
+  ##set
+
     set -o
+      #show options
 
-  #shopt
+  ##shopt
 
     shopt
       #show option
@@ -4281,7 +4622,160 @@ int main(int argc, char** argv)
     shopt -u op
       #unset option
 
-#users and groups
+  ##tput
+
+    #get/set terminal output params
+
+    #could be used for cu
+    
+    tput cols
+      #terminal width
+    tput lines
+      #terminal height
+      
+    tput clear
+      #clear terminal
+
+    tput cup 0 0
+      #go to top of screen
+      #start rewritting over what was written
+
+    #multiple commands
+
+      echo $'clear\ncup 10 0' | tput -S
+
+    ##colors
+      CLEAR_TERMINAL=`tput clear`
+
+      SET_CURSOR_POSITION=`tput cup 2 3`
+      tput sc #saves current position
+      tput rc #restore previously saved cursor position
+
+      NCOLS=`tput cols`
+      NLINES=`tput lines`
+
+      CLEAR_FORMAT=`tput sgr0`
+
+      HIDE_CURSOR=`tput civis`
+      SHOW_CURSOR=`tput cnorm`
+
+      BOLD=`tput bold`
+
+      UNDERLINE_ON=`tput smul`
+      UNDERLINE_OFF=`tput rmul`
+
+      LINE_WRAP_OFF=`tput rmam`
+      LINE_WRAP_ON=`tput smam`
+
+      Black="$(tput setaf 0)"
+      BlackBG="$(tput setab 0)"
+
+      Red="$(tput setaf 1)"
+      RedBG="$(tput setab 1)"
+
+      Green="$(tput setaf 2)"
+      GreenBG="$(tput setab 2)"
+
+      Brown="$(tput setaf 3)"
+      BrownBG="$(tput setab 3)"
+
+      Blue="$(tput setaf 4)"
+      BlueBG="$(tput setab 4)"
+
+      Purple="$(tput setaf 5)"
+      PurpleBG="$(tput setab 5)"
+
+      Cyan="$(tput setaf 6)"
+      CyanBG="$(tput setab 6)"
+
+      White="$(tput setaf 7)"
+      WhiteBG="$(tput setab 7)"
+
+      echo "${GreyBG}${Red}gray on red${CLEAR_FORMAT}no format"
+      tput bold; tput setaf 7; tput setab 1; echo "gray on red"; tput sgr0; echo "no format"
+
+      #colors
+      #Set background color 	tput setab color
+      #Set foreground color 	tput setaf color
+      #Set bold mode 	tput bold
+      #Set half-bright mode 	tput dim
+      #Set underline mode 	tput smul
+      #Exit underline mode 	tput rmul
+      #Reverse mode 	tput rev
+      #Set standout mode 	tput smso
+      #Exit standout mode 	tput rmso
+      #Reset all attributes 	tput sgr0
+      #Color 	Code
+      #black 	0
+      #red 	1
+      #green 	2
+      #yellow 	3
+      #blue 	4
+      #purple 	5
+      #cyan 	6
+      #white 	7o
+  
+  ##setterm
+  
+    #change terminal properties
+
+    #turns the cursor (blinck you are here whing) on/off
+      setterm -cursor off
+      setterm -cursor on
+    
+  ##libnotify
+  
+    #do those annoying popup notifications yourself!
+  
+    sudo aptitude install -y libnotify-bin
+
+    notify-send abc
+    notify-send -t 1000 abc
+      #-t: timeout
+    notify-send -u critical abc
+      #-u urgency. low, normal, or critical
+  
+  ##setleds
+  
+    #set/get capslock, numlock and scrolllock led state
+  
+    #only works from a terminal (ctrl+alt+F? thingy) 
+    
+    setleds
+
+  ##prompt user
+
+    ##while read case
+
+      #ask for user input, break into cases
+      #if none of the cases is met, print error message and ask again.
+      while true; do
+          read -p "Which case do you want? case a [a], case b [b], case c [c])" c 
+          case "$c" in
+            "a" ) echo "Action for case a"; break;;
+            "b" ) echo "Action for case b"; break;;
+            "c" ) echo "Action for case c"; break;;
+            * ) echo "Does not match any of the possible cases. Try again."
+          esac
+      done
+
+      #same as above, but for the ultra common case of yes [Y] no [n] case 
+      while true; do
+          read -p "Yes or no? [Y/n]" yn
+          case "$yn" in
+              Y ) ; break;;
+              n ) ; break;;
+              * ) echo "Please enter either 'Y' or 'n'.";;
+          esac
+      done
+
+    ##dialog
+      
+      #ncurses wrapper
+    
+      sudo aptitude install -y dialog
+
+##users and groups
 
   #to play around with those in ubuntu, do ctrl+alt+f2, f3 ... f7
   #and you will go into login shells
@@ -4315,14 +4809,14 @@ int main(int argc, char** argv)
 
   cat /etc/default/useradd
 
-  #groups
+  ##groups
     
      groups "$u"
        #list groups of u 
      groups
        #list groups of cur user
 
-  #who
+  ##who
 
     #list who is logged on system
 
@@ -4394,13 +4888,14 @@ int main(int argc, char** argv)
       
       #TODO login vs su?
 
-  #sudo
+  ##sudo
 
     #do next single command as another user or super user
 
     #safer than becoming root with su
 
     #in order to see who can sudo what as who and with what pass
+
       sudo cat /etc/sudoers
 
       #syntax:
@@ -4435,7 +4930,7 @@ int main(int argc, char** argv)
             #ALL_PROGS = APT,USBDEV
             #%admin  ALL=(ALL) ALL
           
-    #ubuntu default:
+    ##ubuntu default
 
       #sudo group allows members to sudo whatever they want as root
 
@@ -4457,7 +4952,7 @@ int main(int argc, char** argv)
         #sudo -L --> sudo env PATH=$PATH -l
         #env thinks -l is his option
 
-  #hostname
+  ##hostname
 
      hostname
        #print hostname
@@ -4475,7 +4970,7 @@ int main(int argc, char** argv)
     #logs out
     #can only be used on login shell
 
-  #faillog
+  ##faillog
     
     faillog -a
       #TODO understand output
@@ -4523,7 +5018,7 @@ int main(int argc, char** argv)
       #-e: password expires automatically at the given date.
       #-f: account disables 5 days after password expires if pass not changed.
 
-  #userdel
+  ##userdel
    
     #remove users
     #cannot be used on logged in users
@@ -4533,14 +5028,14 @@ int main(int argc, char** argv)
     userdel -r $u
       #delete user and his home
 
-  #groupadd
+  ##groupadd
    
     #create new groups
 
     g=
     sudo groupadd $g
 
-  #usermod
+  ##usermod
 
     #add/remove users to groups
 
@@ -4558,7 +5053,7 @@ int main(int argc, char** argv)
     usermod -md $d $u
       #also move his current dir contents to new dir
 
-  #passwd
+  ##passwd
 
     #set user passws
 
@@ -4570,7 +5065,7 @@ int main(int argc, char** argv)
     sudo passwd -d "$u"
       #delete passwd for u, disabling his account
 
-  #chsh
+  ##chsh
 
     #change login shell
 
@@ -4579,7 +5074,7 @@ int main(int argc, char** argv)
     chsh -s /bin/bash
       #change your shell to bash
 
-  #ac
+  ##ac
 
     #connection statistics
 
@@ -4591,7 +5086,7 @@ int main(int argc, char** argv)
     ac -p
     #connection time for all users
 
-  #finger
+  ##finger
 
     #shows user info
     #some data taken from /etc/passwd comment field
@@ -4601,19 +5096,25 @@ int main(int argc, char** argv)
     finger "$u"
       #shows info on user u
 
-##web
+##web networking
 
-  #ping 
+  ##ping 
+
     ping google.com
     #sends an recieves data, measuring round trip, several times
 
-  whois 201.81.160.156
-    #check info about ip (country and ISP included)
+  ##whois
 
-  netstat -a
-    #TODO understand crazy output
+    whois 201.81.160.156
+      #check info about ip (country and ISP included)
 
-  #wget
+  ##netstat
+
+    netstat -a
+      #TODO understand crazy output
+
+  ##wget
+
     #for recursive down only, for the rest, curl it
 
     u=
@@ -4656,7 +5157,7 @@ int main(int argc, char** argv)
       #-I : include dir
     #-N : timestamping. only down if newer than already downloaded
 
-  #curl
+  ##curl
 
     sudo aptitude install -y curl
 
@@ -4711,7 +5212,7 @@ int main(int argc, char** argv)
     #-X DELETE : make a DELETE request. defaults to GET, if no -data nor ftp.
     #-z 21-Dec-11 : download iff it is modified after given time (sounds like crawlers!)
 
-  #ifconfig
+  ##ifconfig
 
     ifconfig
     #shows local network ips
@@ -4721,38 +5222,12 @@ int main(int argc, char** argv)
 
     #<http://www.thegeekstuff.com/2009/03/ifconfig-7-examples-to-configure-network-interface/>
 
-  #nmap
+  ##nmap
+
     sudo aptitude install -y nmap
     nmap google.com
     #shows open ports at google.com
     #you are gonna get at least 80 for their http server
-
-  #apache2 server
-
-    cd /var/www
-    #default root for serving files
-
-    mkdir test
-    #going to a dir on the web browser opens the contained index.html file by default
-
-    echo "<h1>Test subdir!</h1>" > test/index.html
-    firefox http://127.0.0.1/test
-    firefox http://127.0.0.1/test/index.html
-    #same result
-
-    sudo vim /etc/apache2/httpd.conf
-    #file to put apache configuration
-
-      DocumentRoot "/var/www"
-      #sets apache serve root at given dir
-
-      Listen 80
-      Listen 8000
-      #listen those ports on all interfaces?
-
-      Listen 192.0.2.1:80
-      Listen 192.0.2.5:8000
-      #listen those ports on given interfaces
 
   ##telnet
 
@@ -4792,13 +5267,24 @@ User-Agent: fingers
 
       w3m google.com
 
+  ##sites
+  
+    #some random bookmarks
+    
+    firefox http://www.twiddla.com/1 &
+      #draw on whiteboard
+      #share with others
+    firefox http://mathb.in
+      #math pastebin
+      #renders with mathjax
+
 #boot
 
   #grub
 
   sudo vim /etc/default/grub
-  sudo update-grub
     #timeout : time before OS choice
+  sudo update-grub
     #must update grub after changing this file
 
 ##environment variables
@@ -4852,6 +5338,9 @@ User-Agent: fingers
       #seconds since shell started
     echo $LANG
       #en_US.UTF-8
+    echo $COLUMNS
+    echo $LINES
+      #terminal width/height
 
 ##history
 
@@ -5064,7 +5553,7 @@ add Lock = Caps_Lock
     chmod +x ~/.xinitrc
       #now the change will happen every time at startup
 
-  #xdotool
+  ##xdotool
 
     #send clicks and manage window properties.
 
@@ -5111,7 +5600,13 @@ add Lock = Caps_Lock
         #wait until results
         #you can launch an app and send commands, making sure they will be received!
 
-  #xbacklight
+  ##keyboard and mouse automation 
+
+    #autokey
+      #sudo apt-add-repository ppa:cdekter/ppa
+      #sudo aptitude install -y autokey-gtk
+
+  ##xbacklight
 
     #control screen brightness
    
@@ -5122,7 +5617,7 @@ add Lock = Caps_Lock
     xbacklight -set 80
       #set to 80%
 
-  #xsel
+  ##xsel
 
     #manipulate the x selection (copy/paste area)
 
@@ -5147,7 +5642,7 @@ add Lock = Caps_Lock
   xeyes
     #fun x11 test prog
 
-  #xwd
+  ##xwd
 
     #take screenshots (x11 write dump)
 
@@ -5159,12 +5654,12 @@ add Lock = Caps_Lock
     xwd | xwdtopnm | pnmtopng > Screenshot.png
       #change format
 
-  #window manager
+  ##wmctrl
 
     wmctrl -m
       #detect
 
-  #display manager
+  ##display manager
 
     cat /etc/X11/default-display-manager
       #detect which
@@ -5197,7 +5692,7 @@ add Lock = Caps_Lock
       ./NVIDIA*.run --extract-only
       vim NVIDIA*/README
 
-#shutdown reboot
+##shutdown reboot
 
   sudo shutdown -P now
     #brings down the system and powers off afterwards
