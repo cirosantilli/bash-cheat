@@ -1,4 +1,49 @@
 #!/usr/bin/env bash
+#^^
+#1
+#1: shebang
+
+##shebang
+
+  #she: name for '#', bang: name for '!'
+
+  #tells linux which interpreter to use to run the program
+
+  #*must* be first line
+
+  #if this were a phython script for example,
+  #we'd use ``/bin/python``
+
+  ##env
+
+    #you could use ``!#/bin/bash`` instead
+    #but if you go on a system where bash is located
+    #at ``/usr/bin/bash``, your script breaks
+
+    #with env, path is used instead
+    #so if ``bash`` is in the users $PATH,
+    #and /usr/bin/env exists 
+    #it works
+
+    #the advantage of this is that:
+      #- env is more often located in ``/usr/bin`` than bash in ``/usr`` acros *NIX TODO check
+      #- all you interpreters
+
+  ##why not from extension
+
+    #in windows, interpreter is determined by extension
+
+    ##advantage os extension
+    
+      #easier to spot program type.
+
+    ##disadvantage os extension
+
+      #you need an extra EXT env var that says: you can execute a.py as py, a.sh as a
+
+      #it is important to execute a.sh as ``a`` because if someday you decide that
+      #it sould be written in python istead, you don't break all dependant programs
+      #by using ``a.py``
 
 #no complex programs shown: only language "basics"
 
@@ -45,19 +90,17 @@ function cleanup_test {
     a="echo b"
     $a
       #b
-    assert [ `$a` = b ]
-    assert [ $(a) = b ]
-    assert [ "$a"   = "echo b" ]
+    #assert [ `$a` = b ]
+    #assert [ $(a) = b ]
+    #assert [ "$a"   = "echo b" ]
 
-  #vars expand recursivelly
+  #vars are not expand recursivelly
   
-    a='$b'
     b=c
-    assert [ $a = c ]
-    b=d
-    assert [ $a = d ]
-    assert [ "$a" = d ]
-    assert [ '$a' = '$b' ]
+    a='$b'
+    assert [ "$a" = '$b' ]
+    a="$b"
+    assert [ "$a" = c ]
 
   ##unset
 
@@ -67,10 +110,12 @@ function cleanup_test {
 
   ##readonly
 
-    a=b
-    readonly a
-    #a=c
+    readon=b
+    readonly readon
+    #readon=c
       #error: a is readonly
+
+    #TODO how to undo readonly?
 
   ##special vars
 
@@ -171,15 +216,77 @@ function cleanup_test {
 
 ##quoting
 
-  a="a b"
-  assert "$a = \"a b\""
+  ##double
 
-#() parenthesis
+    ##space to var
+
+      a="a b"
+      assert [ "$a" = "a b" ]
+
+    ##dollar interpreted
+
+      a=b
+      b="$a"
+      assert [ $b = b ]
+
+    ##dollar backlash escaped
+
+      a=b
+      assert [ "\$a" = '$a' ]
+
+    ##single dollar ok
+
+      assert [ "\$" = "$" ]
+
+    ##backslash not interpreted
+
+      echo "a\nb"
+        #ab
+
+  ##single
+
+    #dollar not interpreted
+    a=b
+    b='$a'
+    assert [ "$b" = '$a' ]
+
+  ##dollar single
+
+    #interprets backslash
+
+    #does not interpret dollars
+
+    #backquote assumed
+
+    a=$'a\nb'
+    assert [ "$a" = `echo -e "a\nb"` ]
+      #not "$'a\nb'" = ...
+
+    #cannot be quoted
+
+    assert [ "$'a'" = "'\$a'" ]
+
+  ##back
+
+    #same as <#eval expression>
+    assert [ `echo a` = a ]
+
+    #external double quote not assumed
+    assert [ ! `echoa "a b"`  = "a b" ]
+    assert [  "`echoa "a b"`" = "a b" ]
+
+    #double quote escape not needed
+      assert [ "`echoa "a b"`" = "a b" ]
+    #not:
+      #assert [ "`echoa \"a b\"`" = "a b" ]
+
+#parenthesis
 
   #spawn subshell
 
   cd; pwd
     #changes current dir
+    #prints previous dir
   ( cd; pwd )
     #does not  change current dir
     #but still prints home
@@ -188,10 +295,27 @@ function cleanup_test {
     bash -c 'cd; pwd'
   #EXCEPT you don't have to do escaping or quoting!
 
-##$() eval expression
+##evaluate expression
+
+  #$()
 
   assert [ "$(echo abc)" = "abc" ]
   assert [ "`echo abc`"  = "abc" ]
+
+##eval
+
+  #exec string in current bash
+
+  eval "a=b"
+  assert [ $a = b ]
+
+  ##applications
+
+    #make varname from var
+
+    a=b
+    eval "$a=c"
+    assert [ $b = c ]
 
 ##string
 
@@ -204,8 +328,8 @@ function cleanup_test {
     a=b
     echo -e "$a\nb"
       #solution
-    assert [ $'$\0' = '' ]
-      #short null notation
+    assert [ '' = $'\0' ]
+      #null charcter
 
   s='abcd'
   echo ${#s}
@@ -239,6 +363,8 @@ function cleanup_test {
 
 echo glob
 
+  #formal name: pat expansion
+
   #simple regex like expanded before command is evaluated
 
   echo *
@@ -252,10 +378,9 @@ echo glob
     #* matches ""
   echo [ab]*
     #start with a or b
-  whoami
-    #ciro
+  su a
   echo ~
-    #/home/ciro
+    #/home/a
   echo ~test
     #/home/test
   echo ~root
@@ -264,9 +389,57 @@ echo glob
     #~idonthaveahome
   
   #combos:
-    #for f in *; do echo "$f"; done
-    #for f in .*; do echo "$f"; done
-    #for f in * .*; do echo "$f"; done
+
+    for f in *; do echo "$f"; done
+      #only non hidden
+    for f in .*; do echo "$f"; done
+      #only hidden
+    for f in * .*; do echo "$f"; done
+      #both hidden and not hidden
+
+  ##extended globbing
+
+    #glob with ERE-like expressions instead of BREs
+
+    shopt -s extglob
+      #extended globbing
+
+      #glob              ERE mnemonic
+      #?(pattern-list)   (...|...)?
+      #*(pattern-list)   (...|...)*
+      #+(pattern-list)   (...|...)+
+      #@(pattern-list)   (...|...)    [@ not a RE syntax]
+      #!(pattern-list)   "!" used as for negative assertions in RE syntax
+
+##brace expansion
+
+  #{}
+
+  ##alternatives
+
+    assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
+
+    ##nested ok
+
+      assert [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ]
+
+  ##number ranges
+
+    assert [ "`for a in a{1..3}b; do echo -n "$a"; done`" = $'a1b a2b a3b ' ]
+    assert [ "`for a in a{-1..-3}b; do echo "$a"; done`" = $'a-1b\na-2b\na-3b' ]
+    assert [ "`for a in a{1..5..2}b; do echo "$a"; done`" = $'a1b\na3b\na5b' ]
+    assert [ "`for a in a{5..1..2}b; do echo "$a"; done`" = $'a5b\na3b\na1b' ]
+
+  ##letter ranges
+
+    assert [ "`for a in 0{a..c}1; do echo "$a"; done`" = $'0a1\n0b1\n0c1' ]
+    assert [ "`for a in 0{a..e..2}1; do echo "$a"; done`" = $'0a1\n0c1\n0e1' ]
+
+  ##applications
+
+    for i in {1..5}; do echo $i; done
+
+    mkdir a{a..c}
     
 echo array
 
@@ -452,8 +625,6 @@ echo string
   for f in 'a  b'; do echo "$f"; done
     #'a  b'
 
-  for i in `seq 1 10`; do echo $i; done
-
   echo {1..5..2}
     #'1 3 5'
   for i in {1..5..2}; do echo $i; done
@@ -558,10 +729,11 @@ echo string
 
   #| pipe
 
-    outerr | cat
+    assert [ "`outerr | cat`" = $'out\nerr' ]
       #out
       #err
         #pipes out *and* err
+    outerr |& cat
     outerr >/dev/null | cat
       #err
 
@@ -650,7 +822,6 @@ echo string
     #remove job 3 from list of sub jobs
     #closing bash will not kill it anymore
 
-
 #list available commands
 
   #commands: programs in path
@@ -662,6 +833,10 @@ echo string
     #examples:
       #echo, printf, read
       #let, eval, set export
+
+    ##good way to find that command is not a built-in:
+      which cmd
+      #if it has a path, then it is not a built-in
   #keywords: 
     #hard coded in bash
     #not commands, but parts of commands
@@ -679,7 +854,17 @@ echo string
 
   ##set
 
-    #list all vars and functions
+    #view/modify vars, functions and SHELLOPTS
+
+    set
+      #list all vars and functions that are set
+    set -e
+      #sets the -e option
+    set +e
+      #unsets the -e option
+
+    man bash
+      #/SHELLOPTS
 
 ##alias
 
@@ -697,7 +882,225 @@ echo string
     unalias echo
     assert [ `command echo a` = a ]
 
+##exec
+
+  #bash interface similar to an exec system call
+
+  #replaces cur process with the given process
+
+  #destroying the caller bash!
+
+  assert [ $SHLVL = 1 ]
+  exec bash
+  assert [ $SHLVL = 1 ]
+  #exec bash
+    #ls then exits bash!
+    #you don't see anything
+
+##login
+
+  #login shells source:
+
+  #/etc/profile
+    #sourced by all login shells of all users
+  #~/.bash_profile, ~/.bash_login, and ~/.profile
+    #the first one *and only* the first one that is found and readable
+    #is sourced by login shells of the user
+
+  ##how to make a login shell:
+    
+    #start your system with it
+
+    bash -l
+
+    #this is not usually necessary since exported environment variables
+    #are inherited by child shells
+
+##interactive
+
+  #normally: a shell with std(in|out|err) linket to console
+
+  #sources ``/etc/bash.bashrc`` and ``~/.bashrc`` in that order
+  #after any login sources
+
+  ##non-interactive
+
+    #does not source the interactive files,
+    #but sources $BASH_ENV file if not empty
+
+  ##how to start non interactive bash:
+
+    ##subshells
+
+      bash -c 'echo a'
+      echo "echo a" | bash
+      ( echo a )
+
+  ##how to start interactive bash:
+
+    #the one you start your system with
+
+    bash
+      #you are now inside and interactive bash!
+
+##environment variables
+
+  #huge list: <http://wiki.bash-hackers.org/syntax/shellvars>
+
+  ##env
+
+    env
+      #shows all environment variables and their values
+
+    #change environment for a single command
+
+      a=b
+      env a=c echo $a
+        #c
+      echo $a
+        #b
+    
+    ##-i
+    
+      #exec in a clean environment
+
+      assert [ "`env -i a=b env`" = "a=b" ]
+
+      ##start a subshell in the cleanest env possible
+      
+        #don't forget: subshells inherit all exported vars
+
+        env -i bash --noprofile --norc
+        env
+          #some default vars might still be there!
+          #I get: SHLVL, PWD
+        exit
+
+  ##some important ones
+    
+    echo $HOME
+      #home dir. /home/ciro/
+    echo $USER
+      #cur username. ciro
+    echo $HOSTNAME
+      #cur hostname. ciro-thinkpad
+    echo $HOSTTYPE
+      #i686
+      #x86_64
+    echo $SHELL
+      #cur default shell. /bin/bash
+    echo $TERM
+      #xterm on terminals run from x
+      #linux on ctrl+alt+f1 terminal
+      #not sure what it means
+    echo $PWD
+      #cur working dir. ``pwd``
+    echo $OLDPWD
+      #last working dir. ``pwd``
+    echo $PS1
+      #is printed on every terminal line
+      #very large due to coloring
+    echo $PS2
+      #second line terminal. default '>' !
+    echo $BASHOPTS
+      #list of current on bash options
+      #readonly, modified indirectly by ``shopts``
+      #on subshell startup, options in this list are set
+      #``man bash`` ``/shopts`` for full list
+    echo $SHELLOPTS
+      #same as BASHOPTS
+      #but set with ``set`` command instead
+    echo $BASH_VERSION
+      #4.2.37(1)-release
+    echo $RANDOM
+    echo $RANDOM
+      #random number between 0 and 32767
+    echo $SECONDS
+    echo $SECONDS
+      #seconds since shell started
+    echo $LANG
+      #en_US.UTF-8
+    echo $COLUMNS
+    echo $LINES
+      #terminal width/height
+    ##shlvl
+
+      #depth level of cur shell
+      
+      assert [ "`echo $SHLVL`" = 1 ]
+      bash
+      assert [ "`echo $SHLVL`" = 2 ]
+      exit
+      assert [ "`echo $SHLVL`" = 1 ]
+      bash &
+      assert [ "`echo $SHLVL`" = 1 ]
+        #does not increase
+        #only increases in nested bashes
+      kill %+
+
+##history
+
+  ##fc
+
+    #posix 7
+  
+    echo a
+    fc
+      #opens "echo a" in vim for editing
+      #when you quit, executes what you wrote
+    
+    #set default editor
+
+      FCEDIT=/bin/vi
+      fc
+
+##clear
+
+  #clear terminal screen
+
+  clear
+
+##shopt
+
+  #builtin
+
+  shopt
+    #show options
+  shopt -s op
+    #set option
+  shopt -u op
+    #unset option
+  
+  ##hash
+
+    set -h
+    mkdir d
+    echo "echo 2" > d/echon
+    chmod +x d/echon
+    PATH="$PATH:`pwd`:`pwd`/d"
+    assert [ `echon` = 2 ]
+    for i in {}
+    echo "echo 1" > echon
+    chmod +x echon
+    assert [ `echon` = 2 ]
+      #surprise!
+    rm -r d
+    rm echon
+
+      #./echon is first in path
+      #and sould print 1!
+
+      #with ``set -h``
+      #bash does not search the path every time
+      #it would take too long
+      #it remembers paths!
+  
+    #shows used commands in current session
+    #with usage count
+    
+    hash
+
 echo '
 ##################################################
-# ALL ASSERTS PASSED!
+# ALL ASSERTS PASSED
 ##################################################'

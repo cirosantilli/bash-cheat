@@ -34,9 +34,14 @@
 
   #<http://www.thegeekstuff.com>
     #short tutorials with lots of examles
+  
+  #tuxfiles
+    #<http://www.tuxfiles.org/linuxhelp/fstab.html>
+    #some good tuts
 
   #linux man pages
-    #check ##man
+    #check <#man>
+    #not many examples, but full function list, and you often can guess what they mean!
 
 ##the standards
 
@@ -48,9 +53,15 @@
 
 ##POSIX
 
-  #is an operating system standardization by IEEE and ``the open group``.
+  #posix.1-2008, Single UNIX Specification, Version 4. formal name:``IEEE Std 1003.1-2008``
+  #<http://pubs.opengroup.org/onlinepubs/9699919799/>
+  
+  ##open group
 
-  #posix.1-2008, Single UNIX Specification, Version 4. formal name:``IEEE Std 1003.1-2008`` <http://pubs.opengroup.org/onlinepubs/9699919799/>
+    #is an operating system standardization by IEEE and ``the open group``
+    #(merger of the ``Open software foundation`` with ``X/Open``)
+
+    #major open group supporters: Fujitsu, Oracle, Hitachi, HP, Orbus Software, IBM, Kingdee, NEC, SAP, US Department of Defense, NASA 
 
   #linux and mac OS X are largely posix compliant, but not certified
   #windows is not
@@ -188,6 +199,14 @@
   #/dev
     #devices
     #represent hardware
+    #/dev/sd.. and /dev/hd..
+      #hard disk partitions. see <#hd>
+    #/dev/sr.
+      #cd/dvd
+    #/dev/cdrom
+    #/dev/cdrw
+      #usually link to /dev/sr.
+    #/dev/(sd|hd)..
     #/dev/input/by-id
       #now remove you mouse
       #mouse files dissapear!
@@ -300,8 +319,28 @@
 
   ##search
 
+    man intro
+      #exact search on title
+      #shows only first match
+    man -a intro
+      #shows each match in succession
+      #asks if you want to continue on each quit
     man -k password
       #search for commands with password word on summary
+    man -K password
+      #search on all of manual pages
+      #may take some time
+
+    ##--regex
+    
+      #whatever you were searching
+      #search with ERE now
+    
+      man --regex 'a.c'
+        #regex on title
+      man --regex -K 'a.c'
+        #regex on entire manual
+
     apropos password
       #same
     man -k .
@@ -486,13 +525,20 @@
 
   ##bc
 
-    #command line "calculator"
+    #simple interpreted language, calulator focus
+    
+    #c-like syntax
+    
+    #features: variable definition, function definition, arrays, strings
 
-    #useless: not worth learning curve. use python instead.
+    #non features: string concatenation
 
     #posix 7
+    
+    assert [ `echo '1+1' | bc` = 2 ]
 
   #weather indicator
+
     sudo add-apt-repository -y ppa:atareao/atareao
     sudo apt-get update
     sudo apt-get install my-weather-indicator
@@ -500,14 +546,15 @@
 ##compresssion
 
   #the performance parameters are:
-    #compression ratio
-    #compression time
-    #can see and extracting single files
-    #support across OS
-    #ability to break into chunks
-    #keep file metadata such as permissions, hidden (windows), etc.
+    #- compression ratio
+    #- compression time
+    #- can see and extracting single files
+    #- support across OS
+    #- ability to break into chunks
+    #- keep file metadata such as permissions, hidden (windows), etc.
 
-  #zip
+  ##zip
+
     #most widely supported
     #not so high compression
       #compresses dir one file by one it seems
@@ -535,7 +582,8 @@
     for F in *; do echo "$F"; echo "$F".zip; zip "$F".zip "$F"; done
     #zip every file in cur dir to file.zip
 
-  #tar tar.gz tgz tar.bz2 tb2
+  ##tar tar.gz tgz tar.bz2 tb2
+
     #tar only turns dir into file, but no compression
     #this is why it is often coupled with gz and bz2: those are files compressers
     #gz gives similar compression to .zip
@@ -558,7 +606,8 @@
       tar xjf "$F".tbz
       #f: from file given as next arg, not stdin
 
-  #rar
+  ##rar
+    
     #proprietary Roshal ARchive
     #can do split archive
       #split archive extensions:
@@ -2095,6 +2144,14 @@
         #-q : only call graph
         #-qfunc1 : only call graph for ``func1``
   
+  ##mingw
+  
+    #cross compile for windows
+    
+    #it seems gcc can't do this
+    
+    apt-cache search mingw
+  
   ##binutils package
   
     #utilities for compiled code
@@ -3092,6 +3149,22 @@ int main(void)
 
     #-s : separator
     #-w : equal width
+    
+    ##non-application
+    
+      #you could use this for loops:
+      
+      for i in `seq 10`; do echo $i; done
+
+      #but don't
+      
+      #use brace expansion instead which is a bash built-in,
+      #and thus potentially faster (possibly no new process spawned):
+
+      for i in {1..10}; do echo $i; done
+
+      #use this only if you really need to control
+      #the output with the options
 
   ##path operations
 
@@ -3442,7 +3515,6 @@ int main(void)
     echo "touch a" | at -q b now
       #same, but with at you can change to any time
     
-
 ##hd
 
   #hd, mount partitions and filesystem
@@ -3453,20 +3525,19 @@ int main(void)
       #disk usage per file/dir
         #s: summarize: only for dirs in *
         #h: human readable: G, M, b
-
-  ##df
-
-    #show partitions, total and free space of each
-
-    df -h
-    # h: like for du -h
-
-    df -h | sort -hrk2
-    #sort by total size
   
   ##paritions
     
     #you should unmount partitions before making change to them!
+
+    ##df
+
+      #show partitions, total and free space of each
+
+      df -h
+        #h: like ``du -h``
+      df -h | sort -hrk2
+        #sort by total size
     
     ##parition devices
     
@@ -3505,68 +3576,233 @@ int main(void)
           #2 is sd
         #1 has 3 partitions
         #...
-
-  ##fdisk
-  
-    #prompt interface to view/edit partitions
-
-    sudo fdisk -l /dev/sda
-      #show partition table of hd
-    sudo fdisk /dev/sda
-      #view/edit partitions for hd sda
-
-    #a primary parition that is split into logical paritions is called ``extended``
     
-    #logical partitions are limited to 16 scsi and 53 ide total.
-  
-  ##label
-  
-    sudo e2label /dev/sda new_label
-      #sets new label for partition
+    ##label
     
-    #each partition may have a label up to 16 chars length.
-    #if it does, th partition will get that name when mounted.
+      #an ext concept
+      
+      #determines the mount name for the partition
+      
+      #should be unique, but not sure this is enforced.
+      
+      ##e2label
+      
+        #get/set ext[234] label info
 
-  ##gparted
-  
-    #gui to fdisk
+        sudo e2label /dev/sda7 
+        sudo e2label /dev/sda new_label
+          #sets new label for partition
+        
+        #each partition may have a label up to 16 chars length.
+        #if it does, th partition will get that name when mounted.
+      
+      ##list all labels:
+      
+        sudo blkid
+
+    ##filesystem type
     
-    #really easy to use and informative
+      ##ext[234]: linux today
+        #on ext4, only one dir is created: lost+found
+      ##ntfs: windows today
+      ##nfat: dos
+      
+      #to find out types see: <#blkid> or <#lsblk>
+      
+    ##uuid
+      
+      #given when you create of format a partition
+      
+      #to view them, see <#blkid> or <#lsblk> or <#gparted>
+    
+    ##swap
+      
+      #used by os to store unused ram
+      
+      #should be as large as your ram more or less, or twice it.
+      
+      #can be shared by multiple os, since only one os can run at a time.
+      
+      sudo swapon /dev/sda7
+        #tur swap on on partition /dev/sda7
+      swapon -s
+        #find the swap partition used on cur os
+      
+      sudo swapoff
+        #disable swap partition
+      
+      sudo mkswap -U random /dev/sda7
+        #make a swap partition on partition with random uuid
+        #swap must be off
 
-    sudo aptitude install -y gparted
-      #gparted. create/delete/change partition size. In order to reduce you windows partition
-      #you need first to reduce it in windows, and then use this.
+    ##blkid
+    
+      #get UUID, label and filesystem type for all partitions
 
-    ##format an external hd:
-      #erase partition table and create new one.
-      #gpt seems to be a good choice of partition table type.
-      #create a partiion on the hd.
-      #ntfs seems to be best cross platform choice now.
-      #give a label. it will be mounted like that. I choose 300g for my 300 Gb hd.
-      #all ops are very quick!
+      sudo blkid
 
-  #get uid for devices
-    ls -l /dev/disk/by-uuid
+    ##lsblk
+    
+      #list block devices (such as partitions)
+      
+      sudo lsblk -f
+        #show filesystems (partitions) only
+        #shows type, label and mountpoint
+      sudo lsblk
+        #lis all block devices.
+        #to me, also lists ``/dev/sr0``, my dvd.
+      sudo lsblk -no UUID /dev/sda1
+        #get UUID only
 
-  ##fstab
+    ##/dev/disk
+    
+      #symliks to partition identifiers
+      
+      #allows you to get identifier info
+      
+      #if id no present, link not there
 
-    #automatic mount info
+      cd /dev/disk/
+      ls -l 
+        #by-id
+        #by-label
+        #by-path
+        #by-uuid
 
-    sudo cp /etc/fstab /etc/fstab.bak
-    sudo vim /etc/fstab
-    sudo mount -a #acknowledge changes
+      ls -l by-id
+
+    ##fdisk
+    
+      #format disk
+      
+      #better use <#gparted> if you have X11
+      
+      #edit partition table. does not create filesystems. for that see: <#mke2fs>
+    
+      #to view/edit partitions with interactive cli prompt interface
+      
+      #does not show labels and where partitions are mounted
+
+      sudo fdisk -l /dev/sda
+        #show partition table of hd
+      sudo fdisk /dev/sda
+        #view/edit partitions for hd sda
+
+      #a primary parition that is split into logical paritions is called ``extended``
+      
+      #logical partitions are limited to 16 scsi and 53 ide total.
+      
+      #interesting line:
+        #255 heads, 63 sectors/track, 60801 cylinders, total 976773168 sectors
+        #255 ^^^^^, 63 ^^^^^^^/^^^^^, 60801 ^^^^^^^^^, total 976773168 sectors
+        #    1         2       3            4                                 
+        # 
+        #2: sector: smalles adressable memory in hd. you must get the whole sector at once.
+        #4: defaults: rw, suid, dev, exec, auto, nouser, and async
+        #
+        #to understand, must see images:
+        #
+        #  <http://osr507doc.sco.com/en/HANDBOOK/hdi_dkinit.html>
+        #  <http://en.wikipedia.org/wiki/Track_%28disk_drive%29>
+    
+    ##mke2fs
+    
+      #make ext[234] partitions
+
+      #better use <#gparted> if you have X11
+
+    ##gparted
+    
+      #gui to <#fdisk> + <#mke2fs>
+      
+      #really easy to use and informative
+
+      sudo aptitude install -y gparted
+
+      ##format an external hd:
+        #- erase partition table and create new one
+        #- gpt seems to be a good choice of partition table type.
+        #- create a partiion on the hd.
+        #- ntfs seems to be best cross platform choice now.
+        #- give a label. it will be mounted like that. I choose 300g for my 300 Gb hd.
+        #- all ops are very quick!
+  
+  ##mount
+  
+    sudo mount /dev/sda1 /media/win/
+      #mount /dev/sda1 on /media/win/
 
   ##umount
 
-    umount /media/OS
+    sudo umount /media/win/
       #unmount what is on this dir
+
+  ##/etc/fstab
+    
+    #source
+      firefox http://www.tuxfiles.org/linuxhelp/fstab.html
+      firefox https://wiki.archlinux.org/index.php/Fstab
+      man fstab
+      man mount
+        #options are here
+
+    #list partitions that should mount up at startup
+    #and where to mount them
+
+    sudo cp /etc/fstab /etc/fstab.bak
+    sudo vim /etc/fstab
+    sudo mount -a
+      #apply changes
+      #only mounts ``auto`` option set.
+    
+    #syntax:
+    
+      #<file system> <mount point>   <type>  <options>       <dump>  <pass>
+      #1             2               3       4               5       6
+      #1: identifier to the file system.
+        #Ex:
+          #- /dev/sda1
+          #- UUID=ABCD1234ABCD1234
+          #- LABEL=mylabel
+      #2: where it will get mounted.
+        #On ubuntu: make a subdir of /media like /media/windows
+        #This dir must exist before mount
+        #and preferably be used only for mounting a single filesystem.
+        #I don't think fstab can auto create/remove the missing dirs.
+      #3: type. ext[234], ntfs, etc.
+      #see sources for others.
+      
+      ##windows
+        #use:
+        umask=111,dmask=000 
+        #this way, dirs will be 000 and files 666 (not executable)
+        #see <#umask> to understand better
+      
+      ##dvd
+
+        #mounting dvds/usbs is similar to mounting partitions:
+        /dev/cdrom 	/media/dvd 	noauto 	ro 0 0
+        #however if you use auto, you always get errors when the dvd is empty
+        
+        #it is best to use auto, because dvd can be of several formats.
 
   ##fuser
 
     fuser -m /dev/sdb1
       #which processes are keeping device busy
     
+  ##fsck
+  
+    #check and repair linux filesystems
+
 ##system info
+
+  ##uname
+  
+    uname -a
+      #print all info uname has to give!
+
+      #you can get it isolated with other opts
 
   ##kernel
 
@@ -3986,6 +4222,52 @@ int main(void)
 
         #does not take into account how many cores you have!
         #ex: for a dual core, breakeven at 2.0!
+  
+  ##nohup
+    
+    ##application
+    
+      #make a process that continues to run if calling bash dies
+      #for example an X application!
+
+      nohup firefox >/dev/null &
+      exit
+        #firefox still lives!
+  
+    ##explanation
+    
+      #program ignores HUP (hangup) signal (signal is a linux os concept)
+      
+      #this signal is sent when the calling shell of a program is killed
+      
+      #most signals if uncaught (the case of most programs), kill the program
+      
+      #consequense: killing calling bash kills the program
+      
+      #*unless*, you use nohup
+      
+      #consequences of ``nohup``:
+        #- if stdin came from terminal (not pipe for example),
+          #sdtin comes from ``/dev/null`` (you have no stdin!) instead
+        #- if stdout would go to terminal (not pipe for example)
+          #it is *appended to* ``./nohup.out``, and if not possible from ``$HOME/nohup.out``
+          #instead
+          #
+          #if no stdout is generated, ``nohup.out`` is not created
+          #
+          #you can also redirect stdout to any file you want via ``nohup cmd > file``
+          #for example ``nohup cmd > /dev/null`` to ignore output
+        #- the program is still visible in ``jobs``, and may be killed with ``kill %+``
+        #- if you don't use ``&``, it runs on foreground, preventing you from using bash
+
+      #how to test all this:
+      nohup bash -c 'for i in {1..10}; do echo $i; sleep 1; done'
+
+      #try:
+        #append ``> f`` to command
+        #append ``&``   to command
+        jobs
+        cat nohup.out
     
   ##nice
 
@@ -4026,6 +4308,27 @@ int main(void)
     ##ipcrm
 
       #remove ipc facility
+  
+  ##chroot
+  
+    #execute single command with new root
+    
+    ##application
+    
+      #you mounted another linux system
+      
+      #you want to try it out from bash, without rebooting
+      
+      sudo chroot /media/other_linux /bin/env -i \
+          HOME=/root                  \
+          TERM="$TERM"                \
+          PS1='\u:\w\$ '              \
+          PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+          /bin/bash --login
+
+      #``/bin/env`` and ``/bin/bash`` must exist relavive to ``/media/other_linux``
+      
+      #TODO check this and get asserts working =)
 
 ##files
 
@@ -4036,7 +4339,7 @@ int main(void)
     #posix 7
 
     ls -l
-      #linux permissions:
+      ##permissions
       #  <http://www.ibm.com/developerworks/linux/library/l-lpic1-v3-104-5/index.html>
       #symbolic:
       #  -rw-rw-r-- 1 owner group   62 Jan 28 17:35 file-list
@@ -4095,8 +4398,18 @@ int main(void)
       #  user 0 (named root by default) is special and can do whatever regardless of permissions
       #
       #meaning:
+      
+        ##write directories
+        
+          mkdir r
+          mkdir r/d
+          chmod 444 r
+          touch r/f
+            #permission denied
+          touch r/d/f
+            #permission denied
 
-        #sticky bit
+        ##sticky bit
 
           su a
           mkdir a
@@ -4109,7 +4422,7 @@ int main(void)
           rm a/a
             #removed
 
-        #suid and sgid on executable
+        ##suid and sgid on executable
 
           #DOES NOT WORK PROPERLY ON SCRIPTS: YOU MUST HAVE AN EXECUTABLE!!!!
 
@@ -4135,7 +4448,7 @@ int main(int argc, char** argv)
           chmod g+s ./a.out
             #now effective group is also b's!
 
-        #sgid on directory
+        ##sgid on directory
 
           a=
           b=
@@ -4160,7 +4473,7 @@ int main(int argc, char** argv)
             test -g not-sgid/d && echo g
               #
 
-          #sgid
+         ##sgid
 
             mkdir sgid
             chmod 2777 sgid
@@ -4278,11 +4591,36 @@ int main(int argc, char** argv)
       #TODO understand this!
 
   ##chown
+  
+    #change owner and group of files
+    
+    ##owner
 
-    sudo chown $new "$f1" "$f2"
-      #-R : recursive
+      su a
+      mkdir d
+      touch d/f
+      sudo chown b d
+        #must use sudo to chown
+      assert [ ``stat -c '%U' d`` = b ]
+      assert [ ``stat -c '%U' d`` = a ]
+      
+      #-R: recursive
+        su a
+        mkdir d
+        touch d/f
+        sudo chown b d
+        assert [ ``stat -c '%U' d`` = b ]
+        assert [ ``stat -c '%U' d`` = b ]
+
+    ##group
+    
+      g=``id -gn``
+      touch f
+      assert [ ``stat -c '%G' f`` = $g ]
 
   ##chmod
+  
+    #change file permissions
 
     #chomod [ugoa][+-=][rwxXst]+
       chmod a+x "$f"
@@ -4366,6 +4704,30 @@ int main(int argc, char** argv)
     touch c
       #---------
 
+  ##stat
+
+    #cli for sys_stat
+    
+    #get file/dir info such as:
+      #size
+      #owner
+      #group
+      #permissions
+      #last access date
+      #create date
+      #modify date
+
+      touch f
+      stat f
+        #lots of info
+
+      chmod 1234 f
+      stat -c "%a" f
+        #234
+      chmod a=rt f
+      stat -c "%A" f
+        #-r--r--r-T
+
   ##ln
 
     #make hardlinks and symlinks
@@ -4409,31 +4771,6 @@ int main(int argc, char** argv)
     else
         echo eq
     fi
-
-  ##stat
-
-    #cli for sys_stat
-    
-    #get file/dir info such as:
-      #size
-      #owner
-      #group
-      #permissions
-      #last access date
-      #create date
-      #modify date
-
-      touch f
-      stat f
-        #lots of info
-
-      chmod 1234 f
-      stat -c "%a" f
-        #234
-
-      chmod a=rt f
-      stat -c "%A" f
-        #-r--r--r-T
 
   ##find
 
@@ -4598,29 +4935,7 @@ int main(int argc, char** argv)
     fdupes -rd .
       #finds dupes, and prompt which to keep for each match
 
-##shell
-
-  ##clear
-  
-    #clear terminal screen
-  
-    clear
-
-  ##set
-
-    set -o
-      #show options
-
-  ##shopt
-
-    shopt
-      #show option
-
-    shopt -s op
-      #set option
-
-    shopt -u op
-      #unset option
+##bash
 
   ##tput
 
@@ -4645,6 +4960,7 @@ int main(int argc, char** argv)
       echo $'clear\ncup 10 0' | tput -S
 
     ##colors
+
       CLEAR_TERMINAL=`tput clear`
 
       SET_CURSOR_POSITION=`tput cup 2 3`
@@ -4719,7 +5035,7 @@ int main(int argc, char** argv)
   
     #change terminal properties
 
-    #turns the cursor (blinck you are here whing) on/off
+    #turns the cursor (blincking you are here thinghty) on/off
       setterm -cursor off
       setterm -cursor on
     
@@ -4735,14 +5051,6 @@ int main(int argc, char** argv)
     notify-send -u critical abc
       #-u urgency. low, normal, or critical
   
-  ##setleds
-  
-    #set/get capslock, numlock and scrolllock led state
-  
-    #only works from a terminal (ctrl+alt+F? thingy) 
-    
-    setleds
-
   ##prompt user
 
     ##while read case
@@ -4887,6 +5195,12 @@ int main(int argc, char** argv)
     #login
       
       #TODO login vs su?
+    
+    ##login shell
+    
+      su - a
+        #start a login shell
+        #without this starts a non-login shell
 
   ##sudo
 
@@ -4988,6 +5302,11 @@ int main(int argc, char** argv)
             sudo mkdir /home/$u
             sudo chmod 700 /home/$u $u
             sudo chown /home/$u $u
+
+          #home dir files will me copied from a default template located at ``/etc/skel``
+          #to change this template use ``-k /path/to/skel/``.
+          #to create no files: ``-k /dev/null``
+
       #-p $p
         #bad because visible
         #without -p:
@@ -5211,6 +5530,28 @@ int main(int argc, char** argv)
     #-x proxysever.test.com:3128 : proxy
     #-X DELETE : make a DELETE request. defaults to GET, if no -data nor ftp.
     #-z 21-Dec-11 : download iff it is modified after given time (sounds like crawlers!)
+  
+  ##md5sum
+  
+    #generates/checks md5 checksums
+    
+    echo a > a
+    echo b > b
+    md5sum a b > f
+    cat f
+      #60b725f10c9c85c70d97880dfe8191b3  a
+      #3b5d5c3712955042212316173ccf37be  b
+    md5sum -c f
+      #a: OK
+      #b: OK
+      #checks checksums on current dir
+
+    ##application:
+    
+      #have I downloaded the right file?
+      
+      #it is *very* difficult to make another file
+      #with the same checksum
 
   ##ifconfig
 
@@ -5278,101 +5619,36 @@ User-Agent: fingers
       #math pastebin
       #renders with mathjax
 
-#boot
+##boot
 
-  #grub
+  ##grub
 
-  sudo vim /etc/default/grub
-    #timeout : time before OS choice
-  sudo update-grub
-    #must update grub after changing this file
-
-##environment variables
-
-  #huge list: <http://wiki.bash-hackers.org/syntax/shellvars>
-
-  ##env
-
-    env
-      #shows all environment variables and their values
-
-    #change environment for a single command
-
-      a=b
-      env a=c echo $a
-        #c
-      echo $a
-        #b
-
-  ##some important ones
-    
-    echo $HOME
-      #home dir. /home/ciro/
-    echo $USER
-      #cur username. ciro
-    echo $HOSTNAME
-      #cur hostname. ciro-thinkpad
-    echo $HOSTTYPE
-      #i686
-      #x86_64
-    echo $SHELL
-      #cur default shell. /bin/bash
-    echo $PWD
-      #cur working dir. ``pwd``
-    echo $OLDPWD
-      #last working dir. ``pwd``
-    echo $PS1
-      #is printed on every terminal line
-      #very large due to coloring
-    echo $PS2
-      #second line terminal. default '>' !
-    echo $BASHOPTS
-      #list of current on bash options
-    echo $BASH_VERSION
-      #4.2.37(1)-release
-    echo $RANDOM
-    echo $RANDOM
-      #random number between 0 and 32767
-    echo $SECONDS
-    echo $SECONDS
-      #seconds since shell started
-    echo $LANG
-      #en_US.UTF-8
-    echo $COLUMNS
-    echo $LINES
-      #terminal width/height
-
-##history
-
-  ##fc
-
-    #posix 7
+    sudo vim /etc/default/grub
+      #timeout : time before OS choice
+    sudo update-grub
+      #must update grub after changing this file
   
-    echo a
-    fc
-      #opens "echo a" in vim for editing
-      #when you quit, executes what you wrote
-    
-    #set default editor
-
-      FCEDIT=/bin/vi
-      fc
+  ##init
   
-  ##hash
-  
-    #shows used commands in current session
-    #with usage count
+    #parent of all processes!
     
-    hash
+    #determines runlevel
+    
+    sudo init 6
+      #runlevel 6: reboot
+    
+    #configuration files in /etc/init
 
-#flash
+##flash
+
   sudo apt-add-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
   sudo aptitude update && sudo aptitude install -y flashplugin-installer
 
-#java
-  sudo add-apt-repository -y ppa:webupd8team/java
-  sudo apt-get update
-  sudo apt-get install -y oracle-java7-installer
+##java
+
+  #sudo add-apt-repository -y ppa:webupd8team/java
+  #sudo apt-get update
+  #sudo apt-get install -y oracle-java7-installer
 
 #combos
 
@@ -5692,12 +5968,22 @@ add Lock = Caps_Lock
       ./NVIDIA*.run --extract-only
       vim NVIDIA*/README
 
-##shutdown reboot
+##misc
 
-  sudo shutdown -P now
-    #brings down the system and powers off afterwards
-    #``usual`` shutdown
-    #sends TODO signal to running processes and waits for their termination TODO?
+  ##shutdown reboot
 
-  sudo reboot now
-    #``usual`` restart computer
+    sudo shutdown -P now
+      #brings down the system and powers off afterwards
+      #``usual`` shutdown
+      #sends TODO signal to running processes and waits for their termination TODO?
+
+    sudo reboot now
+      #``usual`` restart computer
+
+  ##setleds
+  
+    #set/get capslock, numlock and scrolllock led state
+  
+    #only works from a terminal (ctrl+alt+F? thingy) 
+    
+    setleds
