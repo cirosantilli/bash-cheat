@@ -8,10 +8,10 @@
 #
 #for installation, I focus on ubuntu which is what I am using.
 #
-#if a program gets large enough, or fits better somewhereelse, it might be moved
+#if a program gets large enough, or fits better somewhere else, it might be moved
 #a commit note will say when that happens.
 #
-#if a program does not comme with ubuntu 12.04, the aptitude install will be included
+#if a program does not come with ubuntu 12.04, the aptitude install will be included
 #
 #try cat % | grep "aptitude install" to list all installs
 #
@@ -33,7 +33,7 @@
     #many tutorials
 
   #<http://www.thegeekstuff.com>
-    #short tutorials with lots of examles
+    #short tutorials with lots of examples
   
   #tuxfiles
     #<http://www.tuxfiles.org/linuxhelp/fstab.html>
@@ -43,13 +43,17 @@
     #check <#man>
     #not many examples, but full function list, and you often can guess what they mean!
 
+  ##linux from scratch
+  
+    #teaches how to build a minimal linux distro from a working linux distro
+
 ##the standards
 
   #linux is based on the following:
 
   ##posix <#posix>
   ##linux standard base (lsb) <#lsb>
-  ##filesystem hierarchy standard: <#fhs>
+  ##file system hierarchy standard: <#fhs>
 
 ##POSIX
 
@@ -111,7 +115,7 @@
 
     #basic is deprecated, so don't use it
     
-    ##extended regex
+    ##ERE
       
       ##examples
       
@@ -121,15 +125,16 @@
         echo -e 'a\nb' | grep -E 'a+'
         echo -e 'a\nb' | grep -E '^a$'
         echo -e 'a\nb' | grep -E 'a{1,2}'
+        assert [ "`echo -e 'aa\nab' | grep -E '(a)\1'`" = aa ]
         echo -e 'a\nb' | grep -E '.'
         echo -e 'a\nb' | grep -E '[[:alpha:]]'
-        echo -e 'a\nb' | grep -E '[[:space:]]'
+        assert [ "`echo -e 'a\nA' | grep -E '[[:upper:][:lower:]]'`" = $'a\nA' ]
     
       #close to perl except:
 
       ##predefined character classes
 
-        #which are enclosed in ``[::]``
+        #which are enclosed in ``[::]`` inside a ``[]``
         #full list:
         
             #alnum       digit       punct
@@ -138,14 +143,6 @@
             #cntrl       print       xdigit
         
         #in perl these are backlash escaped chars
-        
-        #``.`` is an exception, which works like in perl 
-      
-      ##magic
-      
-        ##backreferences
-        
-          #``(.*)\1``
 
 ##lsb
     
@@ -291,8 +288,6 @@
     #like gpl
     #except you *can* use in commercial projects
 
-##run levels
-
 ##packages
 
   sudo apt-get update
@@ -304,12 +299,19 @@
     #search package by file and list package files
   sudo aptitude install -y ppa-purge
     #remove added ppas
+  sudo aptitude install -y apt-file
+    #lets you search packages by files it contains
+    #see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
+  sudo aptitude install -y apt-rdepends
+    #fins packages that depend on a given package
 
-  ##python
-  
-    sudo aptitude install -y python-pip
-      #python package manager
-    sudo pip install termcolor
+##python
+
+  sudo aptitude install -y python-pip
+    #python package manager
+  sudo pip install termcolor
+  sudo pip install django
+  sudo pip install south
 
 ##man
 
@@ -401,14 +403,48 @@
   
   #gnu, not posix
   
-  #each page contains lots of info, more than posix man
+  #each page contains lots of info, more than man pages
+  #may even contain, *gasp*, examples!
   
-  #obscure, used by few utilities
+  #the keybindings are very tree/node based. To get started:
+  
+    #?: help
+    #x: close help
+
+    ##page
+
+      #<space>:   down one page. May change nodes.
+      #<backspace>: up one page. May change nodes.
+      #b, e: beginning/end of current node.
+      #s, /: search string
+      #{, }: repeat search back/forward
+
+    ##menu
+
+      #<arrows>: move cursor
+      #<enter>: go to link under cursor
+      #<tab>: go to next link
+      #1-9: go to menu item nb.
+
+    ##node
+
+      #u: parent node
+      #t: top node
+      #[, ]: next previous node. May     change node level.
+      #n, p:                         not                   
+      #m: select menu item in current page by name. Can tab complete.
+      #g:                     all                                       
   
   info
   info rm
 
 ##ubuntu
+
+  #a debian based distribution
+  
+  #important implications:
+  
+    #maby key programs are the same: ``dpkg`` for packages, ``upstart`` for init
 
   ##upgrade version
 
@@ -420,17 +456,9 @@
   
     env UBUNTU_MENUPROXY=0 golly 
 
-#package management
+##configuration
 
-  sudo aptitude install -y apt-file
-    #lets you search packages by files it contains
-    #see http://www.thegeekstuff.com/2009/10/debian-ubuntu-install-upgrade-remove-packages-using-apt-get-apt-cache-apt-file-dpkg/
-
-  sudo aptitude install -y apt-rdepends
-
-#configuration editing
-
-  #ubuntu
+  ##ubuntu
 
     sudo aptitude install -y ubuntu-restricted-extras
       #usefull stuff that does not come by default or Canonical would have to pay royalties
@@ -459,7 +487,7 @@
 
   sudo aptitude install -y gconf-editor
 
-  #gsettings
+  ##gsettings
 
     #set vaules
 
@@ -475,7 +503,7 @@
 
   sudo aptitude install -y compiz compizconfig-settings-manager compiz-plugins-extra
 
-#desktop
+##desktop
 
   unity --restart
     #restarts the unity shell only
@@ -523,21 +551,7 @@
   ##alarm
     sudo aptitude install -y alarm-clock-applet
 
-  ##bc
-
-    #simple interpreted language, calulator focus
-    
-    #c-like syntax
-    
-    #features: variable definition, function definition, arrays, strings
-
-    #non features: string concatenation
-
-    #posix 7
-    
-    assert [ `echo '1+1' | bc` = 2 ]
-
-  #weather indicator
+  ##weather indicator
 
     sudo add-apt-repository -y ppa:atareao/atareao
     sudo apt-get update
@@ -588,12 +602,15 @@
     #this is why it is often coupled with gz and bz2: those are files compressers
     #gz gives similar compression to .zip
     #gz2 is smaller than gz (30% for roms), but MUCH slower to make, and you can't extract individual files easily
-    #tgz == tar.gz and tb2 == tar.bz2
+    #tgz == tar.gz
+    #txz == tar.xz
+    #tb2 == tbz == tar.bz2
 
     #create
-      tar cf "$F".tar "$F" 
-      tar czf "$F".tgz "$F" 
-      tar cjf "$F".tbz "$F" 
+      tar vcf "$F".tar "$F" 
+      tar vczf "$F".tgz "$F" 
+      tar vcjf "$F".tbz "$F" 
+      tar vcJf "$F".txz "$F" 
       #c: create
       #f: to file given as next arg, not to stdout
       #z: gzip
@@ -601,9 +618,9 @@
       #v: verbose
 
     #extract
-      tar xf "$F".tar
-      tar xzf "$F".tgz
-      tar xjf "$F".tbz
+      tar vxf "$F".tar
+      tar vxzf "$F".tgz
+      tar vxjf "$F".tbz
       #f: from file given as next arg, not stdin
 
   ##rar
@@ -718,7 +735,7 @@
 
     #-o : output file. default: logkeys -s -m mylang.map -o ~/.secret/keys.log
 
-#dictionnary
+##dictionnary
 
   sudo aptitude install -y goldendict
     #select text can make popup windows!
@@ -734,6 +751,28 @@
     #  now most exes are downloader without blgs, probably vendor lockin
     #  I found some that actually contained the blg here:
     #    http://www.babylon.com/dictionaries-glossaries
+
+  ##spell checking
+
+    ##aspell
+    
+      #interactively checks files for spelling errors
+
+      ##features
+
+        #can add words to dict
+        
+        #understands some predefined formats!
+      
+      aspell -c f
+
+      aspell --mode=tex -c f
+      aspell --mode=html -c f
+        #ignores language constructs!
+      
+      #modes can be added/removed. They are called ``filters``
+        sudo aspell --add-filter=$f
+        sudo aspell --remove-filter=$f
 
 #text
 
@@ -1277,12 +1316,15 @@
 
       #write to a user in a tty
 
-        write u tty3
+        u=
+        write $u tty3
           #type you message
           #type enter, and it is sent
           #ctrl+d ends
 
-        sudo write u tty3
+        u=
+        h=
+        sudo write $h@$u tty2
           #with sudo, you can write even is mseg n
     
     ##wall
@@ -1511,7 +1553,7 @@
     make -C /some/dir
       #changes current dir
 
-  ##gcc/g++
+  ##gcc ##g++
 
     #Gnu Compiler Collection: NOT c compiler
     #does: C, C++, Objective-C, Fortran, Java, Ada, and Go
@@ -1570,7 +1612,7 @@
 
         #std
         #specifies version os the language to be used
-        #{
+        #
           #disable gcc extensions that conflict with c standrad
           gcc -std=c90
           gcc -std=c99
@@ -1591,7 +1633,7 @@
         gcc -std=c1x -pedantic-errors
           #give errors instead of warnings
 
-        #-march cputype
+        ##-march cputype
 
           #optimizes code to given cpu (arch is for archtecture)
           #may use instructions only available to given cpu
@@ -1603,7 +1645,7 @@
           gcc -march=armv7
             #Arm v.7, used on mobiles today
 
-        #code optimization
+        ##code optimization
 
           gcc -Q -O --help=optimizers
           #shows optimizations for -O
@@ -1619,11 +1661,11 @@
           gcc -O3 a.c -o a.out
           #compile with optimization
 
-        ##summary
-          
-          gcc -std=c99 -pedantic-errors -Wall -03 -march=native a.c
-            #always use this for production code
-
+          ##summary
+            
+            gcc -std=c99 -pedantic-errors -Wall -03 -march=native a.c
+              #always use this for production code
+      
       ##other
       
         gcc -std=gnu90
@@ -1650,6 +1692,10 @@
             #include "..." search starts here:
             #include <...> search starts here:
 
+          ##summary
+            
+            gcc -std=c99 -pedantic-errors -Wall -03 -march=native a.c
+              #always use this for production code
         export CPATH="/add/to/include"
 
         gcc a.c -I/path/dir/ -I/path/dir2/
@@ -1684,6 +1730,8 @@
 
       ##dynamic
       
+        #aka ##shared library
+      
         ##loading vs linking
         
           ##linking
@@ -1704,66 +1752,134 @@
             #*MUST* compile like this
           gcc -shared a.o b.o -o libab.so
 
+          ##version numbering
+          
+            #standard: up to 3 numbers
+            
+            #yes, they come after the ``.so``
+            #otherwise possible ambiguity:
+            #``liba.1.so`` is version 1 of ``liba`` or simply ``lib.a.1``?
+            
+            #to link to a given version:
+            #use full basename linking with verison number.
+            
+            #linking takes care of version defaults:
+            
+              #- liba.so.1.1.1
+                #necessarily itself
+              
+              #- liba.so.1.1
+                #itself
+                #or a link to 1.1.1
+                #or a link to 1.1.2
+                #...
+
+              #- liba.so.1
+                #itself
+                #or a link to 1.1
+                #or a link to 1.2
+                #or a link to 1.1.2
+                #or a link to 1.2.1
+                #...
+              
+              #- liba.so
+                #itself
+                #or a link to 1
+                #or a link to 2
+                #or a link to 1.1
+                #or a link to 1.2
+                #...
+              
+              #rationale: if you underspecify the library
+              #you get by default the most recent
+            
+              #convention: change in first number means possible interface break
+
         ##compile with so
 
-          gcc a.c -o a.out -lm
+          #-l : link to library libm.so.
 
-            #-l : link to library libm.so.
-              #it must be in the load path
+            gcc a.c -o a.out -lm
+            gcc a.c -o a.out -l:libm.so
+              #SAME
+              #relative paths to the load path get stored in the elf file
+              #``readelf -d`` shows that
+            gcc a.c /full/path/to/libm.so -o a.out 
+              #DIFFERENT
+              #the full path gets stored in the elf file
+              #``readelf -d`` shows that
             
-              #PUT -l AFTER ALL COMMANDS!!!!!!!!!!
+            #it must be in the load path. see: <#-L>
+          
+            #PUT -l AFTER ALL COMMANDS!!!!!!!!!!
 
-              #the name must be EXACTLY!!!!!! libm.so,
-              #libm.so.1 wont be linked to!!
+            #the name given to -l must be EITHER:
+
+              #- stripped from ``lib`` and ``.so`` part
+                #in this example: ``m``, for ``libm.so``. *will not work for ``libm.so.1`` !!!!!
+              #- full basename: ``libm.so.1``
               
               #you need to compile like this so gcc
               #can tell if all your functions are definied
 
-            ##so version numbering
-            
-              #standard: up to 3 numbers
-              
-              #linking takes care of versions:
-              
-                #-la.1.1.1
-                  #necessarily itself
-                
-                #-la.1.1
-                  #itself
-                  #or a link to 1.1.1
-                  #or a link to 1.1.2
-                  #...
+            #-L
 
-                #-la.1
-                  #itself
-                  #or a link to 1.1
-                  #or a link to 1.2
-                  #or a link to 1.1.2
-                  #or a link to 1.2.1
-                  #...
+              gcc a.c -o a.out -L/full/path/to/lib -lm
+              gcc a.c -o a.out -L./rel/path/to/lib -lm
+              env LIBRARY_PATH=$LIBRARY_PATH:/path/to/lib gcc a.c -o a.out -llib
 
-          gcc a.c -o a.out -L/path/to/lib -llib
-          env LIBRARY_PATH=$LIBRARY_PATH:/path/to/lib gcc a.c -o a.out -llib
-            #-L : append path to link search path
+              #append path to link search path
+              #
+              #to view current path: <#library path>
+              #
+              #can also be done via LIBRARY_PATH variable
+              #
               #HOWEVER, when the program will run,
               #you still need to add it to the load path!!!
               #
               #either on /etc/ld.so.cache or on the variable
-              #$LD_LIBRARY_PATH (which is completelly different from
-              #LIBRARY_PATH, which can be used for compilation path,
+              #``LD_LIBRARY_PATH`` (which is completelly different from
+              #``LIBRARY_PATH``, which can be used for compilation path,
               #but not for loading). see <#load path>.
               #
               #this is only good for compilation!!!
-            #can also be done via LIBRARY_PATH variable
         
         ##execute
         
-          env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/lib ./a.out
-          env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./rel/path/to/lib ./a.out
-          ./a.out
-            #WILL ONLY WORK IF required libs are in LOAD PATH
-            #this has nothing to do with gcc library path!
-            #
+          ##best method
+
+            sudo mv liba.so /some/where/in/link/path
+            sudo ldconfig
+              #optional but better, see <#search path>
+            ./a.out
+
+            #this suposes that when you compiled you used: ``-lliba.so``
+          
+          ##LD_LIBRARY_PATH
+
+            #this has nothing to do with LIBRARY_PATH path variable
+            #which is used during compilation by gcc!
+            
+            #LD_LIBRARY_PATH is used during execution by the linker!
+
+            env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/absolute/path/to/lib ./a.out
+            ./a.out
+
+            #BAD
+            
+              env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./rel/path/to/lib/from/cd ./a.out
+              ./a.out
+
+              #this only works if you are in the right dir
+              #since relative path is take to current dir
+            
+          #required libs are stored in the ELF file at compilation
+          #either as relative or absolute or absolute paths
+          
+          #next, the linker uses this information to find the library
+          #during execution
+          
+            
             #you could build the exe, move the lib, and still link to it!
             
           ##ldd
@@ -1772,6 +1888,8 @@
             #and if they can be found
             
             #binutils package
+            
+            #is a convenient subset of ``readelf -d``
             
             ldd a.out
               ##cases:
@@ -1789,18 +1907,26 @@
                 #in this case you want to:
                   cat /etc/ld.so.conf.d/*.conf
 
-            #there can also be ldconfig builtin paths
+              #the following are hard codded in ``ldconfig``:
+                #- /lib/
+                #- /usr/lib/
 
             ##cache
 
-              #HOWEVER!!! puting in path in not enough
               #it would be very slow to search the path every time
-              #instead, only the files listed in:
-                cat /etc/ld.so.cache
-              #are considered.
               
-              #however, you can generate ``/etc/ld.so.cache`` automatically
+              #therefore the linker keeps uses a cache at:
+                cat /etc/ld.so.cache
+
+              #it first looks for libs there,
+              #and only then searches the path
+              
+              #you can generate ``/etc/ld.so.cache`` automatically
               #once you have your ``ld.so.conf`` with ``ldconfig``
+
+              #even if the linker finds the lib in the path,
+              #it does not automatically add it to the cache
+              #so you still have to run ``ldconfig``
 
               #running ldconfig is a part of every package install/uninstall
               #if it conatins a lib
@@ -1853,7 +1979,7 @@
         
         ##override symbols in libraries
         
-          sudo echo "/path/to/my/a.o" >> /etc/ld.so.preload
+          echo "/path/to/my/a.o" | sudo tee -a /etc/ld.so.preload
             #symbols in a.o will override symbols in liked libs
             
             #emergency/tests
@@ -1871,24 +1997,60 @@
           file -L /lib/ld-linux.so.2
             #ELF
       
-      ##recommended
+      ##recommended libs
+              
+        #to get the most out of applications, you have to
+        #compile it on your own computer so that the compiler will
+        #be able to make all the possible optimizations for your given
+        #architecture.
       
-        sudo aptitude install -y linux-source linux-headers 
-
-        ##opengl glut
-
-          sudo aptitude install -y freeglut3-dev
-          
-          #opengl is just an interface to use the graphics card
-          #for graphics
-          
-          #there can be several implentations
-        
-          ##mesa
-          
-            #most common linux Opengl implementation
+        ##single language
+      
+          ##c
             
-            #used by X server
+            sudo aptitude install -y linux-source linux-headers 
+
+            ##check
+            
+              #c unit testing
+              
+              sudo aptitude install -y check
+
+            ##ncurses
+            
+              #command line interactive interfaces
+              
+              sudo aptitude install -y ncurses
+
+            ##expat
+            
+              #xml parsing
+            
+            ##to evaluate
+
+              ##PCRE 
+
+                #perl regexes. c11 has regexes.
+              
+              ##popt 
+              
+                #parse command line options
+
+          ##c++
+
+            ##ode
+            
+              #solid body physics engine
+              
+              sudo aptitude install -y libode-dev
+
+            ##boost
+
+              #cross platform utilities
+              
+              #very popular, largely influences c++ future
+
+        ##multi language
             
           ##glx
           
@@ -1905,48 +2067,102 @@
             glxgears
               #demo
 
-        ##ode
-        
-          #solid body physics engine
-          
-          #c++
-          
-          sudo aptitude install -y libode-dev
+          ##scientific
 
-        ##opencv
-        
-          #computer vision
-          
-          #c++, python
-          
-          sudo aptitude install -y libopencv-dev opencv-doc
-          sudo aptitude install -y libavformat-dev
-          sudo aptitude install -y ffmpeg
-          sudo aptitude install -y python-opencv opencv-doc libcv-dev libcvaux-dev libhighgui-dev
-
-        ##bison and flex
-        
-          #flex  = open source for lex
-          #bison = open source for yacc
-          
-          sudo aptitude install -y bison bison-doc
-          sudo aptitude install -y flex flex-doc
-
-          ##flex
-          
-            #formal regex to tokens
-            
-            #why it works well with bison:
-            
-              #this step is O(n)
+            ##blas lapack
+              #langs: fortran, c, c++
               
-              #the bison naive algorithm is O(n^3) ( assymptotic O(n^2.40) and falling )
+              #de-facto standard linalg lib
+
+              #matlab backend
+
+              #originally written in fortran, automatically converted to c with ``f2c``
               
-          ##bison
-          
-            #parses deterministic context free languages (aka deterministic LR)
-            #subset of context-free, superset of regex
+              #install possibility:
+                #sudo aptitude install -y libblas-dev
+                #sudo aptitude install -y liblapack-dev
+                #sudo aptitude install -y libf2c2-dev
+              #but easier with atlas
+              
+              ##atlas
+              
+                #automatically tuned blas lapack
+                
+                #contains does full blas and a subset of lapack
+
+                #TODO understand what subset of lapack
+                #TODO understand how it automatically tunes
+                #TODO understand the relation with packages
+
+                sudo aptitude install -y libatlas-dev libatlas-doc libatlas-test
+              
+            ##opengl glut
+
+              #opengl is just an interface to use the graphics card
+              #for graphics. Therefore it only contains basic primitives.
+              
+              #opengl is only the interface, but there can be several implentations:
+
+              ##mesa
+              
+                #most common linux Opengl implementation
+                
+                #used by X server
+                
+                #requirement of <#freeglut>
+
+              ##glut
+                
+                #glut is based on gl, and adds things like:
+
+                ##mouse/keyboard input
+                ##geometric objects like spheres, cubes and teapots
+              
+                #the original glut implementation is proprietary
+
+              ##freeglut
+              
+                #is an open source implementation of glut
+                
+                #it is often associated with the <#mesa> implementation of gl
+
+              sudo aptitude install -y freeglut3-dev
+                #already installs mesa opengl on which it depends
+              
+            ##opencv
+              #langs: c++, python
             
+              #computer vision
+              
+              sudo aptitude install -y libopencv-dev opencv-doc
+              sudo aptitude install -y libavformat-dev
+              sudo aptitude install -y ffmpeg
+              sudo aptitude install -y python-opencv opencv-doc libcv-dev libcvaux-dev libhighgui-dev
+
+            ##gsl
+              #langs: c, c++
+            
+              #gnu scientific library
+              
+              sudo aptitude install -y libgsl0-dev
+
+              sudo aptitude install -y gsl-doc-info
+              info gsl
+
+            ##freefem
+            
+              #2d and 3d fem
+              
+              #TODO
+            
+            ##r
+            
+              #statistics
+              
+            ##it++
+            
+              #signal processing
+        
     ##gdb
     
       #gnu symbolic debugger
@@ -2154,7 +2370,7 @@
   
   ##binutils package
   
-    #utilities for compiled code
+    #utilities to view and modify compiled code
 
     ##ar
 
@@ -2170,8 +2386,13 @@
 
     ##readelf
     
+      #gets stored inside executable files
+      #in a human readable way
+    
       readelf --syms liba.so
         #shows symtable (defined stuff) of elf .so
+      readelf -d a.out
+        #shows dependencies of an executable (symbols and shared libs)
 
       readelf --relocs a.o
         #TODO ?
@@ -2202,8 +2423,11 @@
     #info is contained in "$PKG_NAME.pc" files located mainly under:
       #/usr/share/pkgconfig/ 
       #/usr/lib/i386-linux-gnu/pkgconfig/
+    
+    #a part of program installation may be to put files there
 
     #usage in in a makefile:
+
       CFLAGS=$(shell pkg-config --cflags pkgname)
       LIBS=$(shell pkg-config --libs pkgname)
 
@@ -2564,16 +2788,35 @@ int main(void)
     
     ##bsdgames
   
-      #lots of console games!
+      #lots of console games/cute apps
+      
+      sudo aptitude install -y bsdgames
       
       afsh bsdgames | grep /usr/games/
         #get a list
-      
-      sudo aptitude install -y bsdgames
 
       ##battlestar
         #MUD
+
       ##backgammon
+      
+      ##number
+      
+        #convert number in numerals to number in english
+        
+        assert [ `echo 1 | number` = "one." ]
+
+      ##pom
+      
+        #displays the phase of the moon
+    
+      ##primes
+      
+        primes 1 100
+          #prints primes numbers between 1 to 100
+
+        primes 1 100 | wc -l
+          #count primes
     
     ##greed
       
@@ -2822,9 +3065,15 @@ int main(void)
 
   ##tac
 
-    #cat reversed
+    #cat reversed linewise
 
-    tac "$f"
+    assert [ "`echo $'a\nb' | tac`" = $'b\na' ]
+
+  ##rev
+  
+    #reverse bytewise
+    
+    assert [ "`echo $'ab' | rev`" = $'ba' ]
 
   ##pagers
 
@@ -2904,6 +3153,14 @@ int main(void)
     echo $?
       #1
 
+  ##factor
+  
+    #coreutils package
+  
+    #factor a number into prime constituents
+    
+    assert [ "`factor 30`" = "30: 2 3 5" ]
+
   ##uniq
 
     #ajacent dupe line operations
@@ -2936,6 +3193,8 @@ int main(void)
     # -c : counts how many dupes
 
   ##read
+  
+    #read linewise
 
     while read l; do
       echo "$l";
@@ -2993,6 +3252,10 @@ int main(void)
     #removes non printable chars
 
   ##cut
+  
+    #simple text table field operations
+    
+    #for more complex ops, consider <#awk>
 
     echo $'a\tb\nc\td' | cut -f1
       #$'a\nc'
@@ -3054,31 +3317,77 @@ int main(void)
 
     tail -n3 "$f"
       #shows last 3 lines of f
+  
+  ##truncate
+  
+    #sets file to given size
+    
+    #if greater, pads with 0s
+    
+    #if smaller, data loss
+    
+    echo ab > f
+    truncate -s 1 f
+    assert [ `cat f` = a ]
+
+    truncate -s 2 f
+    hexdump
+    assert [ `cat f` = $'a\0' ]
+
+  ##dd
+
+    #corutils package
+  
+    #TODO
 
   ##split
 
-    #split files into new smaller files
+    #corutils package
 
-    echo -n asdf > a
+    #split files into new smaller files of same size
 
-    split -db1 a pref_
-    split -dn4 a pref_
-    #four files are created, named pref_00, pref_01 .. pref 04, contaning a, s, d and f
-    #if exist, they are *overwritten*
+    echo -n abc > f
+
+    split -db1 f p
+    split -dn3 f p
+
+    assert [ `cat p00` = a ]
+    assert [ `cat p01` = b ]
+    assert [ `cat p02` = c ]
+
+    #existing files are overwritten
     #-d: uses number suffixes, otherwise, uses letters aa, ab, ac, ...
     #-b: bytes per file
     #-n: number of files
 
+  ##csplit
+  
+    #corutils package
+
+    #split files into new smaller files at lines that match given EREs
+    
+    #matching lines are kept
+    
+    echo $'0\naa\n1\naa\n2' > f
+    csplit f '/^a/' '{*}'
+    assert [ `cat xx00` = 0 ]
+    assert [ `cat xx01` = $'aa\n1' ]
+    assert [ `cat xx02` = $'aa\n2' ]
+
   ##nl
 
     #number lines
+  
+    #posix 7
+
+    #corutils package
 
     nl "$f"
       #cat lines, number non-empty ones
   
   ##fold
   
-    #fold long lines
+    #wrap lines
     
     #posix 7
     
@@ -3087,16 +3396,24 @@ int main(void)
       #a
       #bb
 
+  ##fmt
+  
+    #coreutils
+    
+    #wrap lines, but don't cut words
+
+    assert [ `echo "a bcd" | fold -w 2` = $'a\nbcd' ]
+
   ##hexdump
   
     #view bytes in hexa
 
-    hexdump -C $F
-      # -C : see bytes in hexadecimal
-      # -n32 : only 32 bytes
-      # -s32 : start at byte 32
-      # -v : show duplicate lines
-      # -e '1/1 " %02X"' : complicated format string
+    echo abc | hexdump -C
+      #-C : see bytes in hexadecimal
+      #-n32 : only 32 bytes
+      #-s32 : start at byte 32
+      #-v: show duplicate lines
+      #-e '1/1 " %02X"': format string
 
   ##od
 
@@ -3198,28 +3515,251 @@ int main(void)
 
   ##sed
     
+    ##sources
+    
+      #<http://www.grymoire.com/Unix/Sed.html>
+  
+    #Stream EDitor
+    
     #posix 7
-
-    #just use perl lape/pie instead
     
-    ##<#sed suggestion>
+    #modifies files non-interactively
 
-      #learn only the very basic one liners at most
+    ##learning suggestion
+
+      #consider using <#perl> instead of this
       
-      #otherwise, just use ##perl one liners instead
-      
-      #for harder tasks, python
-      
-      #for even harder tasks, bison flex parsers
+      #sed has only slightly better golfing than perl
     
-    find . -type f -iname '*.py' -print0 | xargs -0 sed -n 's/django_cheatsheet/project0/gp' #replaces, and prints replaced lines only
-    find . -type f -iname '*.py' -print0 | xargs -0 sed -i 's/django_cheatsheet/project0/g' #replaces in the file
+    ##s command
+    
+      #substitute
+
+      assert [ "`echo $'aba\ncd' | sed 's/a/b/'`" = $'bba\ncd' ]
+
+      ##g modifier
+
+        assert [ "`echo 'aba' | sed 's/a/b/g'`" = $'bbb' ]
+
+      ##patterns are BREs
+      
+        assert [ "`echo 'aa' | sed 's/[[:alpha:]]/b/'`" = 'ba' ]
+        assert [ "`echo 'aa' | sed 's/.+/b/'`" = 'ab' ]
+          #+ is ordinary, thus BRE, and no match
+
+        ##EREs with -r
+
+          #therefore always use -r for regexes
+          
+            assert [ "echo 'aa' | `sed -r 's/.+/b/'`" = 'b' ]
+
+      ##replace references
+          
+          assert [ "`echo a1 | sed -r 's/a(.)/b\1/'`" = 'b1' ]
+          assert [ "`echo a1 | sed -r 's/a(.)/b\\1/'`" = 'b\1' ]
+          assert [ "`echo a1 | sed -r 's/a(.)/\0&/'`" = 'a1a1' ]
+            #\0 and & both refer to the entire match
+          assert [ "`echo a1 | sed -r 's/a(.)/\&/'`" = '&' ]
+
+          #no non-greedy *? operator. use [^]* instead
+      
+      ##flags
+      
+        ##g
+        
+        ##p
+        
+          #is also a flag, besides the original print command
+        
+        ##w
+        
+          #write matching to file
+        
+          echo $'a\nb\na' | sed -n 's/a/A/w f'
+          assert [ "`cat a`" = $'A\nA' ]
+
+    ##/ command
+    
+      #only exec next command if match
+
+      assert [ "`echo $'a\nb' | sed -n '/a/p'`" = $'a' ]
+
+    ##restrict lines
+    
+      #line number:
+      assert [ "`echo $'a\nb' | sed '1 s/./c/'`" = $'c\nb' ]
+
+      #last line:
+      assert [ "`echo $'a\nb' | sed '$ s/./c/'`" = $'a\nc' ]
+
+      #line matches pattern:
+      assert [ "`echo $'a\nb' | sed '/a/ s/./c/'`" = $'c\nb' ]
+
+      #line range:
+      assert [ "`echo $'a\nb\nc\nd' | sed '1,3 s/./e/'`" = $'e\ne\ne\nd' ]
+
+      #pattern range:
+      assert [ "`echo $'a\nb\nc\nd' | sed '/a/,/c/ s/./e/'`" = $'e\ne\ne\nd' ]
+
+      ##multiple commands per restriction
+      
+        assert [ "`echo $'a\nb' | sed '1 {s/./c/; s/c/d/}'`" = $'d\nb' ]
+
+      ##!
+      
+        #negation
+        
+        #act on non matching
+
+        assert [ "`echo $'a\nb' | sed -n '1! p'`" = $'b' ]
+        assert [ "`echo $'a\nb' | sed -n '/a/! p'`" = $'b' ]
+
+    ##multiple commands
+      
+      #concatenate with ; or newlines
+
+      assert [ "`echo $'a\nb' | sed '/a/ s/./B/; /B/ {s/B/C/; s/C/D/}'`" = $'D\nb' ]
+
+    ##q
+      
+      #quit
+    
+      assert [ "`echo $'a\nb' | sed 's/./c/; q'`" = $'c' ]
+
+    ##d
+      
+      #delete
+    
+      assert [ "`echo $'a\nb' | sed '/a/ d'`" = $'b' ]
+
+    ##a, i, c
+    
+      #append (after), insert (before), change
+
+      assert [ "`echo $'a\nb' | sed '1 i 0'`" = $'a\n0\nb' ]
+      assert [ "`echo $'a\nb' | sed '1 i 0'`" = $'0\na\nb' ]
+      assert [ "`echo $'a\nb' | sed '1 c 0'`" = $'0\nb' ]
+
+      ##newlines and spaces
+      
+        assert [ "`echo $'a\nb' | sed '1 c 0 1\n2 3'`" = $'0 1\n2 3\nb' ]
+    
+    ##line number
+    
+      #=
+      
+      assert [ "`echo $'a\nb\na' | sed -n '/a/ ='`" = $'1\n3' ]
+
+    ##replace chars
+    
+      #y
+      
+      assert [ "`echo $'a\nb' | sed -n 'y/ab/01'`" = $'0\n1' ]
+      assert [ "`echo $'a\nb' | sed -n 'y/ab/AB'`" = $'A\nB' ]
+
+    ##multiline
+    
+      #n: empty pattern space, put next line into it. default action.
+      
+      #N: append next line to pattern space
+
+      #p: print entire pattern space. default action.
+      
+      #P: print up to first newline
+    
+      #d: delete pattern space, start new command.
+
+      #d: delete pattern space, start new command.
+    
+      assert [ "`echo $'a\nb' | sed '/a/ {s/a\n//}'`" = $'a\nb' ]
+      assert [ "`echo $'a\nb' | sed '/a/ {N; s/a\n//}'`" = $'b' ]
+
+    ##hold buffer
+
+    ##goto
+    
+      ##b
+        
+        #unconditional
+    
+        assert [ "`echo $'a\nb' | sed '/a/ b c; s/./c/; :c';`" = $'a\nc' ]
+        assert [ "`echo $'a\nb' | sed '/a/ b c; s/./c/; :c s/c/d';`" = $'a\nd' ]
+
+      ##t
+      
+        #result of last s op
+
+        #remove spaces after a:
+        assert [ "`echo $'a  b  c' | sed ':a s/a /a/; t a'`" = $'ab  c' ]
+
+        #remove everything between a and c
+        assert [ "`echo $'a  b  c' | sed ':a s/a[^c]/a/; t a'`" = $'ac' ]
+
+    ##command line arguments
+
+      ##-n
+
+        #-n: don't print all lines (default)
+
+        sed -n 's/find/repl/gp'
+          #/p: print if match
+          #prints only lines that match find
+          #does not change f
+    
+        sed -n '/find/p'
+          #same as grep
+
+      ##-i
+
+        f=f
+        echo $'a\nb' > "$f"
+        sed -i 's/a/A/' "$f"
+        assert [ "`cat "$f"`" = $'A\nb' ]
+
+        sed -i.bak 's/A/a/' "$f"
+          #baks up old file with .bak suffix
+        assert [ "`cat "$f"`" = $'a\nb' ]
+        assert [ "`cat "$f".bak`" = $'A\nb' ]
+        assert [ `ls | wc -l` = 2 ]
+          
+          #-i: in place
+          
+          #whatever it would print to stdout, writes to the input file instead
+
+          #cannot be used with stdin input!
+      
+      ##-e
+      
+        #execute
+        
+        #give multiple commands
+        
+        #execute in each line in given order
+        
+        #same as ; concatenating commands
+        
+        assert [ "`echo $'a\nb' | sed -e 's/a/b/' -e 's/b/c/'`" = $'c\nc' ]
+
+      ##-f
+    
+        #read commands from given file
+        
+        #one command per line
+
+        ##shebang
+
+          #can exec sed script with following shebang:
+
+          #!/bin/sed -f
 
   ##awk
   
-    #text table field manipulation
+    #use only for text table field manipulation
     
-    #learn only the basics
+    #consider not to learn this and just learn pearl one liners instead
+    #since pearl is more flexible, powerful, good for golfing and has similar syntax
+    
+    #awk only gets slightly better golfing on a very limited problem set
     
     #for more complex tasks, use python or real databases
     
@@ -3231,6 +3771,7 @@ int main(void)
 
       #$0: entire record
       #$\n: fields
+      #last field: $(NF-1)
 
       ##FS
         #field (column) separator
@@ -3244,7 +3785,7 @@ int main(void)
 
     #arithmetic: same as c
     #string comp: ~, !~
-    #posix ERE regex: ~// !~//
+    #posix ERE regex: ~// !~// (inner match ok)
     #if else for while: like c
     
     echo $'1 2\n3 4' | awk 'BEGIN{print "b"}1<2{print "l"}1<2{print "l2"; print "l3"}1>2{print "l4"}END{print "e"}'
@@ -3269,7 +3810,6 @@ int main(void)
           #string concat
       awk '{print}'
         #cat
-    
 
   ##perl one liners
   
@@ -3279,43 +3819,54 @@ int main(void)
       #use like this!
 
     perl -lape 's/r1/r2/g' F
-    #replace in file linewise
-    #print entire new file to screen
-    #does not make changes
-    #newline at start and end are affected
+      #replace in file linewise
+      #print entire new file to screen
+      #does not make changes
+      #newline at start and end are affected
 
     perl -lapi -e 's/a/A/g' F
-    #modifies the file! prints nothing to screen
-    #newlines are affected
-    #-i : inline
+      #modifies the file! prints nothing to screen
+      #newlines are affected
+      #-i : inline
 
     perl -lapi.bak -e 's/a/A/g' F
-    #saves newfile to F.bak, original is not changed
-    #NO SPACE BETWEEN I AND '.bak'!!!
+      #saves newfile to F.bak, original is not changed
+      #NO SPACE BETWEEN I AND '.bak'!!!
 
     perl -pe 's/\n/ /g' F
-    #acts on newlines at end
+      #acts on newlines at end
 
     perl -lane 'print if (s/a/A/g)' F
-    #print only new modified lines to screen
+      #print only new modified lines to screen
 
     perl -lane '$old = $_; if (s/a/A/g) {print $., "  ", $old, "\n", $., "  ", $_, "\n"}' F
-    #print only modified lines to screen, together with old line, and line numbers;
+      #print only modified lines to screen, together with old line, and line numbers;
 
     perl -0777 -lape 's/\n\n+/\n/\ng' F
-    #not linewise
+      #not linewise
 
-    perl -ne 'print $., "  " ,$_' F
-    #print file with line numbers, tab separated by 2 spaces from text
+    perl -ne 'print $., "  ", $_' F
+      #print file with line numbers, tab separated by 2 spaces from text
 
     perl -ne 'print unless /^BEGIN$/ .. /^END$/' F
-    #prints only lines between BEGIN and END lines
+      #prints only lines between lines that match BEGIN and END lines
 
     perl -ne 'print if 15 .. 17' F
-    # print just lines 15 to 17
+      #print just lines 15 to 17
 
     perl -pe '/baz/ && s/foo/bar/'
-    #Substitute (find and replace) "foo" with "bar" on lines that match "baz".
+      #Substitute (find and replace) "foo" with "bar" on lines that match "baz".
+
+    ifconfig | perl -ne '/HWaddr (\S*)/ && print $1 . "\n"'
+      #print backreference only on matching lines
+  
+  ##m4
+  
+    #macro language
+    
+    sudo aptitude install -y m4
+
+    #TODO
   
   ##iconv
 
@@ -3446,12 +3997,13 @@ int main(void)
     #1 2 3 ...
 
     crontab -l
+      #list all cronjobs
     crontab -u user -l
-    #list all cronjobs
-
+      #for a given user
     crontab -r
+      #erase all crontabs
     crontab -r -u username
-    #erase all crontabs
+      #for a given user only
 
     #@reboot	Run once, at startup.
     #@yearly	Run once a year, "0 0 1 1 *".
@@ -3514,10 +4066,33 @@ int main(void)
 
     echo "touch a" | at -q b now
       #same, but with at you can change to any time
+
+##bison and flex
+
+  #flex  = open source for lex
+  #bison = open source for yacc
+  
+  sudo aptitude install -y bison bison-doc
+  sudo aptitude install -y flex flex-doc
+
+  ##flex
+  
+    #formal regex to tokens
+    
+    #why it works well with bison:
+    
+      #this step is O(n)
+      
+      #the bison naive algorithm is O(n^3) ( assymptotic O(n^2.40) and falling )
+      
+  ##bison
+  
+    #parses deterministic context free languages (aka deterministic LR)
+    #subset of context-free, superset of regex
     
 ##hd
 
-  #hd, mount partitions and filesystem
+  #hard disk, mount partitions and filesystem
 
   ##du
 
@@ -3731,6 +4306,21 @@ int main(void)
   
     sudo mount /dev/sda1 /media/win/
       #mount /dev/sda1 on /media/win/
+    
+    ##bind
+    
+      #make one dir a copy of the other
+      
+      mkdir a
+      mkdir b
+      sudo mount --bind a b
+      touch a/a
+      touch b/b
+      assert [ `ls a` = $'a\nb' ]
+      assert [ `ls b` = $'a\nb' ]
+      sudo umount b
+      assert [ `ls a` = $'a\nb' ]
+      assert [ -z `ls b` ]
 
   ##umount
 
@@ -3802,7 +4392,33 @@ int main(void)
     uname -a
       #print all info uname has to give!
 
-      #you can get it isolated with other opts
+    #you can each isolated with other opts
+
+  ##processor
+
+    ##arch
+    
+      #architecture
+      
+      #subset of <#uname>
+    
+      arch
+        #i686
+    
+    ##mpstat
+    
+      #processor related stats
+      
+      mpstat
+
+    ##nproc
+      
+      #number of processing unites (= cores?)
+    
+      #coreutils
+
+      nproc
+        #4
 
   ##kernel
 
@@ -3907,7 +4523,7 @@ int main(void)
 
           sudo insmod
         
-        #modprobe
+        ##modprobe
 
           sudo modprobe -l
             #lists available modules
@@ -3995,7 +4611,7 @@ int main(void)
         # -t totals at bottom
         # -sN : repeat every N seconds
 
-    #vmstat
+    ##vmstat
 
       #memory, sway, io, cpu
 
@@ -4038,7 +4654,7 @@ int main(void)
           #Id field: Idle time.
           #Wa field: Time spent waiting for the IO
 
-    #sar
+    ##sar
 
       #long term performance statistics
 
@@ -4057,26 +4673,66 @@ int main(void)
       sar -n DEV | more
       sar -n SOCK |more
         #network stats
-    
-    ##mpstat
-    
-      #processor related stats
-      
-      mpstat
 
   ##hardware info
+  
+    ##bus
+    
+      ##usb
+      
+        #new: usb 3.0
+        #old still existing: usb 2.0
 
+        #current uses: mouse, keyboard, external hard disks, external cd, flash storage devices
+        
+        #several device classes
+
+        #several connector types: Standard-A, Standard-B, Micro-B, Mini-B
+        #<http://en.wikipedia.org/wiki/File:Usb_connectors.JPG>
+      
+        #3.0:
+        
+          #full duplex
+          #8 pins
+          #voltage: 5 V
+          #power: max 0.9 A (5V)
+          #signaling rate: 5 Gbit/s (Super Speed mode)
+          #maximal cable length: 5 meters
+          
+          ##differentiate from usb 2.0
+          
+            #3.0 tipically blue while 2.0 black
+
+            #3.0 has 8 pins instead of 4
+
+            #ss for super spped may be written
+
+            #<http://www.usb3.com/usb3-info.html>
+
+        ##libusb
+        
+          #control usbs
+          
+          sudo aptitude install -y libusb-dev
+          sudo aptitude install -y libusb++-dev
+      
+      ##firewire
+      
+      ##ethernet
+      
+        #
+  
     cat /proc/cpuinfo
       #cpu info
 
     cat /proc/meminfo
       #mem info
 
-    #lspci
+    ##lspci
 
       sudo lspci
 
-    #hwinfo
+    ##hwinfo
 
       sudo aptitude install -y hwinfo
 
@@ -4123,6 +4779,8 @@ int main(void)
       #sleep 2 seconds and then echo done
 
   ##ps
+  
+    #psmisc package
 
     sleep 100
     sleep 100
@@ -4184,6 +4842,8 @@ int main(void)
   ##killall
 
     #kill all process by name
+    
+    #psmisc package
 
   ##top
 
@@ -4268,6 +4928,15 @@ int main(void)
         #append ``&``   to command
         jobs
         cat nohup.out
+
+  ##timeout
+  
+    #run command for at most n seconds
+    
+    #coreutils
+  
+    assert [ `timeout 3 bash -c 'for i in {1..2}; do echo $i; sleep 1; done'` = $'1\n2\n' ]
+    assert [ `timeout 1 bash -c 'for i in {1..2}; do echo $i; sleep 1; done'` = $'1\n' ]
     
   ##nice
 
@@ -4295,6 +4964,24 @@ int main(void)
     touch a
 
     flock a sleep 5
+  
+  ##pstree
+  
+    #shows tree of which process invocates which
+    
+    #note how ``init`` is the parent of all processes
+
+    #psmisc package
+    
+    pstree
+
+  ##prtstat
+  
+    #TODO
+
+  ##peekfd
+  
+    #TODO
 
   ##ipcs
 
@@ -4519,6 +5206,10 @@ int main(int argc, char** argv)
       assert [ "$(ls -d d e)" = "$(echo -e 'd\ne')" ]
 
     #-lL : when showing symlinks, shows info to what is linked to
+    
+    ##dircolors
+    
+      #config <#ls> colors
 
   ##cd
 
@@ -4563,6 +5254,63 @@ int main(int argc, char** argv)
     mkdir -p "$d"
       #make a dir
       #no error if existant
+    mkdir -m 000 d
+    assert [ `stat -c "%A" d` = 'd---------' ]
+      #-m: mode (permissions)
+  
+  ##mv
+  
+    #move or rename files
+    
+    touch a
+    mv a b
+    assert [ ! -f a ]
+    assert [ -f b ]
+
+    touch a
+    mkdir d
+    mv a d
+    assert [ ! -f a ]
+    assert [ -f d/a ]
+
+    ##-b
+
+      #make backup if dest exits
+      
+      #if backupt exists, it is lost
+      
+      touch a
+      touch b
+
+      #backup ~a is made:
+      mv -b b a
+      assert [ -f a ]
+      assert [ -f a~ ]
+      assert [ `ls | wc -l` = 2 ]
+
+      #backup is only made if destination exists:
+      mv -b a b
+      assert [ -f a~ ]
+      assert [ -f b ]
+      assert [ `ls | wc -l` = 2 ]
+
+      #if backup exists, it gets overwritten
+      touch a
+      mv -b a b
+      assert [ -f a ]
+      assert [ -f a~ ]
+      assert [ `ls | wc -l` = 2 ]
+
+  ##install
+  
+    ##move and set: mode, ownership and groups
+  
+    ##make all components of path
+    
+      install -d a/b/c
+      assert [ -d a ]
+      assert [ -d a/b ]
+      assert [ -d a/b/c ]
 
   ##rename
 
@@ -4573,6 +5321,8 @@ int main(int argc, char** argv)
       #makes changes
 
   ##cpio
+  
+    #TODO
 
     find . ! -iname '* - *' -type f -print | cpio -pvdumB './no author'
     #cfind selected files to destination, building and keeping their relative directory structure
@@ -4583,10 +5333,14 @@ int main(int argc, char** argv)
 
     mkfifo f
     echo a > f &
-      #echo is still running
+      #the other end of the pipe has not been opened to read
+      #therefore the echo write system call blocks
     cat f
       #a
-      #echo stops running
+      #requests for data
+      #echo sends its data
+      #echo terminates
+      #this closes the echo input pipe
 
       #TODO understand this!
 
@@ -4830,6 +5584,22 @@ int main(int argc, char** argv)
         #only use this for very simple commands, or you are in for an escaping hell!
         #use the next pattern instead: TODO
   
+  ##locate
+  
+    #searchs for files in entire computer
+    
+    #prints all matches
+    
+    #this uses a database, which must be updated with <#updatedb> before your new file is found
+    
+    #commonly, ``updatedb`` is a <#cronjob>
+    
+    locate a.h
+
+    ##updatedb
+    
+      sudo updatedb
+  
   ##file
   
     #determine file type
@@ -4855,6 +5625,8 @@ int main(int argc, char** argv)
         #b: ASCII text
   
   ##fuser
+  
+    #psmisc package
   
     #determines which process are using a file or directory
     
@@ -4905,6 +5677,13 @@ int main(int argc, char** argv)
       assert test -d "$d"
       rm -r "$d"
         #dir instead of file
+  
+  ##pathchk
+  
+    #check if path is portable across posix systems
+    
+    pathchk -p 'a'
+    pathchk -p '\'
 
   ##dirs
 
@@ -5083,6 +5862,26 @@ int main(int argc, char** argv)
     
       sudo aptitude install -y dialog
 
+    ##yes
+    
+      #coreutils
+    
+      #repeat an output forever!
+      
+      yes
+        #y
+        #y
+        #y
+        #...
+
+      yes a b c
+        #a b c
+        #a b c
+        #a b c
+        #...
+      
+      yes | timeout 1 cat
+
 ##users and groups
 
   #to play around with those in ubuntu, do ctrl+alt+f2, f3 ... f7
@@ -5171,6 +5970,15 @@ int main(int argc, char** argv)
 
     tty
       #/dev/pts/1
+  
+  ##getty
+
+    #the tty that runs on those ctrl-alt-F\d things
+    
+    cat /etc/default/console-setup
+
+    ACTIVE_CONSOLES="/dev/tty[1-6]"
+      #allow you to change the number of consoles and their locations
 
   ##su
 
@@ -5243,6 +6051,23 @@ int main(int argc, char** argv)
             #Cmnd_Alias USBDEV  = /usr/bin/unetbootin,/usr/bin/gnome-format
             #ALL_PROGS = APT,USBDEV
             #%admin  ALL=(ALL) ALL
+      
+      ##redirection
+      
+        su a
+        mkdir b
+        chown b b
+        #sudo echo a > b/a
+          #does not work
+        sudo bash -c 'echo a > b/a'
+          #works, but quoting is hell
+        echo a | tee b/a
+          #best method. shorter and no quoting hell
+        
+        #sudo echo a > b/a
+          #does not work
+        echo a | tee -a b/a
+          #to append use -a
           
     ##ubuntu default
 
@@ -5266,23 +6091,12 @@ int main(int argc, char** argv)
         #sudo -L --> sudo env PATH=$PATH -l
         #env thinks -l is his option
 
-  ##hostname
+  ##logout
 
-     hostname
-       #print hostname
-       #if in command prompt: ``ciro@ciro-Thinkpad-T430``
-       #hostname is ``ciro-Thinkpad-T430``
-
-     sudo hostname "$h"
-       #change hostname for cur session
-       #prompt is not changed immediatelly
-
-     sudo echo "$h" > /etc/hostname
-       #change hostname permanently
-
-  logout
     #logs out
     #can only be used on login shell
+  
+    logout
 
   ##faillog
     
@@ -5414,23 +6228,357 @@ int main(int argc, char** argv)
 
     finger "$u"
       #shows info on user u
+    
+    ##pinky
+    
+      #lightweight finger
+      
+      #coreutils package
 
-##web networking
+  ##ldap
+          
+    #filesystem, printer, etc server over network
+  
+  ##radius
+  
+    #login server
+    
+    #freeradius major implementation
+
+##networking
+
+  ##sources
+    
+    #<http://www.aboutdebian.com/network.htm>
+  
+  ##host concept
+  
+    #any computer connected to a network 
+    
+    #can be specified by
+    
+    #- an IP or by
+    #- a string that will be resolved by a dns server to an ip
+  
+
+    ##hostname
+    
+      #an alias for you ip
+      
+      ##hostname
+
+        echo $HOSTNAME
+        hostname
+          #print hostname
+          #if in command prompt: ``ciro@ciro-Thinkpad-T430``
+          #hostname is ``ciro-Thinkpad-T430``
+
+        h=
+        sudo hostname "$h"
+          #change hostname for cur session
+          #prompt is not changed immediatelly
+    
+      ##host command
+      
+        #get ips for a given hostname
+      
+        host www.google.com
+        host $HOSTNAME
+      
+      ##lan
+      
+        #on your lan, people can use that alias to communicate between computers
+        
+        ##example
+        
+          ping $HOSTNAME
+          firefox $HOSTNAME
+            #if you have a server like apache running
+
+          #all the commands work equally if you give ips
+          #
+          #shows your apache index if you are running one
+          #
+          #this will work from other computers in the lan
+          #
+          #TODO if many people set up the same hostname, then what?
+        
+        ##change hostname permanently
+
+          h=
+          echo "$h" | sudo tee /etc/hostname
+          
+          ##windows
+          
+            #host is reffered to as "computer name". good name choice.
+        
+            wmic computersystem where name="%COMPUTERNAME%" call rename name="NEW-NAME" 
+
+      ##wan
+      
+        #on the internet, hotnames are resolved to ips by DNS servers
+        
+        #you must pay for hostnames to use them
+
+  ##routers
+
+    ##routing table
+      
+      ##advantages
+
+        #- local requests don't go out
+        #- you can block all forbidden websites and services on a single computer
+    
+      #great lan routing example: <http://en.wikipedia.org/wiki/Default_gateway>
+      
+      #note:
+      
+      #routing tables say: if the request should go to a given network, send it to a given interface
+      
+      #0.0.0.0 is the default if no other is found
+      
+      #routers have two interfaes each: inside and outside
+
+    ##external vs internal ip
+
+      #if you use a router, all computers behind the router have a single external ip seen
+      #you have an external ip seen on the web and an internal ip seen on the private
+      #local network (lan)
+        
+      curl http://ipecho.net/plain
+      curl ifconfig.me
+        #get external ip
+
+      ifconfig | grep -B1 "inet addr" | awk '{ if ( $1 == "inet" ) { print $2 } else if ( $2 == "Link" ) { printf "%s:" ,$1 } }' | awk -F: '{ print $1 ": " $3 }'
+        #internal adresses for current computer
+        #different ones for wireless and for wired connections
+      
+      #computers in the network only talk to the router.
+      #the server on the router is called **proxy server**.
+  
+    ##internal ip ranges
+    
+      #3 ip ranges are reserved for internal ips
+      #they are called class [ABC]
+      #if your address is in those ranges,
+      #the routers proxy server knows it is an internal one you are asking about
+      
+      #most common home range is the Class C:
+      
+      #192.168.0.1 through 192.168.255.254
+      #subnet mask 255.255.255.0
+
+    ##subnet mask
+      
+      ##get mask for an interface:
+      
+        ifconfig wlan0 | sed -nr 's/.*Mask:([^ ]*)/\1/p'
+    
+      #internal ips have two parts: network and computer
+      
+      #the length of the network part may vary between networks
+      
+      #the length is given by the **subnet mask**, ex:
+      
+      #255.255.255.0
+      #1111.1111.1111.0000
+      
+      #means that 12 first bits are network
+      
+      #255.255.0.0
+      
+      #means that 8 first bits are network
+      
+      #all computers in the same network must have the same subnet mask and the same 
+      #network part, but different computer parts.
+      
+      #each network (formally **network segment**) is run by a single router #TODO confirm
+    
+    ##special adresses
+
+      ##network address
+        
+        #aka #<zero address>
+      
+        ##sources
+
+          #<http://serverfault.com/questions/135267/what-is-the-network-address-x-x-x-0-used-for>
+      
+        #the last bytes 0 is reserved
+        
+        #it is used to refer to the network itself
+        
+        #it is used when several networks, one one a different router must speak to each other
+
+      ##default gateway
+        
+        #0.0.0.0 network address in the routing table
+        
+        #if no network matches request, sends to this network
+      
+        #address you get automatically redirected to by reuter if the address you gave cannot be found
+        
+        ##get
+        
+          route -n | awk '{ if( $1 ~ "0.0.0.0" ) print $2 }'
+
+          firefox `route -n | awk '{ if( $1 ~ "0.0.0.0" ) print $2 }'`
+            #go into the router configuration
+    
+      ##broadcast address
+        
+        #for the last bytes, 255 is reserved
+        
+        #the broadcast address means talking to all computers on a given network at once
+        #instead of a single computer
+        
+        ##ex
+        
+          ##Class C
+          
+            #- network part: 192.168.3
+
+              #broadcast is: 192.168.3.255
+
+            #- network part: 192.168.234
+
+              #broadcast is: 192.168.3.255
+
+          ##Class A
+        
+            #- network part: 10
+
+              #broadcast is: 10.255.255.255
+      
+      ##.1
+      
+        #.1 is not special, but in home networks is often already taken by the router's inner interface
+        
+        #this is why your addresses may start at .2
+  
+    ##NIC
+
+      #Network Interface Cards
+      
+      #hardware that does netowrk communication
+      
+      #come mostly built-in the motherboard today
+      
+      #each router has 2 NICs: one external and one internal.
+      
+      ##get all interface names
+      
+        ifconfig | perl -ne '/^(\S+)/ && print $1 . "\n"'
+    
+    ##MAC
+    
+      #unchangeable address of each NIC
+      
+      #unique across and within vendors
+      
+      #6 bytes: first 3 identify vendor, last 3 product
+      
+      #colon separated notation. Ex: ``0C:21:B8:47:5F:96``
+    
+      ##aka
+      
+        #physical address
+        
+        #hardware address
+
+        #media access control address
+      
+        #BIA: burnt in address
+      
+      ##get MAC addresses of my computer
+
+        ifconfig | sed -nr 's/([^ ]*) .*HWaddr (.*)/\1 \2/p' 
+
+      ##get MAC addresses of computers i talked to in the lan
+      
+        timeout 3 ping 192.168.1.3; arp -a | sed -nr 's/([^ ]*) .*at (.*)/\1 \2/p'
+
+  ##/etc/hosts
+
+    #tells your computer  where to redirect the given names
+    
+    #big downside: you have to have one of this file on every pc
+    
+    #therfore, use <#dns> instead
+  
+    cat /etc/hosts
+    
+    echo "127.0.0.1 www.wikipedia.org" | sudo -a /etc/hosts
+    firefox www.wikipedia.org &
+      #you see your localhost apache if it is running there
+    sudo sed -i "$ d" /etc/hosts
+
+    ##windows
+    
+      #the file is:
+      
+      C:\Windows\System32\Drivers\Etc\hosts
+
+  ##dns
+  
+    #domain name system
+    
+    #convert strings into ips
+    
+  ##ifconfig
+  
+    #network InterFace configuration
+    
+    #includes stuff like IPs, subnet masks, MAC, etc
+
+    #<http://www.thegeekstuff.com/2009/03/ifconfig-7-examples-to-configure-network-interface/>
+
+    ifconfig
+      #eth0  wired network 0
+      #wlan0 wifi card 0
+      #lo    loopback (local host)
+    
+    ifconfig | grep -B1 "inet addr" | awk '{ if ( $1 == "inet" ) { print $2 } else if ( $2 == "Link" ) { printf "%s:" ,$1 } }' | awk -F: '{ print $1 ": " $3 }'
+      #get local ips (behind router)
+      #wlan0 and eth0 give different results
+
+  ##iwconfig
+  
+    #wireless network configuration
 
   ##ping 
 
-    ping google.com
     #sends an recieves data, measuring round trip, several times
 
+    #main tool used to test connectivity
+    
+    #in online games, ping means the go and return time of the signal
+
+    ping google.com
+  
+  ##arp
+
+    #shows info of computers you connected to
+
+    timeout 3 ping 192.168.1.3; arp -a
+
+  ##route
+  
+    #view kernel routing table
+    
+    route
+
+    route -n
+      #numeric instead of names
+
   ##whois
+  
+    sudo aptitude install -y whois
 
     whois 201.81.160.156
       #check info about ip (country and ISP included)
 
-  ##netstat
-
-    netstat -a
-      #TODO understand crazy output
+    whois `curl ifconfig.me`
 
   ##wget
 
@@ -5481,7 +6629,7 @@ int main(int argc, char** argv)
     sudo aptitude install -y curl
 
     curl ifconfig.me
-    #external ip address of your computer
+      #external ip address of your computer
 
     curl "$URL"
     #make get resquest, stdout server response
@@ -5517,10 +6665,10 @@ int main(int argc, char** argv)
     #curl does mail
     #end body with a single dot '.' on a line
 
-    curl dict://dict.org/show:db #dictionnaries
-    curl dict://dict.org/d:bash #general
-    curl dict://dict.org/d:bash:foldoc #computing
-    #curl does dict!
+    #dict!
+      curl dict://dict.org/show:db #dictionnaries
+      curl dict://dict.org/d:bash #general
+      curl dict://dict.org/d:bash:foldoc #computing
 
     #-i : show output protocol headers
     #-v , --trace $FILE, --trace-ascii $FILE: increasing levels of output showing
@@ -5552,16 +6700,41 @@ int main(int argc, char** argv)
       
       #it is *very* difficult to make another file
       #with the same checksum
+  
+  ##ifup
+  
+    #TODO
+    
+    ##/etc/network/interfaces
+    
+      ##manual
 
-  ##ifconfig
+          man interfaces
+    
+      ##set static ip
+      
+        #on a home network that you control,
+        #it is better to use intuitive hostnames
+        #and let the addresses be dynamic,
+        #unless some app really requires you
+        #to enter ips.
+        #see: <#hostname> for how.
 
-    ifconfig
-    #shows local network ips
-      #eth0  wired network 0
-      #wlan0 wifi card 0
-      #lo    loopback (local host)
+          sudo vim /etc/network/interfaces
 
-    #<http://www.thegeekstuff.com/2009/03/ifconfig-7-examples-to-configure-network-interface/>
+          auto lo wlan0 eth0
+
+          iface wlan0 inet static
+            address 192.168.1.100
+            netmask 255.255.255.0
+            broadcast 192.168.1.255
+            gateway 192.168.1.1
+
+        #- auto if1 if2
+          #automatically create interfaces if1 and if2 on ``ifup -a``
+
+        #- iface if1
+          #from now on, define properties of if1
 
   ##nmap
 
@@ -5570,9 +6743,23 @@ int main(int argc, char** argv)
     #shows open ports at google.com
     #you are gonna get at least 80 for their http server
 
-  ##telnet
+  ##netstat
 
-    #connect to external servers throught the telnet protocol. (no encryption I think)
+    netstat -a
+      #TODO understand crazy output
+
+  ##telnet
+  
+    #do sh commands on remote computer!
+    
+    #ultra powerful and ultra dangerous
+    
+    #no encryption, therefore *DONT'T SEND PASSWORDS ON UNTRUSTED NETWORK WITH THIS*!!
+
+    #always use <#ssh> which is encrypted for anything even remotelly serious
+    
+    #the other computer must be running a telnet server
+
     #fun MUD games!
     
     echo 'GET / google.com 80
@@ -5595,6 +6782,107 @@ User-Agent: fingers
       #and GET the google page
       #Host is the only required field, since there can be multiple hosts per ip
       #connexion is closed
+  
+  ##ssh
+  
+    #like <#telnet>, but encrypted
+    
+    #predominant implementation: OpenSSH
+
+    sudo aptitude install -y openssh-client
+    sudo aptitude install -y openssh-server
+    
+    man ssh
+    man ssh_config
+
+    ##server
+    
+      sudo cp /etc/ssh/ssh_config{,.bak}
+      sudo vim /etc/ssh/ssh_config
+
+      Host *                    #config for all hosts
+        Port 22                 #open port 22
+        AllowUsers user1 user2  #allow the given users
+    
+    ##client
+
+      h=
+      u=
+
+      #get the version of you ssh:
+      ssh -V
+
+      #connect to hostname with your current username:
+      ssh $h
+      #for this to work you need:
+        #your host (computer) is allowed. see <#ssh#server>
+        #your user is allowed. see <#ssh#server>
+        #your user exists in the server computer. see <#useradd>
+
+      #connect to hostname with the given username:
+      ssh $u@$h
+      ssh -l $u $h
+
+      #choose port:
+      p=
+      ssh -p $p $h
+
+    ##usage
+
+      #once you log in, it is as if you had a shell on the given ssh server computer!
+      
+      #you canno copy files between computer with ssh directly,
+      #but you can use <#scp> or <#sftp> to do it
+      
+      #note how you appear on the who list:
+      who
+      
+      #you cannot launch x11 programs:
+      xeyes
+        #Error: can't open display
+      
+      #to close your connection:
+      logout
+
+    ##scp
+
+      #cp with ssh encryption
+      
+      #get a file:
+      p= #path to file
+      d= #destination directory
+      u=
+      h=
+      scp $u@$h:$p $d
+
+      #send a file:
+      scp $p $u@$h:$d
+
+      #directories:
+      scp -r $u@$h:$p
+      #use -r
+
+      #multiple files/dirs:
+      scp -r $u@$h:"$p1" $u@$h:"$p2"
+    
+    ##sftp
+    
+      #similar to ftp, ssh encryption
+
+  ##cifs
+
+    sudo aptitude install -y cifs-utils
+  
+  ##samba
+  
+    #open source linux implementation of the SMB/CIFS networking protocol
+    #used by default on windows
+  
+    #it allows for file, printer and driver sharing on a network
+    
+    #best option for cross platform file transfers
+
+    sudo aptitude install -y samba
 
   ##browser
   
@@ -5618,13 +6906,29 @@ User-Agent: fingers
     firefox http://mathb.in
       #math pastebin
       #renders with mathjax
+  
+  ##files
+  
+    ##/etc/protocols
+
+    ##/etc/hosts.allow
+    ##/etc/hosts.deny
+    
+    ##/etc/services
+
+    ##/etc/udev/rules.d/70-persistent-net.rules
 
 ##boot
+
+  #summary of the boot process: <http://www.ibm.com/developerworks/library/l-linuxboot/>
 
   ##grub
 
     sudo vim /etc/default/grub
-      #timeout : time before OS choice
+      #GRUB_DEFAULT : default os choice if cursor is not moved.
+        #starts from 0, the order is the same as shown at grub os choice menu
+      #GRUB_TIMEOUT : time before auto OS choice in seconds
+
     sudo update-grub
       #must update grub after changing this file
   
@@ -5632,25 +6936,84 @@ User-Agent: fingers
   
     #parent of all processes!
     
+    #last thing that is run at boot process
+    
+    #firs user-space process
+    
     #determines runlevel
     
     sudo init 6
-      #runlevel 6: reboot
+      #set runlevel 6: reboot
+
+  ##run levels
+  
+    #ubuntu uses upstart, newer replacement to ``system v`` init
     
-    #configuration files in /etc/init
+    #/etc/init: upstart configuration files
+      #programs here are named services
+    #/etc/init.d: are the old compatibility only system v initi dirs
+    #links to programs that get run on each runlevel: /etc/rc\n.d/
+  
+    runlevel
+      #determines previous and current run level
+      #N == none
+    
+    #S == 1. better use 1 always on debian systems.
+    
+    ##upstart
+    
+      ##service
+    
+        #upstart interface to services
+      
+        sudo service --status-all
+          #status of all services
+        
+        sudo service apache2 status
+        sudo status apache2
 
-##flash
+        sudo service apache2 start
+        sudo start apache2
 
-  sudo apt-add-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
-  sudo aptitude update && sudo aptitude install -y flashplugin-installer
+        sudo service apache2 stop
+        sudo stop apache2
 
-##java
+        sudo service apache2 restart
+        sudo restart apache2
 
-  #sudo add-apt-repository -y ppa:webupd8team/java
-  #sudo apt-get update
-  #sudo apt-get install -y oracle-java7-installer
+##interpreters
 
-#combos
+  ##bc
+
+    #simple interpreted language, calulator focus
+    
+    #c-like syntax
+    
+    #features: variable definition, function definition, arrays, strings
+
+    #non features: string concatenation
+
+    #posix 7
+    
+    assert [ `echo '1+1' | bc` = 2 ]
+
+  ##flash
+
+    sudo apt-add-repository -y "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
+    sudo aptitude update
+    sudo aptitude install -y flashplugin-installer
+
+  ##java
+
+    sudo add-apt-repository -y ppa:webupd8team/java
+    sudo aptitude update
+    sudo aptitude install -y oracle-java7-installer
+    sudo aptitude install -y oracle-java7-set-default
+      #set env variables
+    sudo aptitude install -y icedtea6-plugin
+      #allows to run java on certain brosers, including firefox
+
+##combos
 
   find . | sort -f | uniq -di
     #find files whose path differ from other files only by case
@@ -5742,6 +7105,8 @@ User-Agent: fingers
         #very nice demo of lots of 2.0 features with easy to see source code
   
   ##xorg
+  
+    #is the dominant implementation of the x server
 
     ##conf file
     
@@ -5770,9 +7135,13 @@ User-Agent: fingers
   
     sudo X -version
 
+  ##xhost
+  
+    #x control
+
   ##service lightdm
 
-    sudo service lightdm restart
+    sudo restart lightdm
       #restart lightdm display manager used for Unity
       
       #restart X too
@@ -5783,9 +7152,9 @@ User-Agent: fingers
       #don't ask me why! =), but probably because
       #your terminal is going to die in the middle of the operation
 
-    sudo service lightdm stop
+    sudo stop lightdm
 
-    sudo service lightdm start
+    sudo start lightdm
 
   #starts x, somewhere
   
@@ -5895,28 +7264,92 @@ add Lock = Caps_Lock
 
   ##xsel
 
-    #manipulate the x selection (copy/paste area)
+    #manipulate the x selection and clipboard
 
     sudo aptitude install -y xsel
+    
+    ##x selection
+    
+      #is the last focused selected text
+      
+      #can be pasted with a middle click
 
-    xsel > file
-      #put xsel into a file.
-    xsel < file
-      #xsel is the last focused selected text
-      #different from clipboard
+      echo a > xsel
+        #set x selection
+      assert [ `xsel` = a ]
+        #print contents of xselection
     
-    xsel --clipboard > file
-    xsel --clipboard < file
-    #uses the clipboard (ctrl+c) instead of selection
+    ##clipboard
+
+      #uses the clipboard (ctrl+c) instead of selection
+      
+      echo a | xsel -b
+        #set clipboard
+      assert [ `xsel -b` = a ]
+        #print clipboard
     
-    xsel --append < file
-      #appends to file
+    ##append
     
-    xsel --follow < file#
+      echo a | xsel
+      echo b | xsel -a
+      assert [ "`xsel`" = $'a\nb\n' ]
+    
+    ##follow
+    
       #follows stardard input as it grows
 
-  xeyes
+      echo a > f
+      xsel -f < f
+      assert [ "`xsel`" = $'a\n' ]
+      echo b >> f
+      assert [ "`xsel`" = $'a\nb\n' ]
+
+      ##stop
+      
+        echo a | xsel
+        echo c > f
+        assert [ "`xsel`" = $'a\n' ]
+
+  ##xmodmap
+  
+    #view and modify key mappings
+    
+    xmodmap -pke > ~/.Xmodmap
+      #outpus all keymappings to a file
+      #
+      #keycode  24 = q Q q Q adiaeresis Adiaeresis
+      #              ^ ^ ^ ^ ^^^^^^^^^^ ^^^^^^^^^^
+      #              1 2 3 4 5          6         
+      #         
+      #1: no modifiers
+      #2: shift
+      #3: mode_switch no shift
+      #4: mode_switch +  shift
+      #5: ?
+      #6: ?
+      #7: ?
+      #8: ?
+      #9: ?
+      #
+      #**AltGru** is the mode_switch key
+      #
+      #up to 8 keysims bay be attached to each keycode
+      #
+      #however, only the first 4 are commonly used
+  
+  ##xeyes
+    
     #fun x11 test prog
+
+    xeyes
+
+  ##xev
+  
+    #opens test window and prints x events description to stdout
+    
+    xterm
+      #does not work well on guake
+    xev
 
   ##xwd
 
@@ -5987,3 +7420,13 @@ add Lock = Caps_Lock
     #only works from a terminal (ctrl+alt+F? thingy) 
     
     setleds
+
+  ##expect
+  
+    sudo aptitude install -y expect
+
+  ##dejagnu
+
+    #provide single frontend for program tests
+
+    sudo aptitude install -y expect

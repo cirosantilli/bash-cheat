@@ -146,10 +146,17 @@ use warnings;
   print values %hash;
 
 #conditional
+
   #if
+
     if (1 == 1) {
         print 'True';
     }
+
+    #if (1 == 1)
+        #print 'True';
+      #ERROR
+      #must use brackets
 
     if (1) {
         print 'Hello';

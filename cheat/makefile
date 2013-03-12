@@ -34,9 +34,6 @@
 
 	#first target in file is default! all is often it by convention
 
-	#all if no options required by convention, builds everything.
-	all: target
-
 	#help. can be first if options required
 	help:
 		@echo "must use an option:"
@@ -44,12 +41,39 @@
 		@echo "  cpp"
 	#$make #makes first target found on file
 
-	#clean what you built
-	clean:
-		@rm *.o *.tmp
+	##conventional names
 
-	install:
-		@mv out $(DIRINPATH)
+		##help
+			
+				#print help on cur makefile options
+
+		##all
+
+			#builds everything
+
+			#usually is the default target (comes first)
+
+		##check
+
+			#do test to check that application is woking properly
+	
+		##install
+			
+				#install after a build
+
+				#this basically putting built/config files in the right place with right permissions
+
+				#and calling auxiliary programs such as ``ldconfig``
+
+		##clean
+
+			#remove generated output/auxiliary files
+
+			clean:
+				@rm *.o *.tmp
+
+			install:
+				@mv out $(DIRINPATH)
 
 #variables
 
@@ -264,15 +288,17 @@ all: $(SRC)
 
 #submake
 
+	#call other makefiles
+
 	mkdir a
 
-echo -e 'a=b
+	echo -e 'a=b
 all:
 \t@echo $(a)
-\t@$(MAKE) -C a all' > Makefile
+\t@$(MAKE) -C a all' > makefile
 
 	echo -e 'all:
-\t@echo $(a)' > a/Makefile
+\t@echo $(a)' > a/makefile
 
 	make
 

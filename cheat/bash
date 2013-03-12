@@ -25,6 +25,12 @@
     #and /usr/bin/env exists 
     #it works
 
+    ##why it works
+
+      #``env cmd`` simply executes a program in current environment
+
+      #in our case, the bash program
+
     #the advantage of this is that:
       #- env is more often located in ``/usr/bin`` than bash in ``/usr`` acros *NIX TODO check
       #- all you interpreters
@@ -76,6 +82,8 @@ function cleanup_test {
   chmod 777 a
   ./a
     #a
+  `realpath a`
+    #a
 
 ##variables
 
@@ -85,7 +93,7 @@ function cleanup_test {
   a="abc"
   assert [ "0${a}1" = "0abc1" ]
 
-  #you can use vars as commands
+  ##you can use vars as commands
 
     a="echo b"
     $a
@@ -94,7 +102,7 @@ function cleanup_test {
     #assert [ $(a) = b ]
     #assert [ "$a"   = "echo b" ]
 
-  #vars are not expand recursivelly
+  ##vars are not expand recursivelly
   
     b=c
     a='$b'
@@ -146,7 +154,7 @@ function cleanup_test {
       #number of cli args
 
       echo '#!/bin/bash
-  echo "$#"' > a
+echo "$#"' > a
       ./a a b
         #2
       ./a a b c d
@@ -305,9 +313,11 @@ function cleanup_test {
 ##eval
 
   #exec string in current bash
-
   eval "a=b"
   assert [ $a = b ]
+
+  #concatenates arguments, space separated:
+  assert [ `eval echo a` = a ]
 
   ##applications
 
@@ -361,85 +371,101 @@ function cleanup_test {
     #a/b
       #simple remove ext
 
-echo glob
+##expansion
 
-  #formal name: pat expansion
+  ##pathname expansion
 
-  #simple regex like expanded before command is evaluated
+    #formal name: #<pathname expansion>
 
-  echo *
-    #files cur dir
-  echo '*'
-    #literal
-  echo a*
-    #start with a
-  echo ?a*
-    #second letter a
-    #* matches ""
-  echo [ab]*
-    #start with a or b
-  su a
-  echo ~
-    #/home/a
-  echo ~test
-    #/home/test
-  echo ~root
-    #/root
-  echo ~idonthaveahome
-    #~idonthaveahome
-  
-  #combos:
+    #simple regex like expanded before command is evaluated
 
-    for f in *; do echo "$f"; done
-      #only non hidden
-    for f in .*; do echo "$f"; done
-      #only hidden
-    for f in * .*; do echo "$f"; done
-      #both hidden and not hidden
+    echo *
+      #files cur dir
+    echo '*'
+      #literal
+    echo a*
+      #start with a
+    echo ?a*
+      #second letter a
+      #* matches ""
+    echo [ab]*
+      #start with a or b
+    echo [a-c]*
+      #start with a, b or c
+    
+    #combos:
 
-  ##extended globbing
+      for f in *; do echo "$f"; done
+        #only non hidden
+      for f in .*; do echo "$f"; done
+        #only hidden
+      for f in * .*; do echo "$f"; done
+        #both hidden and not hidden
 
-    #glob with ERE-like expressions instead of BREs
+    ##extended globbing
 
-    shopt -s extglob
-      #extended globbing
+      #glob with ERE-like expressions instead of BREs
 
-      #glob              ERE mnemonic
-      #?(pattern-list)   (...|...)?
-      #*(pattern-list)   (...|...)*
-      #+(pattern-list)   (...|...)+
-      #@(pattern-list)   (...|...)    [@ not a RE syntax]
-      #!(pattern-list)   "!" used as for negative assertions in RE syntax
+      shopt -s extglob
+        #extended globbing
 
-##brace expansion
+        #glob              ERE mnemonic
+        #?(pattern-list)   (...|...)?
+        #*(pattern-list)   (...|...)*
+        #+(pattern-list)   (...|...)+
+        #@(pattern-list)   (...|...)    [@ not a RE syntax]
+        #!(pattern-list)   "!" used as for negative assertions in RE syntax
 
-  #{}
+  #tilde expansion
 
-  ##alternatives
+    su a
+    echo ~
+      #/home/a
+    echo ~test
+      #/home/test
+    echo ~root
+      #/root
+    echo ~idonthaveahome
+      #~idonthaveahome
 
-    assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
+  ##brace expansion
 
-    ##nested ok
+    #{}
 
-      assert [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ]
+    ##alternatives
 
-  ##number ranges
+      assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
 
-    assert [ "`for a in a{1..3}b; do echo -n "$a"; done`" = $'a1b a2b a3b ' ]
-    assert [ "`for a in a{-1..-3}b; do echo "$a"; done`" = $'a-1b\na-2b\na-3b' ]
-    assert [ "`for a in a{1..5..2}b; do echo "$a"; done`" = $'a1b\na3b\na5b' ]
-    assert [ "`for a in a{5..1..2}b; do echo "$a"; done`" = $'a5b\na3b\na1b' ]
+      ##nested ok
 
-  ##letter ranges
+        assert [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ]
 
-    assert [ "`for a in 0{a..c}1; do echo "$a"; done`" = $'0a1\n0b1\n0c1' ]
-    assert [ "`for a in 0{a..e..2}1; do echo "$a"; done`" = $'0a1\n0c1\n0e1' ]
+    ##number ranges
 
-  ##applications
+      assert [ "`for a in a{1..3}b; do echo -n "$a"; done`" = $'a1b a2b a3b ' ]
+      assert [ "`for a in a{-1..-3}b; do echo "$a"; done`" = $'a-1b\na-2b\na-3b' ]
+      assert [ "`for a in a{1..5..2}b; do echo "$a"; done`" = $'a1b\na3b\na5b' ]
+      assert [ "`for a in a{5..1..2}b; do echo "$a"; done`" = $'a5b\na3b\na1b' ]
 
-    for i in {1..5}; do echo $i; done
+    ##letter ranges
 
-    mkdir a{a..c}
+      assert [ "`for a in 0{a..c}1; do echo "$a"; done`" = $'0a1\n0b1\n0c1' ]
+      assert [ "`for a in 0{a..e..2}1; do echo "$a"; done`" = $'0a1\n0c1\n0e1' ]
+    
+    ##single quotes
+
+      #prevens expansion
+
+      echo "{1..3}"
+        #{1..3}
+
+    ##applications
+
+      for i in {1..5}; do echo $i; done
+
+      mkdir {a..c}
+
+      cp a{,.bak}
     
 echo array
 
@@ -503,67 +529,70 @@ echo string
   a="not empty"
   if [ -z "$a" ]; then echo true; fi
 
-#if
-
-  [ 1 = 1 ]
-  [ $? = 0 ]
-    #[ ] is an external program
-    #it retunrs an exit status
-
-  #[ 1 = 0 ]
-    #program ends because of -e
-
-  v=false
-  v=true
-  if $v; then
-    echo "true"
-  fi
-
-  #integer
-
-    if [ 1 -eq 1 ]; then echo true; fi
-    if [ 1 -lt 2 ]; then echo true; fi
-    if [ 2 -gt 2 ]; then echo true; fi
-    if [ 1 -le 2 ]; then echo true; fi
-    if [ 2 -ge 2 ]; then echo true; fi
-
-  #&& and ||
-
-    #&& only execute next command if previous command gives status = 1
-    #||                                                            = 0
-
-    #if they don't execute, status is unchanged
-
-    true && echo a
-      #a
-    false && echo a
-      #
-    true || echo a
-      #
-    false || echo a
-      #a
-
-  #logical
-
-    a=true
-    if [ ! a = b ]; then echo true; fi
-      #not
-    if [ a = a ] && [ b = b ]; then echo true; fi
-      #and
-        #actually, if first is true do seconde
-        #else skip
-        #this has same effect as and
-    if [ a = b ] || [ b = b ]; then echo true; fi
-      #or
-        #actually, if first is true, skip
-        #else do second
-        #this has same effect as or
+##if
 
   ##true false
 
     which true
       #/bin/true
       #it is a program that does one thing: ``exit(1);`` !
+
+    assert [ `if true; then echo a; fi` = a ]
+    assert [ -z `if false; then echo a; fi` ]
+
+    v=true
+    assert [ `if $v; then echo a; fi` = a ]
+
+  ##square brackets
+
+    #bash built-in
+
+    #does the same as <#test>
+
+    [ 1 = 1 ]
+    [ $? = 0 ]
+    if [ 1 = 1 ]; then echo true; fi
+    if [ ! 1 = 1 ]; then echo true; fi
+
+    #integer
+
+      if [ 1 -eq 1 ]; then echo true; fi
+      if [ 1 -lt 2 ]; then echo true; fi
+      if [ 2 -gt 2 ]; then echo true; fi
+      if [ 1 -le 2 ]; then echo true; fi
+      if [ 2 -ge 2 ]; then echo true; fi
+
+  ##logical
+
+    #&& only execute next command if previous command gives status = 1
+    #||                                                            = 0
+
+    #if they don't execute, status is unchanged
+
+    #therefore, for if ``&&`` has the same effect as and and ``||`` the same effect as or!
+
+    assert [ `true && echo a` = a ]
+    assert [ -z `false && echo a` ]
+    assert [ `false || echo a` = a ]
+    assert [ -z `true || echo a` ]
+
+    assert [ `if true && true; then echo a; fi` = a ]
+    assert [ -z `if false && true; then echo a; fi` ]
+    assert [ -z `if true && false; then echo a; fi` ]
+    assert [ -z `if false && false; then echo a; fi` ]
+
+    assert [ `if true || true; then echo a; fi` = a ]
+    assert [ `if false || true; then echo a; fi` = a ]
+    assert [ `if true || false; then echo a; fi` = a ]
+    assert [ -z `if false || false; then echo a; fi` ]
+
+  ##not
+
+    #! here is part of the if
+
+    #note that <#test> also understands !
+
+    assert [ `if ! false; then echo a; fi` = a ]
 
   ##test
 
@@ -576,15 +605,16 @@ echo string
     which test
       #/bin/test
 
-    #value compare
+    ##value compare
+
       test a = a && echo a
         #a
       test a = b && echo a
         #
 
-    #file ops
+    ##file ops
 
-      #-f
+      ##-f
 
         #exists and is regular file
 
@@ -593,7 +623,7 @@ echo string
         assert test -f a
         cleanup_test
 
-      #-s
+      ##-s
 
         #exists and has size > 0
 
@@ -601,7 +631,8 @@ echo string
         touch a
         assert test -f a
 
-    #logical
+    ##logical
+
       test ! a = a        && echo a
         #
       test a = a -a b = b && echo a
@@ -612,11 +643,29 @@ echo string
         #a
       test a = b -o a = b && echo a
 
-  #colon
+  ##colon
 
     #do nothing
 
     if true; then : ; fi
+
+##case
+
+  #each case is a <#pathname expansion> pattern
+  #or an pattern | pattern:
+
+  a=
+  case $a in
+    [a-c])
+      echo "1"
+      ;;
+    [d-e]|[1-3])
+      echo "2"
+      ;;
+    *)
+      echo "3"
+      ;;
+  esac
 
 ##for while
 
@@ -754,75 +803,102 @@ echo string
       #close 3
     echo $REPLY
 
-#background
+##process
 
-  #jobs
-    #shows jobs running on background of cur bash
-    #
-    #%N	Job number [N]
-    #%S	Invocation (command line) of job begins with string S
-      #if several matches, ambiguous, and does nothing
-    #%?S	Invocation (command line) of job contains within it string S
-    #%%	"current" job (last job stopped in foreground or started in background)
-    #%+	"current" job (last job stopped in foreground or started in background)
-    #%-	Last job
-    #$!	Last background process
-    #
-    #shows:
-    #  jobspec : local id
-    #  status : runnning, stopped, done
-    #  invocation : exact program call, including command line args. Ex: ``ls ~``
+  ##exec
 
-  #ls &
-  #sleep 100 &
-  #sleep 100 &
-  #sleep 100 &
-    #runs on background
-    #
-    #[1] 12345678
-    #means local id 1
-    #process number 12345678
-    #
-    #when process ends, it prints ``[n] 1234`` and disappears
-    #
-    #stdout continues to go to cur terminal, even if in bg
+    #bash interface similar to an exec system call:
+    #ends current shell and runs given command instead
 
-  #firefox
-    #Ctrl z
-    #puts currently foreground running on background stopped
+    #destroys the calling bash!
 
-  #bg %3
-    #starts running job 3 which was stopped on background
-  #bg
-  #bg %+
-  #bg %%
-    #last bg job [+]
-  #bg %-
-    #before last bg job [-]
+    assert [ $SHLVL = 1 ]
+    exec bash
+    assert [ $SHLVL = 1 ]
+    #exec bash
+      #ls then exits bash!
+      #you don't see anything
 
-  #fg %3
-    #starts running job 3 which was on background on foreground
-  #fg
-    #last job
+    ##application
+      
+      #start a new bash with a custom environment
 
-  #kill %1
-    #kill subprocess [1]
-  #kill $PID
-    #kill by process id
+      #and discard the old one
 
-  #wait && ls
-    #wait for all bg jobs to finish
-  #wait %3 && ls
-    #job 3
+      exec env -i a=b c=d bash --norc --noprofile
+      env
+      exit
 
-  #vlc 100 &
-  #vlc 100 &
-  #vlc 100 &
-  #disown %3
-    #remove job 3 from list of sub jobs
-    #closing bash will not kill it anymore
+  ##background
 
-#list available commands
+    ##jobs
+
+      #shows jobs running on background of cur bash
+      #
+      #%N	Job number [N]
+      #%S	Invocation (command line) of job begins with string S
+        #if several matches, ambiguous, and does nothing
+      #%?S	Invocation (command line) of job contains within it string S
+      #%%	"current" job (last job stopped in foreground or started in background)
+      #%+	"current" job (last job stopped in foreground or started in background)
+      #%-	Last job
+      #$!	Last background process
+      #
+      #shows:
+      #  jobspec : local id
+      #  status : runnning, stopped, done
+      #  invocation : exact program call, including command line args. Ex: ``ls ~``
+
+    #ls &
+    #sleep 100 &
+    #sleep 100 &
+    #sleep 100 &
+      #runs on background
+      #
+      #[1] 12345678
+      #means local id 1
+      #process number 12345678
+      #
+      #when process ends, it prints ``[n] 1234`` and disappears
+      #
+      #stdout continues to go to cur terminal, even if in bg
+
+    #firefox
+      #Ctrl z
+      #puts currently foreground running on background stopped
+
+    #bg %3
+      #starts running job 3 which was stopped on background
+    #bg
+    #bg %+
+    #bg %%
+      #last bg job [+]
+    #bg %-
+      #before last bg job [-]
+
+    #fg %3
+      #starts running job 3 which was on background on foreground
+    #fg
+      #last job
+
+    #kill %1
+      #kill subprocess [1]
+    #kill $PID
+      #kill by process id
+
+    #wait && ls
+      #wait for all bg jobs to finish
+    #wait %3 && ls
+      #job 3
+
+    #vlc 100 &
+    #vlc 100 &
+    #vlc 100 &
+    #disown %3
+      #remove job 3 from list of sub jobs
+      #closing bash will not kill it anymore
+
+##commands aliases built-ins
 
   #commands: programs in path
   #aliases: alias a="b"
@@ -844,13 +920,17 @@ echo string
     #source:
       #http://tldp.org/LDP/abs/html/internal.html
 
-  #compgen -c #commands
-  #compgen -a #aliases
-  #compgen -ac #both
-  #compgen -b #built-ins
-  #compgen -k #keywords
-  #compgen -A function #functions
-  #compgen -A function -abck #all above at once
+  ##compgen
+
+    #list all available commands/built-ins/functions
+
+    #compgen -c #commands
+    #compgen -a #aliases
+    #compgen -ac #both
+    #compgen -b #built-ins
+    #compgen -k #keywords
+    #compgen -A function #functions
+    #compgen -A function -abck #all above at once
 
   ##set
 
@@ -882,20 +962,13 @@ echo string
     unalias echo
     assert [ `command echo a` = a ]
 
-##exec
+  ##aliases are not exported
 
-  #bash interface similar to an exec system call
-
-  #replaces cur process with the given process
-
-  #destroying the caller bash!
-
-  assert [ $SHLVL = 1 ]
-  exec bash
-  assert [ $SHLVL = 1 ]
-  #exec bash
-    #ls then exits bash!
-    #you don't see anything
+    alias a="echo a"
+    assert [ `a` = a ]
+    bash
+    assert [ `a` = a ]
+      #not found, unless you have another a!
 
 ##login
 

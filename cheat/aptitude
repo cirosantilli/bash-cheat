@@ -119,36 +119,52 @@
   sudo apt-cache search "Apache Server"
   #searches package name and descriptions on the web
 
-  sudo aptitude install apt-file
-  apt-file update
-  apt-file search "$F"
-    #search for file "$F" in packages
-  apt-file show "$pkg"
-    #shows files in pkg
+  ##apt-file
+
+    #search for and list package files
+    
+    sudo aptitude install apt-file
+    apt-file update
+    f=
+
+    ##search
+
+      apt-file search "$f"
+        #search for file "$F" in packages.
+        #literal path substring match.
+      apt-file search -x "a.c"
+        #using a perl regex.
+
+    ##show
+
+      p=
+      apt-file show "$p"
+        #shows files in package p
 
 #get new package info
 
   apt-cache depends $PKG
-  #list package dependencies
+    #list package dependencies
 
   sudo apt-get build-dep $PKG
-  #? what is the difference between this and depends
+    #? what is the difference between this and depends
 
   sudo apt-rdepends -r $PKG
-  #who depends on $PKG: reverse dependencies
+    #who depends on $PKG: reverse dependencies
 
   apt-cache show $PKG
-  #basic information about a package
+    #basic information about a package
 
   apt-cache showpkg $PKG
-  #detailed information about a package
+    #detailed information about a package
 
   sudo aptitude install debtags
   debtags tag ls $PKG
 
   #package naming conventions
-    #-dev: contains header and libraries, no docs
-    #-doc: contains documentation
+    #-dev:  headers and libs, no docs
+    #-doc:  documentation
+    #-test: tests
 
 #install
 
