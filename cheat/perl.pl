@@ -1,12 +1,16 @@
 #!/usr/bin/env perl
 
+#perl cheat
+
+#use use perl on a golfing one liner focus
+
+#python for more involved applications
+
 use strict;
 use warnings;
 
-#use strict;
-#use warnings;
+##variables
 
-#variables
   my $i = 1;
   my ($i2 = 1, $i3);
   my $count;
@@ -16,20 +20,22 @@ use warnings;
   my @s = (1,3,'string');
   my @i; #works but is bad practice
 
-#stdout
+##stdout
 
-  #print
+  ##print
+
     print 'string';
     print 's1', 's2', 123;
 
-#numbers
+##numbers
   print 1;
   print 4.4;
   print 1.2e10;
 
   print 1 + 2 - 3*(10/5) ** 4;
 
-#booleans
+##booleans
+
   print !0;
   print !1 + 0;
   print !'string that converts to 1' + 0;
@@ -41,7 +47,8 @@ use warnings;
   print 0 || 1;
   print 0 || 0;
 
-#compairison
+##compairison
+
   print 1 == 1;
   print '11' == '11';
   print '11' == '12';
@@ -52,7 +59,8 @@ use warnings;
   #==	!= <	<= >  >=
   #eq	ne lt	le gt ge
 
-#strings
+##strings
+
   print 'as' . 'df';
   print 'as' x 3;
   print length 'foo';
@@ -67,15 +75,18 @@ use warnings;
   print 1 . 2;
   print "a" . (1+2);
 
-  #chomp
+  ##chomp
+
     $s = "chomp\n\n";
     chomp $s;
     print $s; #remove trailling \n
 
-  #join
+  ##join
+
     print join (',',(1,2,3));
 
-#regex
+##regex
+
   my $mystring;
   my @myarray;
 
@@ -112,6 +123,7 @@ use warnings;
   print (1 .. 5);
 
 #array
+
   my @array = (1, 2, 3);
   #array = ();
 
@@ -137,7 +149,8 @@ use warnings;
     my $length = @array; # scalar context
     print $length;
 
-#hash
+##hash map
+
   my %hash = ('key1', 'value1', 'key2', 'value2');
   #my %hash = (key1 => 'value1', key2 => 'value2'); #same
   print %hash;
@@ -145,65 +158,74 @@ use warnings;
   print keys %hash;
   print values %hash;
 
-#conditional
+##branch
 
-  #if
+  ##if
 
-    if (1 == 1) {
-        print 'True';
-    }
+    ##single line
 
-    #if (1 == 1)
-        #print 'True';
-      #ERROR
-      #must use brackets
+      print 'a' if 1;
 
-    if (1) {
-        print 'Hello';
-    }
-    elseif (1) {
-        print 'Bye';
-    }
-    else {
-        print 'Neither';
-    }
+      #can only use single command: no ``;`` accepted
+      print 'a'; print 'b' if 0;
+        #prints a
 
-    print 'true' if 1 > 0;
+    ##multiline
+
+      if (1)
+      {
+          print 'Hello';
+      }
+      elseif (1)
+      {
+          print 'Bye';
+      }
+      else
+      {
+          print 'Neither';
+      }
+
+  ##unless
+
     print 'true' unless 1 == 0;
 
-#loops
+  ##for
 
-  #for
     print for (1 .. 10);
 
-  #foreach
-    foreach my $element (1, 2, 3, 4, 5) {
-        print $element;
+  ##foreach
+
+    foreach my $e (1, 2, 3)
+    {
+        print $e;
     }
 
-    @array = (1 .. 5);
-    foreach my $element (@array) {
-        print $element;
+    @a = (1 .. 3);
+    foreach my $e (@a)
+    {
+        print $e;
     }
 
     #alters value
-      @array = (1 .. 5);
-      foreach my $element (@array) {
-          $element *= 2;
+
+      @a = (1 .. 5);
+      foreach my $e (@a)
+      {
+          print $e;
+          $e *= 2;
       }
 
-      foreach my $element (@array) {
-          print $element;
-      }
+  ##while
 
-  #while
     $i = 10;
-    while ($i > 0) {
+    while ($i > 0)
+    {
       print $i;
       $i = $i - 1;
     }
 
-    #last = break
+    ##last = break
+
       $i = 0;
       while ($i < 100) {
           last if $i == 10;
@@ -211,62 +233,133 @@ use warnings;
           $i = $i + 1;
       }
 
-    #inverse notation
+    ##single line
+
       $count = 0;
       print $count, " " while ++$count <= 10;
       print "\n"; 
 
 #defalut variables
-  #http://www.kichwa.com/quik_ref/spec_variables.html
 
+  ##sources
 
-  #__
+  #<http://www.kichwa.com/quik_ref/spec_variables.html>
+
+  ##$_
+
+    #default arg to functions
+
     $_ = 'Hello';
     print;
 
-    print for (1 .. 10);
-
-  #print $.; #input line numeber of last handle read
-
-  $/ = ':';
-  print $/; #input record reparator
-
-  $\ = "\n"; #output record separator for print
-  $, = "\n"; #output field separator for print
-  #$# = ''; #output format for numbers in print
-  print $\; 
-
-  print $$; #cur process
-  print 'ok' if $?; #status of last process close
-  print $0; #name of file of script being executed
-
+  ##$.
   
-  #regex
-    #$1..$9 #last regex match
-    #$& #string of last pattern match
+    #line numeber of last handle read
+
+  ##input record reparator
+
+    #char at which perl stops reading from handle
+
+    $/ = ':';
+    print $/;
+
+  ##output record reparator
+
+    #what goes after print
+
+    $\ = "a"; #output record separator for print
+
+    print ''
+      #a
+
+  ##$,
+
+    #output field separator for print when printing lists
+
+    $, = ", ";
+    print 1..3
+      #1, 2, 3
+
+  ##$#
+  
+    #output format for numbers in print
+
+  ##$$
+
+    #cur process number
+
+    print $$;
+
+  ##status of last process close
+
+    #name of file of script being executed
+
+    print $0;
+  
+  ##regex
+
+    #$1..$9 #nth capturing group of last regex match
+    #$& #entire last regex match
     #$`
     #$'
     #$+
 
-  print $ARGV[0];
+  ##command line arguments
 
-#operators
+    print $ARGV[0];
 
-#diamond
+##process call
+
+  ##system
+
+    #on background
+
+    #cannot get stdout nor return status
+
+    system("echo", "-n", "a", "b");
+
+  ##qx
+
+    #program waits for end
+
+    #can get stdout and return status
+
+    my $a = qx(echo -n a b);
+    my $a = `echo -n a b`;
+
+  ##$?
+  
+    #status of last process close
+
+    `echo a | grep b`;
+    print $?, "\n";
+
+    `echo a | grep a`;
+    print $?, "\n";
+
+##diamond
 
   open(FH,"<file");
   @ARRAY = <FH>;
 
-  #while($line = <STDIN>) {
-    #chomp $line;
-  #}
+  ##read from stdin
 
-  #while($line = <>) {
-    #chomp;
-  #}
+    #while($l = <STDIN>)
+    #{
+      #chomp $l;
+    #}
 
-#functions
-  sub miles_to_kilometers {
+    #while($l = <>)
+    #{
+      #chomp;
+    #}
+
+##functions
+
+  #called **subrpocess**
+
+  sub miles_to_kilometers
+  {
     my ($miles) = @_;
     return $miles * 1.609344;
   }
@@ -278,10 +371,12 @@ use warnings;
     my($text, $code) = @_;
   }
 
-#file io
-  #http://www.troubleshooters.com/codecorn/littperl/perlfile.htm
+##file io
+
+  #<http://www.troubleshooters.com/codecorn/littperl/perlfile.htm>
 
   #transfor into another
+
     #open(MYINPUTFILE, "<filename.in");
     #open(MYOUTPUTFILE, ">filename.out");
     #while(<MYINPUTFILE>)
@@ -305,6 +400,7 @@ use warnings;
     #close(MYOUTPUTFILE);
 
   #modify file
+
     #open(FH, "+< FILE")                 or die "Opening: $!";
     #@ARRAY = <FH>;
     #foreach my $line (@array) {

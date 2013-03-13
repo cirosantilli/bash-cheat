@@ -305,14 +305,6 @@
   sudo aptitude install -y apt-rdepends
     #fins packages that depend on a given package
 
-##python
-
-  sudo aptitude install -y python-pip
-    #python package manager
-  sudo pip install termcolor
-  sudo pip install django
-  sudo pip install south
-
 ##man
 
   #the manuals
@@ -1552,7 +1544,7 @@
       #uses Makefile in cur dir
     make -C /some/dir
       #changes current dir
-
+  
   ##gcc ##g++
 
     #Gnu Compiler Collection: NOT c compiler
@@ -2367,6 +2359,14 @@
     #it seems gcc can't do this
     
     apt-cache search mingw
+
+  ##fortran
+
+    #gnu fortran 77:
+      sudo aptitude install -y g77
+
+    #gnu fortran 95:
+      sudo aptitude install -y gfortran
   
   ##binutils package
   
@@ -2389,8 +2389,9 @@
       #gets stored inside executable files
       #in a human readable way
     
-      readelf --syms liba.so
-        #shows symtable (defined stuff) of elf .so
+      readelf -s liba.so
+        #shows symtable (defined stuff) of elf .o or .so
+      
       readelf -d a.out
         #shows dependencies of an executable (symbols and shared libs)
 
@@ -2817,6 +2818,12 @@ int main(void)
 
         primes 1 100 | wc -l
           #count primes
+
+      ##robots
+      
+        #simple, fun, a bit too much luck
+        
+        robots -t
     
     ##greed
       
@@ -3253,17 +3260,21 @@ int main(void)
 
   ##cut
   
-    #simple text table field operations
+    #get columns from text databases
     
     #for more complex ops, consider <#awk>
 
     echo $'a\tb\nc\td' | cut -f1
       #$'a\nc'
       #-f: field. what column to print.
-    
+
     echo $'a:b\nc:d' | cut -d: -f1
       #$'a\nc'
       #-d: delimier
+
+    echo $'a' | cut -d: -f2
+      #$'a'
+      #gets last if larger
 
     echo $'a:b:c\nd:e:f' | cut -d: -f1,3
       #$'a:c\nd:f'
@@ -3598,8 +3609,12 @@ int main(void)
       #line range:
       assert [ "`echo $'a\nb\nc\nd' | sed '1,3 s/./e/'`" = $'e\ne\ne\nd' ]
 
-      #pattern range:
-      assert [ "`echo $'a\nb\nc\nd' | sed '/a/,/c/ s/./e/'`" = $'e\ne\ne\nd' ]
+      ##pattern range
+      
+        assert [ "`echo $'a\nb\nc\nd' | sed '/a/,/c/ s/./0/'`" = $'0\n0\n0\nd' ]
+
+        #non-greedy:
+        assert [ "`echo $'a\nb\n0\n0\na\nb' | sed '/a/,/b/ s/./A/'`" = $'A\nA\n0\n0\nA\nA' ]
 
       ##multiple commands per restriction
       
@@ -3811,55 +3826,6 @@ int main(void)
       awk '{print}'
         #cat
 
-  ##perl one liners
-  
-    #see: <#sed suggestions>
-
-    #ack -f | xargs perl ...
-      #use like this!
-
-    perl -lape 's/r1/r2/g' F
-      #replace in file linewise
-      #print entire new file to screen
-      #does not make changes
-      #newline at start and end are affected
-
-    perl -lapi -e 's/a/A/g' F
-      #modifies the file! prints nothing to screen
-      #newlines are affected
-      #-i : inline
-
-    perl -lapi.bak -e 's/a/A/g' F
-      #saves newfile to F.bak, original is not changed
-      #NO SPACE BETWEEN I AND '.bak'!!!
-
-    perl -pe 's/\n/ /g' F
-      #acts on newlines at end
-
-    perl -lane 'print if (s/a/A/g)' F
-      #print only new modified lines to screen
-
-    perl -lane '$old = $_; if (s/a/A/g) {print $., "  ", $old, "\n", $., "  ", $_, "\n"}' F
-      #print only modified lines to screen, together with old line, and line numbers;
-
-    perl -0777 -lape 's/\n\n+/\n/\ng' F
-      #not linewise
-
-    perl -ne 'print $., "  ", $_' F
-      #print file with line numbers, tab separated by 2 spaces from text
-
-    perl -ne 'print unless /^BEGIN$/ .. /^END$/' F
-      #prints only lines between lines that match BEGIN and END lines
-
-    perl -ne 'print if 15 .. 17' F
-      #print just lines 15 to 17
-
-    perl -pe '/baz/ && s/foo/bar/'
-      #Substitute (find and replace) "foo" with "bar" on lines that match "baz".
-
-    ifconfig | perl -ne '/HWaddr (\S*)/ && print $1 . "\n"'
-      #print backreference only on matching lines
-  
   ##m4
   
     #macro language
@@ -7012,6 +6978,187 @@ User-Agent: fingers
       #set env variables
     sudo aptitude install -y icedtea6-plugin
       #allows to run java on certain brosers, including firefox
+
+  ##perl
+  
+    #perl is installed by default for posix compliance
+    
+    #perl is good for command line golfing and quite powerful
+    
+    #for larger stuff, I prefer the clarity of python
+
+    #the following contains lots of man pages and html docs:
+    
+      sudo aptitude install -y perl-doc
+
+      man perldoc
+      man perlcheat
+
+      #the following waits for a ctrl-d and then executes everything:
+      perl
+    
+    ##sources
+      
+      #famous perl one liners: <http://www.catonmat.net/blog/perl-one-liners-explained-part-six/>
+    
+    ##command line options
+    
+      ##-e "$s"
+
+        #execute given string instead of file program
+
+      ##-n:
+
+        #use ``while (<>) { ... }`` loop aroud given program
+        #this makes perl act linewise
+        #each line gets the default value ``$_``
+        #therfore to print the current line, you instead of ``print($_)`` can simply write ``print``
+        #the endline ``"\n"`` is part of the string
+
+      ##-p
+      
+        #same as ``-n``, with ``print`` at end
+
+      ##-i
+
+        #what would get printed is put into file instead
+        
+        echo $'a\nb' > f
+        perl -lpi -e 's/a/A/g' f
+        [ "`cat f`" = $'A\nb' ] || assert_fail
+          #modifies the file! prints nothing to screen
+          #newlines are affected
+          #-i : inline
+
+        echo $'a\nb' > f
+        perl -lpi.bak -e 's/a/A/g' f
+        [ "`cat f`" = $'A\nb' ] || assert_fail
+        [ "`cat f.bak`" = $'a\nb' ] || assert_fail
+          #saves newfile to F.bak, original is not changed
+          #NO SPACE BETWEEN I AND '.bak'!!!
+
+      ##-a
+
+        #autosplit
+
+        #adds ``@F = split(/ /);`` to top of loop.
+        #requires ``-n`` or ``-p``. 
+        
+        assert[ "`echo $'a b c\nd e f' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c:d:e:f:" ] 
+
+        #multiple spaces are split:
+        assert[ "`echo $'a  b c' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c"] 
+
+        #tabs are split:
+        assert[ "`echo $'a\0b\tc' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c"] 
+
+      ##-F
+
+        #``-F: '/pattern/'``: set field separator for ``-a``
+        
+        #must be used with <#-a>
+
+        #change
+        assert[ "`echo $'a:b:c' | perl -naF':' -e 'print $F[0]. " " . $F[1] . " " . $F[2]'`" = "a b c"] 
+
+      ##-0
+      
+        #``-000`` sets ``$/`` (IRS) to a given octal value
+        
+        #default: "\n"
+        
+        ##special values
+        
+          ##0777
+
+            #slurp mode. read everything at once.
+          
+          ##00
+          
+            #paragraph mode. read up to "\n\n"
+      
+      ##-l
+      
+        #adds chomp to loops
+        
+        #no arg: sets ``$\ = $/`` (ORS = IRS)
+        
+        #with arg: sets ``$\ = $/`` (ORS = IRS)
+        
+        #default ``$\``: ''
+        
+        ##application
+        
+          #add newline to prints if ``-0`` is not set
+          #(and thus equals newline)
+
+      ##-M
+      
+        #import modules
+        
+        #print sum of lines:
+        perl -MList::Util=sum -alne 'print sum @F'
+    
+    ##important one liners
+
+      echo $'a\nb' | perl -lape 's/a/A/'
+        #regex replace
+        #no newline match in the match
+
+      perl -pe 's/\n/ /g' F
+        #acts on newlines at end
+
+      echo $'a\nb\na' | perl -lane 'print if s/a/A/g'
+        #print only new modified lines to screen
+
+      echo $'a\nb\nc\nb' | perl -lane '$o = $_; if (s/b/B/g) { print $. . "  " . $o . "\n" . $. . "  " . $_ . "\n" }'
+        #print only modified lines
+        #print old and new
+        #with line numbers
+
+      perl -0777 -lape 's/\n\n+/\n/\ng' F
+        #not linewise
+
+      perl -ne 'print $., "  ", $_' F
+        #print file with line numbers, tab separated by 2 spaces from text
+
+      echo $'a\nb\nc\nda\nb\nc' | perl -ne 'print if /a/ .. /c/'
+        #$'a\nb\nc\na\nb\nc'
+        #print between regexes inclusive non greedy
+      
+      echo $'a\nb\nc' | perl -ne 'BEGIN{ $a = 0 }; $a = 0 if /c/; print if $a; $a = 1 if /a/;'
+        #b
+        #print between regexes exclusive non greedy
+
+      perl -ne 'print if 15 .. 17' F
+        #print fron line 15 to 17
+
+      perl -pe '/baz/ && s/foo/bar/'
+        #substitute (find and replace) "foo" with "bar" on lines that match "baz".
+
+      ifconfig | perl -ne '/HWaddr (\S*)/ && print $1 . "\n"'
+        #print backreference only on matching lines
+    
+      echo $'a\nb' | perl -ne 'BEGIN{ $a = "b" } END{ print $a }'
+        #b
+        #act only on begin and end
+      
+      echo $'a\nab' | perl -ne 'print length, "\n"'
+        #$'2\n3'
+
+      ##ack combo
+
+        #regex refactoring:
+        ack -f | xargs perl 's/a/b/'
+    
+  ##python
+
+    #python package manager
+
+    sudo aptitude install -y python-pip
+    sudo pip install termcolor
+    sudo pip install django
+    sudo pip install south
 
 ##combos
 
