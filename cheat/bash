@@ -833,21 +833,33 @@ echo string
 
     ##jobs
 
-      #shows jobs running on background of cur bash
-      #
-      #%N	Job number [N]
-      #%S	Invocation (command line) of job begins with string S
-        #if several matches, ambiguous, and does nothing
-      #%?S	Invocation (command line) of job contains within it string S
-      #%%	"current" job (last job stopped in foreground or started in background)
-      #%+	"current" job (last job stopped in foreground or started in background)
-      #%-	Last job
-      #$!	Last background process
-      #
-      #shows:
-      #  jobspec : local id
-      #  status : runnning, stopped, done
-      #  invocation : exact program call, including command line args. Ex: ``ls ~``
+      jobs
+        #shows:
+        #  jobspec : a local job id
+        #  status : runnning, stopped, done
+        #  invocation : exact program call, including command line args. Ex: ``ls ~``
+
+      jobs -p
+        #shows pids of background jobs
+
+      ##jobspecs
+
+        #local job id, found by using <#jobs>
+
+        #certain commands such as ``kill``, ``fg`` them in addition to pids
+
+        #they are:
+        #- %N	Job number [N]
+        #- %S	Invocation (command line) of job begins with string S
+          #if several matches, ambiguous, and does nothing
+        #- ?S	Invocation (command line) of job contains within it string S
+        #- %%	"current" job (last job stopped in foreground or started in background)
+        #- %+	"current" job (last job stopped in foreground or started in background)
+        #- %-	last job
+
+      ##$!
+        
+        #contains the pid of last background process
 
     #ls &
     #sleep 100 &

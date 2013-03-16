@@ -2583,8 +2583,12 @@ int main(void)
     #ignores .git .svn, backup, swap files
     #can detect and filter by filetype via extension and shebangs
 
-    sudo aptitude install -y ack-grep
-      #ack package was already taken by a kanji converter!
+    #install:
+      sudo aptitude install -y ack-grep
+    #``ack`` package was already taken by a kanji converter!
+    
+    #this begs for an alias:
+      alias ack="ack-grep"
     
     ack --py perl_regex
       #recursive find grep for perl_regex in python files only, detects shebangs
@@ -2609,81 +2613,7 @@ int main(void)
 
     ack --thpppt
     #bill the cat
-
-  ##lamp
-
-    #(Linux Apache + Mysqp + PHP)
-
-    #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
-
-    ##apache
-
-      sudo aptitude install -y apache2
-      firefox http://localhost/ &
-        #test apache
-
-      ##understand apache
-
-        ##directories
-        
-          #"web subdirs" map directly to local dirs
-
-          cd /var/www
-            #default root for serving files
-          mkdir test
-            #going to a dir on the web browser opens the contained index.html file by default
-          echo "<h1>Test subdir!</h1>" > test/index.html
-          firefox http://127.0.0.1/test
-          firefox http://127.0.0.1/test/index.html
-            #same result
-          
-        ##configuration
-
-          sudo vim /etc/apache2/httpd.conf
-
-          DocumentRoot "/var/www"
-            #sets apache serve root at given dir
-
-          Listen 80
-          Listen 8000
-            #listen those ports on all interfaces?
-
-          Listen 192.0.2.1:80
-          Listen 192.0.2.5:8000
-            #listen those ports on given interfaces
-
-
-    ##php
-
-      sudo aptitude install -y php5 libapache2-mod-php5
-      sudo /etc/init.d/apache2 restart
-        #test php
-      echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php > /dev/null
-      firefox http://localhost/testphp.php &
-
-    ##mysql server
-
-      sudo aptitude install -y mysql-server
-      #he will ask you for the password, fill it in
-      #mysql -u root #the tutorial said do that, but I didn't need to. This would be for the password.
-
-    ##phpmyadmin
-
-      #php interface for mysql
-
-      sudo aptitude install -y libapache2-mod-auth-mysql php5-mysql phpmyadmin
-      #gksudo gedit /etc/php5/apache2/php.ini
-        #according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
-
-      sudo vim /etc/apache2/apache2.conf
-      #add:
-      #  Include /etc/phpmyadmin/apache.conf
-      sudo /etc/init.d/apache2 restart
-
-    ##test phpmyadmin and mysql
-
-      firefox http://localhost/phpmyadmin & #login: 'root'. password: what you entered at installation.
-  
+    
   ##exuberant-ctags
 
     #generate tags for given file
@@ -3229,8 +3159,12 @@ int main(void)
       #ls to file and sort
     ls | tee –a file
       #ls append to file
-    ls | tee –a f1 f2 f3
+    ls | tee f1 f2 f3
       #ls to multple files
+
+    #tee to multiple processes:
+      echo a | tee >(seqn 2) tee >(seqn 2) | tr a b
+    #note how process are run in parallel and output order is not variable.
 
   ##tr
 
@@ -3528,7 +3462,7 @@ int main(void)
     
     ##sources
     
-      #<http://www.grymoire.com/Unix/Sed.html>
+      #beginner to pro tutorial: <http://www.grymoire.com/Unix/Sed.html>
   
     #Stream EDitor
     
@@ -3572,24 +3506,25 @@ int main(void)
             #\0 and & both refer to the entire match
           assert [ "`echo a1 | sed -r 's/a(.)/\&/'`" = '&' ]
 
-          #no non-greedy *? operator. use [^]* instead
+          #no non-greedy *? operator. use [^]* combo instead
       
       ##flags
       
         ##g
+
+          #replace as many times as possible in string
         
         ##p
         
-          #is also a flag, besides the original print command
+          #is can also be a flag, besides being the print command
         
         ##w
         
-          #write matching to file
-        
-          echo $'a\nb\na' | sed -n 's/a/A/w f'
-          assert [ "`cat a`" = $'A\nA' ]
+          #write lines to file:
+            echo $'a\nb\na' | sed -n 's/a/A/w f'
+            assert [ "`cat a`" = $'A\nA' ]
 
-    ##/ command
+    ##/
     
       #only exec next command if match
 
@@ -3598,23 +3533,26 @@ int main(void)
     ##restrict lines
     
       #line number:
-      assert [ "`echo $'a\nb' | sed '1 s/./c/'`" = $'c\nb' ]
+        assert [ "`echo $'a\nb' | sed -n '1 p'`" = $'a' ]
 
       #last line:
-      assert [ "`echo $'a\nb' | sed '$ s/./c/'`" = $'a\nc' ]
+        assert [ "`echo $'a\nb' | sed -n '$ p'`" = $'b' ]
+
+      #before last line:
+        assert [ "`echo $'a\nb' | sed -n '$-1 p'`" = $'a' ]
 
       #line matches pattern:
-      assert [ "`echo $'a\nb' | sed '/a/ s/./c/'`" = $'c\nb' ]
+        assert [ "`echo $'a\nb' | sed '/a/ s/./c/'`" = $'c\nb' ]
 
       #line range:
-      assert [ "`echo $'a\nb\nc\nd' | sed '1,3 s/./e/'`" = $'e\ne\ne\nd' ]
+        assert [ "`echo $'a\nb\nc\nd' | sed '1,3 s/./e/'`" = $'e\ne\ne\nd' ]
 
       ##pattern range
       
         assert [ "`echo $'a\nb\nc\nd' | sed '/a/,/c/ s/./0/'`" = $'0\n0\n0\nd' ]
 
         #non-greedy:
-        assert [ "`echo $'a\nb\n0\n0\na\nb' | sed '/a/,/b/ s/./A/'`" = $'A\nA\n0\n0\nA\nA' ]
+          assert [ "`echo $'a\nb\n0\n0\na\nb' | sed '/a/,/b/ s/./A/'`" = $'A\nA\n0\n0\nA\nA' ]
 
       ##multiple commands per restriction
       
@@ -3626,8 +3564,8 @@ int main(void)
         
         #act on non matching
 
-        assert [ "`echo $'a\nb' | sed -n '1! p'`" = $'b' ]
-        assert [ "`echo $'a\nb' | sed -n '/a/! p'`" = $'b' ]
+          assert [ "`echo $'a\nb' | sed -n '1! p'`" = $'b' ]
+          assert [ "`echo $'a\nb' | sed -n '/a/! p'`" = $'b' ]
 
     ##multiple commands
       
@@ -3674,35 +3612,83 @@ int main(void)
 
     ##multiline
     
-      #n: empty pattern space, put next line into it. default action.
+      #- pattern space: buffer that holds each line.
       
-      #N: append next line to pattern space
-
-      #p: print entire pattern space. default action.
+        #``s//`` modifies pattern space
+    
+      #- n: empty pattern space, put next line into it. default action at end.
       
-      #P: print up to first newline
-    
-      #d: delete pattern space, start new command.
+        #print first line after matching ``/a/``:
+          assert [ "`echo $'a\nb' | sed -n '/a/ {n;p}'`" = $'b' ]
 
-      #d: delete pattern space, start new command.
-    
-      assert [ "`echo $'a\nb' | sed '/a/ {s/a\n//}'`" = $'a\nb' ]
-      assert [ "`echo $'a\nb' | sed '/a/ {N; s/a\n//}'`" = $'b' ]
+        #print second line after matching ``/a/``:
+          assert [ "`echo $'a\nb\nc' | sed -n '/a/ {n;n;p}'`" = $'c' ]
+      
+      #- N: append next line to pattern space. Next line is not read again.
 
+          assert [ "`echo $'a\nb' | sed -n '/a/ {N;p};'`" = $'a\nb' ]
+          assert [ "`echo $'a\nb' | sed -n '/b/ p; /a/ {N;p};'`" = $'a\nb' ]
+
+      #- p: print entire pattern space. default action at end if no ``-n``.
+      
+      #- P: print up to first newline.
+
+          assert [ "`echo $'a\nb' | sed -n '/a/ N'`" = $'b' ]
+    
+      #- d: delete pattern space. go to next line. *Is a loop continue*
+
+      #- D: delete first line of pattern space. go to next line.
+    
     ##hold buffer
+    
+      #there is an storage area called **hold buffer** in addition to the pattern buffer
+      
+      #it can contain the strings
+
+      ##h
+
+        #put pattern buffer into storage
+
+      ##x
+
+        #exchange storage and pattern
+    
+        #print old/new newline pairs after substitution
+          assert [ "`echo $'a\nb' | sed -n 'h; /a/ {s/a/c/; s/$/\n/; x;p;x;p}'`" = $'a\nc\n' ]
+
+        #print first line before matching ``/b/``:
+          assert [ "`echo $'a\nb' | sed -n '/b/ {x;p;d}; h'`" = $'a' ]
+
+      ##g
+
+        #pattern space = hold space
+
+          assert [ "`echo $'a\nb' | sed -n 'h; /a/ {s/a/c/;x;p;g;p}'`" = $'a\nc' ]
+
+      ##G
+
+        #pattern space += hold space
+
+        assert [ "`echo $'a\nb' | sed -n 'h; /a/ {s/a/c/;x;G;p}'`" = $'a\nc' ]
 
     ##goto
+
+      ##label
+      
+        #:label
+        
+        #may be on same line as command, ex: ``:l s/a/b/`` is the same as ``:l; s/a/b``
     
       ##b
         
         #unconditional
     
-        assert [ "`echo $'a\nb' | sed '/a/ b c; s/./c/; :c';`" = $'a\nc' ]
-        assert [ "`echo $'a\nb' | sed '/a/ b c; s/./c/; :c s/c/d';`" = $'a\nd' ]
+        assert [ "`echo $'a\nb' | sed '/a/ b c; s/./c/; :c'`" = $'a\nc' ]
+        assert [ "`echo $'a\nb' | sed '/a/ b c; s/./c/; :c s/c/d'`" = $'a\nd' ]
 
       ##t
       
-        #result of last s op
+        #jump if last s changed pattern space
 
         #remove spaces after a:
         assert [ "`echo $'a  b  c' | sed ':a s/a /a/; t a'`" = $'ab  c' ]
@@ -3766,6 +3752,33 @@ int main(void)
           #can exec sed script with following shebang:
 
           #!/bin/sed -f
+    
+    ##combos
+
+      #if modified, print line number, old line, new line
+      #
+      #Ex:
+      #
+      #input:
+      #
+      #a
+      #b
+      #a
+      #b
+      #
+      #regex: s/a/c/
+      #
+      #output:
+      #
+      #1
+      #a
+      #c
+      #
+      #3
+      #a
+      #c
+
+      assert [ "`echo $'a\nb\na\nb' | sed -n 'h; s/a/c/; t p; d; :p {=;x;G;s/$/\n/;p}'`" = $'1\na\nc\n\n3\na\nc\n' ]
 
   ##awk
   
@@ -3855,47 +3868,208 @@ int main(void)
 
 ##mysql
 
-  ##mysql command line
-    mysql -u root -p
-    mysql -u root -p"$PASS"
-    mysql -u root -p"$PASS" -e "CREATE DATABASE test;"
-    #execute command
-    #create, access and modify your databases with interactive section
-    #commands:
-    #  http://www.pantz.org/software/mysql/mysqlcommands.html 
+  ##souces
 
-  mysqladmin -u root -p'OLD_PASS_HERE' password 'NEW_PASS_HERE'
-  #change passwords
+    #<http://www.pantz.org/software/mysql/mysqlcommands.html >
+
+  ##intro
+
+    #mysql is a database that runs on a server.
+    
+    #this means that requests are made to the server,
+    #and the server returns responses.
+    
+    #to install the sever see <#mysql server>.
+
+  ##mysql server
+
+    sudo aptitude install -y mysql-server
+      #he will ask you for the password, fill it in
+      #mysql -u root #the tutorial said do that, but I didn't need to. This would be for the password.
+
+    #configuration file:
+      less /etc/mysql/my.cnf
+    #contains info such as: listen port, ...
+  
+  ##interfaces
+    
+    ##mysql command
+
+      #the ``mysql`` executable is a simple text based interface to mysql
+
+      #it is bad to view tables that don't fit into the terminal width.
+
+      #one advantage of this interface is the possibilty for automation
+      #using bash. 
+    
+    ##phpmyadmin
+
+      #popular php based broser interface for mysql
+      
+      #first make sure that php is installed. See <#php>.
+
+        sudo aptitude install -y libapache2-mod-auth-mysql php5-mysql phpmyadmin
+        #gksudo gedit /etc/php5/apache2/php.ini
+          #according to tutorial, should uncomment ;extension=mysql.so, but I could not find it in the file. still works.
+
+        sudo vim /etc/apache2/apache2.conf
+        #ensure following line is anywhere in the file:
+          #Include /etc/phpmyadmin/apache.conf
+        sudo service apache2 restart
+
+      #test phpmyadmin and mysql:
+        firefox http://localhost/phpmyadmin &
+      #login: 'root'. password: what you entered at installation.
+
+  ##users
+
+    #mysql has the concept of user permissions.
+
+    #each user/host pair has certain priviledges such as
+    #view, edit, delete databases, tables and entries.
+
+    #those permissions may apply either to specific table/database
+    #or to the entire server (global permissions)
+    
+    #by default, a superuser called root is created during server installation.
+    
+    ##login
+
+      #logs in as user root
+      #and prompts for password:
+        mysql -u root -p
+
+      #execute command and exit:
+        mysql -u root -p -e "create database test;"
+
+      #BAD: unsafe. Logs in without prompting password:
+        mysql -u root -p"pass"
+      #there must be no space between ``-p`` and ``pass``
+
+      #change password for an existing user:
+        mysqladmin -u root -p password
+      #prompts for old and new password
+
+    #list users and their *global* priviledges:
+      select * from mysql.user;
+    #note how priviledges are given to user/host pairs.
+
+    #create a new user:
+      CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
+    #this user has no priviledges
+    
+    #show all global priviledges supported by a server:
+      SHOW PRIVILEGES;
+    
+    #view priviledges given for databases:
+      SHOW GRANTS;
+        #to current user:
+      SHOW GRANTS FOR user@host;
+        #to user:
+  
+    #give priviledges to an user:
+      #*.* implies global priviledges:
+      GRANT ALL            ON *   .*     TO 'user'@'localhost';
+      #all tables on a mydb:
+      GRANT ALL            ON mydb.*     TO 'user'@'localhost';
+      GRANT SELECT, INSERT ON mydb.*     TO 'user'@'localhost';
+      #only for table mydb.mytbl:
+      GRANT ALL            ON mydb.mytbl TO 'user'@'localhost';
+      GRANT SELECT, INSERT ON mydb.mytbl TO 'user'@'localhost';
+      #                       ^^^^ ^^^^^                      
+      #                       1    2                          
+      FLUSH PRIVILEGES;
+    #1: on which databases
+    #2: on which tables of those databases
+
+    #remove priviledges of an user:
+      REVOKE
+
+    #remove users:
+      DROP USER user@localhost, user2@localhost
 
   ##commands
+  
+    ##databases
+  
+      #list databases:
+        show databases
 
-    DESC $table;
-    #get table description
+      #create databases:
+        create database
+        create database elearn_trac character set utf8;
+          #utf8 charset. default is ascii.
+      
+      ##charset and collation
+      
+        ##charset
 
-    show create table
-    #get more info on table: each step used to create it
+          #view all possible charsets:
+            show character set;
 
-    CREATE TABLE $newtable LIKE $oldtable
-    #creates a new table with same structure as old one
+          #view charset for given db/table/column:
+            #<http://stackoverflow.com/questions/1049728/how-do-i-see-what-character-set-a-database-table-column-is-in-mysql>
 
-    drop table t1 , t2;
-    #destrois tables
+        ##collation
 
-    INSERT INTO $newtable SELECT * FROM $oldtable
-    #copies data from old table to new table
+          #is how strings in a given charset are compared for equal, smaller, larger.
+          
+          #may be set for entire database, tables or individual columns
+          
+          #examples: case sensitive, case insensitive, Uppercase comes first (ABC...abc)
+          #same order: (AaBbCc...), etc.
+        
+          #view all possible collations for each charset
+            show collation;
 
-    TRUNCATE TABLE $tablename
-    #removes all data from a table
+      #use a database:
+        use db
+      #necessary before most table operations
+      
+      #list tables of a database:
+        show tables in db
+        show tables
+          #for current db
 
-    DELETE FROM $table;
-    #deletes entire table data. difference from truncate?
+      #delete a database:
+        drop db
+  
+    ##tables
 
-    LOCK TABLES `$table1` READ; `$table2` WRITE;
-    #cannot read from table1 and write to table2
-    #use before making big db changes
+      #get table description:
+        DESC tbl;
 
-    UNLOCK TABLES
-    #releases all locks
+      #get more info on table:
+        show create tbl
+      #shows each step used to create it
+
+      #creates a new table:
+
+      #creates a new table with same structure as old one:
+        CREATE TABLE newtable LIKE $oldtable
+
+      #delete tables:
+        drop table table1, table2;
+
+      INSERT INTO $newtable SELECT * FROM $oldtable
+      #copies data from old table to new table
+
+      TRUNCATE TABLE $tablename
+      #removes all data from a table
+
+      DELETE FROM $table;
+      #deletes entire table data. difference from truncate?
+
+      ##locks
+
+        #synchronization method
+
+          LOCK TABLES `$table1` READ; `$table2` WRITE;
+          #cannot read from table1 and write to table2
+          #use before making big db changes
+
+          UNLOCK TABLES
+          #releases all locks
 
   ##column types
     #length
@@ -4741,8 +4915,22 @@ int main(void)
 
     #wait for process with given pid to terminate
 
-    sleep 2 & wait $!; echo done;
-      #sleep 2 seconds and then echo done
+    sleep 3 &
+    wait $!
+    echo $?
+      #sleep 3 seconds and then echo done
+
+    ##wait gets ``$?`` even if process over already
+
+      echo a | grep b &
+      sleep 2
+      wait $!
+      assert [ "`echo $?`" = 1 ]
+
+      echo a | grep a &
+      sleep 2
+      wait $!
+      assert [ "`echo $?`" = 0 ]
 
   ##ps
   
@@ -4822,9 +5010,9 @@ int main(void)
 
     ##uptime
 
-      #echo first line of top
+      #echo first line of <#top>
 
-      #sample
+      #sample:
         #23:00:13 up 12:00,  3 users,  load average: 0.72, 0.66, 0.6
         #^^^^^^^^ up ^^^^^,  ^ users,  load average: ^^^^, ^^^^, ^^^
         #1           2       3                       4     5     6
@@ -5052,11 +5240,33 @@ int main(void)
       #
       #meaning:
       
+        ##read directories
+        
+          su a
+          mkdir -m 700 d
+          mkdir -m 700 
+          echo b > d/b
+          sudo chown b d/b d/d
+
+          su b
+          ls d
+            #permission denied
+          assert [ ! "$?" = 0 ]
+
+          cat d/b
+            #permission denied,
+            #even if b owns the file!
+          assert [ ! "$?" = 0 ]
+
+          ls d/b
+            #permission denied,
+            #even if b owns the directory!
+          assert [ ! "$?" = 0 ]
+
         ##write directories
         
-          mkdir r
+          mkdir -m 444 r
           mkdir r/d
-          chmod 444 r
           touch r/f
             #permission denied
           touch r/d/f
@@ -5065,8 +5275,7 @@ int main(void)
         ##sticky bit
 
           su a
-          mkdir a
-          chmod 1777 a
+          mkdir -m 1777 a
           touch a/a
           su b
           rm a/a
@@ -5220,8 +5429,8 @@ int main(int argc, char** argv)
     mkdir -p "$d"
       #make a dir
       #no error if existant
-    mkdir -m 000 d
-    assert [ `stat -c "%A" d` = 'd---------' ]
+    mkdir -m 1777 d
+    assert [ `stat -c "%A" d` = 'drwxrwxrwt' ]
       #-m: mode (permissions)
   
   ##mv
@@ -5494,7 +5703,7 @@ int main(int argc, char** argv)
 
   ##find
 
-    #consider ack-grep instead for searching code
+    #consider <#ack> instead when for searching code
 
     while IFS= read -r -u3 -d '' FILE; do
       echo "$FILE"
@@ -5549,6 +5758,16 @@ int main(int argc, char** argv)
         #xargs with multiple commands. must use bash.
         #only use this for very simple commands, or you are in for an escaping hell!
         #use the next pattern instead: TODO
+
+      ##combos
+
+        find . | sort -f | uniq -di
+          #find files whose path differ from other files only by case
+          #useful when copying from linux to a system that does not accept
+          #files that differ only by case (the case for MacOS and Windows)
+
+        find . | sort -f | uniq -di | xargs -I'{}' rm '{}'
+          #remove them
   
   ##locate
   
@@ -6020,15 +6239,20 @@ int main(int argc, char** argv)
       
       ##redirection
       
-        su a
-        mkdir b
-        chown b b
-        #sudo echo a > b/a
-          #does not work
-        sudo bash -c 'echo a > b/a'
-          #works, but quoting is hell
-        echo a | tee b/a
-          #best method. shorter and no quoting hell
+        #sudo passes stdin to the called program:
+          echo a | sudo cat
+            #a
+      
+        #cannot "echo to a file" directly:
+          su a
+          mkdir b
+          chown b b
+          #sudo echo a > b/a
+            #does not work
+          sudo bash -c 'echo a > b/a'
+            #works, but quoting is hell
+          echo a | tee b/a
+            #best method. shorter and no quoting hell
         
         #sudo echo a > b/a
           #does not work
@@ -6225,7 +6449,15 @@ int main(int argc, char** argv)
     
     #- an IP or by
     #- a string that will be resolved by a dns server to an ip
-  
+
+    ##host user pair
+
+      #a user may access a (system) computer from a nother computer using for example <#ssh>
+      
+      #to do so, he must be registered in the target computer.
+      
+      #this is why user/host pairs are common: the host pair says from which computer
+      #user is trying to access his account.
 
     ##hostname
     
@@ -6716,39 +6948,25 @@ int main(int argc, char** argv)
 
   ##telnet
   
-    #do sh commands on remote computer!
-    
-    #ultra powerful and ultra dangerous
+    #protocol for comunicating between servers
     
     #no encryption, therefore *DONT'T SEND PASSWORDS ON UNTRUSTED NETWORK WITH THIS*!!
 
-    #always use <#ssh> which is encrypted for anything even remotelly serious
+    #always use <#ssh> which is encrypted for anything even remotelly Pserious
     
     #the other computer must be running a telnet server
 
     #fun MUD games!
     
-    echo 'GET / google.com 80
-Host: www.google.com
-From: me@me.com
-User-Agent: fingers
+    #make http requests by hand for learning purposes:
+      telnet google.com 80
+    #type:
+      GET / HTTP/1.0 <enter><enter>
+    #you've made a get request by hand!
+    
+    #won;t work, why? 
+      #echo $'GET / HTTP/1.0\n\n' | telnet www.google.com 80
 
-' | telnet google.com 80
-
-    telnet google.com 80
-      #type:
-      #  GET / google.com 80
-      #  Host: www.google.com
-      #  From: me@me.com
-      #  User-Agent: fingers
-      #  <enter>
-      #
-      #connet to google at port 80 (classical HTTP server port)
-      #make a GET request
-      #and GET the google page
-      #Host is the only required field, since there can be multiple hosts per ip
-      #connexion is closed
-  
   ##ssh
   
     #like <#telnet>, but encrypted
@@ -6834,8 +7052,20 @@ User-Agent: fingers
     ##sftp
     
       #similar to ftp, ssh encryption
+  
+  ##ftp
+  
+    #tcp/ip file transfer protocol
+    
+    #client: comes installed by default
+    
+    #install server:
+      sudo aptitude install -y vsftpd
+    #Very Secure FTP Deamon
 
   ##cifs
+  
+    #TODO
 
     sudo aptitude install -y cifs-utils
   
@@ -6875,14 +7105,218 @@ User-Agent: fingers
   
   ##files
   
+    #TODO
+  
     ##/etc/protocols
-
-    ##/etc/hosts.allow
-    ##/etc/hosts.deny
     
     ##/etc/services
 
     ##/etc/udev/rules.d/70-persistent-net.rules
+
+  ##lamp
+
+    #(Linux Apache + Mysqp + PHP)
+
+    #sudo chown "$USER" /var/www/ #not sure it is safe, but good if you are on a test machine
+
+    ##apache
+
+        sudo aptitude install -y apache2
+
+        #test apache:
+          firefox http://localhost/ &
+      
+      ##intro
+      
+        #apache is a web server
+        
+        #a web server listens to a port (default 80) for strings
+        
+        #theses strings are http requests
+        
+        #then it takes the http request, processes it, and then returns the request to the client
+        
+        #part of the processing may be passed to another program: typically a <#cgi> script
+        
+      ##directories
+      
+        #"web subdirs" map directly to local dirs
+
+        #the default root for serving files is specified in the <#conf file>
+        
+        #ubuntu default is currently ``/var/www/``
+        
+        #make an html page:
+          cd /var/www
+          sudo mkdir test
+          echo "<h1>Test subdir!</h1>" > sudo tee test/index.html
+
+        #open file /var/www/test/index.html:
+          firefox http://127.0.0.1/test/index.html
+
+        #going to a dir on the web browser opens the contained index.html file by default:
+          firefox http://127.0.0.1/test/
+        
+      ##conf file
+
+        #ubuntu default location:
+          sudo vim /etc/apache2/apache2.conf
+
+        #configurations only work if you restart apache:
+          sudo service apache2 restart
+
+        #set apache serve root at given dir:
+          DocumentRoot "/var/www"
+
+        #listen those ports on all interfaces (for example, first wireless card, first ethernet card, etc...):
+          Listen 80
+          Listen 8000
+
+        #listen those ports on given interfaces:
+          Listen 192.0.2.1:80
+          Listen 192.0.2.5:8000
+
+        #access filename:
+          AccessFileName .htaccess
+
+        #include other files or entire dirs:
+          Include file.conf
+          Include conf-d
+
+        #deny access from host
+          Deny from 10.252.46.165 
+          Deny from host.example.com
+
+        #deny file permissions for files that match regex "^\.ht":
+          <Files ~ "^\.ht">
+              Order allow,deny
+              Deny from all
+              Satisfy all
+          </Files>
+        #Order says: first process all allow directives, then all deny directives.
+        #since deny came last, it has precedence.
+      
+      ##alias
+      
+        #you can create virtual paths to dirs and files
+      
+      ##http
+      
+        #just read this:
+          #<http://www.jmarshall.com/easy/http/#structure>
+
+      ##cgi
+      
+        ##requires
+          
+          #<#http>
+      
+        #**cgi** is a protocol of how a server communicates with a cgi script
+        
+        #a cgi script is simply a script/executable that outputs the part of http response
+        
+        #this part includes some last header lines which the server delegates to it,
+        #notably ``content type``, followed by "\n\n" followed by the entire body.
+        
+        #the server passes information to the script through environment variables only.
+        
+        ##fastcgi
+        
+          #a faster version of cgi that does not start a new process pre request
+
+          #implementations: mod_fastcgi vs mod_fcgid
+          #<http://superuser.com/questions/228173/whats-the-difference-between-mod-fastcgi-and-mod-fcgid>
+          
+          #install mod_fastcgi:
+            sudo aptitude install -y libapache2-mod-fastcgi
+
+        ##test cgi script
+        
+          #cgi scripts must be in the dir specified by script alias:
+            ScriptAlias /mycgi/ /usr/lib/cgi-bin/
+
+          #the script:
+            echo '#!/usr/bin/perl
+print "Content-type: text/html\n\n";
+foreach $key (keys %ENV) {
+print "$key --> $ENV{$key}<br>";
+}
+print "\n\n";
+#while(<>){print;}
+' > sudo tee /usr/lib/cgi-bin/test.pl
+          #first output line must be "Content-type: text/html\n\n"
+
+          sudo chmod +x /usr/lib/cgi-bin/test.pl
+
+          #run it:
+            firefox localhost/mycgi/test.pl
+          #note how ``ScriptAlias`` created a virtual directory
+          #not present in the actual filesystem.
+
+          #run it whenever an html file is accessed:
+            Action test /cgi-bin/test.pl
+            AddHandler test .html 
+          #TODO: i get ``Action`` directive undefined... solve this.
+          
+          #now try it:
+            firefox localhost/index.html
+
+          #this is how php does it!
+      
+      ##modules
+      
+        #apache plugins are called modules
+        
+        #modules are compiled ``.so`` files
+        
+        #modules may define new directives
+        
+        #for modules to become effective they must be loaded in the config file
+        
+        #only do certain commands if module is exists:
+          <IfModule mod_fastcgi.c>
+            commands...
+          </IfModule>
+
+        #load a module:
+          LoadModule fastcgi_module /usr/lib/apache2/modules/mod_fastcgi.so
+          #          1              2
+          #1: module identifier hard coded in module?
+          #2: full path to .so
+
+      ##handlers
+        
+        #part of the very default mime_module
+
+        #determines filetypes and sets default actions accordingly
+
+        #example:
+          Action add-footer /cgi-bin/footer.pl
+          AddHandler add-footer .html 
+        #Action: defines a handler called add-footer
+        #AddHandler: uses the handler called add-footer for all html files
+        
+        #handlers can be defined in modules
+
+    ##php
+    
+      #interpretre language almost always run from a server to generate web content.
+      
+      #dominates web today, but faces increasing concurrence python/ruby/perl.
+
+      ##core:
+        sudo aptitude install -y php5
+    
+      ##apache integration:
+        sudo aptitude install -y libapache2-mod-php5
+
+      #test:
+        sudo service apache2 restart
+        echo '<?php phpinfo(); ?>' | sudo tee /var/www/testphp.php
+        firefox http://localhost/testphp.php &
+      #if you see php specs, it works!
+
+    #install mysql server. see: <#mysql server>
 
 ##boot
 
@@ -6947,6 +7381,8 @@ User-Agent: fingers
         sudo service apache2 restart
         sudo restart apache2
 
+        #TODO service restart vs restart?
+
 ##interpreters
 
   ##bc
@@ -6981,20 +7417,19 @@ User-Agent: fingers
 
   ##perl
   
-    #perl is installed by default for posix compliance
-    
     #perl is good for command line golfing and quite powerful
     
-    #for larger stuff, I prefer the clarity of python
-
-    #the following contains lots of man pages and html docs:
+    #i find python clearer and less implicit
     
+    #perl is installed by default for posix compliance
+    
+    #the following contains lots of man pages and html docs:
       sudo aptitude install -y perl-doc
 
       man perldoc
       man perlcheat
 
-      #the following waits for a ctrl-d and then executes everything:
+    #waits a ctrl-d and then execute everything:
       perl
     
     ##sources
@@ -7021,21 +7456,19 @@ User-Agent: fingers
 
       ##-i
 
-        #what would get printed is put into file instead
-        
-        echo $'a\nb' > f
-        perl -lpi -e 's/a/A/g' f
-        [ "`cat f`" = $'A\nb' ] || assert_fail
-          #modifies the file! prints nothing to screen
-          #newlines are affected
-          #-i : inline
+        #what would get printed is put into file instead:
+          echo $'a\nb' > f
+          assert [ "`perl -lpi -e 's/a/A/g' f`" ]
+          assert [ "`cat f`" = $'A\nb' ]
+        #newlines are affected
+        #-i: inline
 
-        echo $'a\nb' > f
-        perl -lpi.bak -e 's/a/A/g' f
-        [ "`cat f`" = $'A\nb' ] || assert_fail
-        [ "`cat f.bak`" = $'a\nb' ] || assert_fail
-          #saves newfile to F.bak, original is not changed
-          #NO SPACE BETWEEN I AND '.bak'!!!
+        #saves old file to F.bak, original is changed:
+          echo $'a\nb' > f
+          assert [ "`perl -lpi.bak -e 's/a/A/g' f`" ]
+            #NO SPACE BETWEEN I AND '.bak'!!!
+          assert [ "`cat f`" = $'A\nb' ]
+          assert [ "`cat f.bak`" = $'a\nb' ]
 
       ##-a
 
@@ -7044,13 +7477,13 @@ User-Agent: fingers
         #adds ``@F = split(/ /);`` to top of loop.
         #requires ``-n`` or ``-p``. 
         
-        assert[ "`echo $'a b c\nd e f' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c:d:e:f:" ] 
+          assert[ "`echo $'a b c\nd e f' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c:d:e:f:" ] 
 
         #multiple spaces are split:
-        assert[ "`echo $'a  b c' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c"] 
+          assert[ "`echo $'a  b c' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c"] 
 
         #tabs are split:
-        assert[ "`echo $'a\0b\tc' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c"] 
+          assert[ "`echo $'a\0b\tc' | perl -nae 'print $F[0]. ":" . $F[1] . ":" . $F[2]'`" = "a:b:c"] 
 
       ##-F
 
@@ -7097,7 +7530,7 @@ User-Agent: fingers
         #import modules
         
         #print sum of lines:
-        perl -MList::Util=sum -alne 'print sum @F'
+          perl -MList::Util=sum -alne 'print sum @F'
     
     ##important one liners
 
@@ -7153,22 +7586,149 @@ User-Agent: fingers
     
   ##python
 
-    #python package manager
+    ##pip
 
-    sudo aptitude install -y python-pip
-    sudo pip install termcolor
-    sudo pip install django
-    sudo pip install south
+      #python package manager
+        
+      #install:
+        sudo aptitude install -y python-pip
 
-##combos
+      #search package:
+        pip search $pkg
 
-  find . | sort -f | uniq -di
-    #find files whose path differ from other files only by case
-    #useful when copying from linux to a system that does not accept
-    #files that differ only by case (the case for MacOS and Windows)
+      #install package:
+        sudo pip install $pkg
 
-  find . | sort -f | uniq -di | xargs -I'{}' rm '{}'
-    #remove them
+      #list installed packages on stdout:
+        pip freeze
+
+      #uninstall package:
+        sudo pip uninstall $pkg
+
+    ##good development packages
+
+      #change terminal fore/background colors:
+        sudo pip install termcolor
+
+      ##web
+      
+        #python mysql interaction:
+          sudo aptitude install -y python-mysqldb
+    
+        ##django
+
+          #most used python web framework
+
+          #required for mysql:
+            sudo aptitude install -y python-mysqldb
+
+          #main package:
+            sudo pip install django
+
+          #database modifications:
+            sudo pip install south
+
+          #easy user creation/login:
+            sudo pip install django-userena
+
+          #practical html table creation:
+            sudo pip install django-tables2
+
+        ##trac
+        
+          #top python written bugracker
+
+          #not written in django unfortunatelly
+
+          #dependency:
+            sudo aptitude install -y python-mysqldb
+
+          #install:
+            sudo pip install trac
+
+          ##create project
+
+            #create db to use:
+              mysql -u root -p -e 'create database trac_test character set utf8'
+            #**MUST BE UTF8!!!**
+            
+            #make a directory and install there:
+
+              d="test"
+              mkdir "$d"
+              trac-admin "$d" initenv
+
+            #enter:
+
+              test
+              mysql://user:pass@host:3306/dbname
+                                    ^^^^        
+                                    default mysql port
+
+            ##test server
+              
+                tracd --port 8000 /path/to/project
+                firefox localhost:8000
+
+            ##apache deployment
+
+              #for real deployment, can be much fater.
+
+              ##access rights
+                
+                #the server process must have ownership of the project dir
+                
+                #by default, the owner of the dir is the owner who run ``trac-admin``
+                
+                #however, usually apache runs as a different user.
+                
+                #to find out the user:
+                  cat ps -Af | grep apache
+
+                #to find out his group:
+                  groups $username
+
+                #finally, change ownership:
+                  chown -R $username.$groupname "$d"
+
+                #on ubuntu at the time of writting the default was:
+                  username=www-data
+                  groupname=www-data
+
+              ##fastgci
+              
+                #install fastgci. see: <#fastcgi>.
+                
+                #add to apache conf:
+                  FastCgiConfig -initial-env TRAC_ENV_PARENT_DIR=/usr/share/trac/projects/
+
+                #inputs:
+                  root="/usr/share/trac/"
+                  projects_dir="$root/projects"
+                  server_user=www-data
+                  server_group=www-data
+                  deploy_dir=/tmp/trac_deploy/
+                  db_user=trac
+                  db_pass=asdf
+                  db_host=localhost
+                  project_name=test3
+                  project_dir="$projects_dir/$project_name"
+                  db=trac_$project_name
+
+                #first time:
+                  sudo mkdir -p "$projects_dir" "$deploy_dir"
+                  sudo chown $u.$g "$project_dir" "$deploy_dir"
+                  mysql -u root -p -e "CREATE USER $db_user@$db_host IDENTIFIED BY $db_pass;"
+
+                #new project:
+                  mysql -u root -p -e "create database $db character set utf8; grant all on $db.* to $db_user@localhost;"
+                  sudo -u $u mkdir -p "$project_dir"
+                  echo -e "$project_name\nmysql://$db_user:$db_pass@localhost:3306/$db" | sudo -u $u trac-admin "$project_dir" initenv
+
+                #first time after first new project:
+                  sudo -u $u trac-admin "$r" deploy "$d"
+                  sudo mv "$deploy_dir"/* "$root"
+                  sudo rmdir "$deploy_dir"
 
 ##x11
 

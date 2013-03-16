@@ -15,7 +15,8 @@ use warnings;
   my ($i2 = 1, $i3);
   my $count;
   my $line;
-  #my $i = 1; #can only declar once
+  #my $i = 1;
+    #can only declare once
   my $s = 'string';
   my @s = (1,3,'string');
   my @i; #works but is bad practice
@@ -28,6 +29,7 @@ use warnings;
     print 's1', 's2', 123;
 
 ##numbers
+
   print 1;
   print 4.4;
   print 1.2e10;
@@ -119,6 +121,7 @@ use warnings;
   #\G - Matches where previous m//g left off 
 
 #lists
+
   print (1, 2, 'asdf', (1,2) );
   print (1 .. 5);
 
@@ -158,18 +161,45 @@ use warnings;
   print keys %hash;
   print values %hash;
 
+##context
+
+  #operators such as = are overloaded depending if the act on variables ($), lists (@) or hashmaps (%)
+
 ##branch
 
   ##if
 
     ##single line
+      
+      #same as ``&&``
 
-      print 'a' if 1;
+      #same as ``and``
 
-      #can only use single command: no ``;`` accepted
-      print 'a'; print 'b' if 0;
-        #prints a
+        print 'a' if 1;
+        print 'b' if 0;
+        1 && print 'a';
+        0 && print 'b';
+        1 and print 'a';
+        0 and print 'b';
 
+      ##concatenate
+
+        #ERROR:
+          #print 'a' if 1 if 1;
+
+        #both conditions must be true
+          1 && 1 && print 'a';
+          1 and 1 and print 'a';
+
+      ##can only use single command
+
+      #no ``;`` accepted
+
+        print 'a'; print 'b' if 0;
+          #a
+        0 && print 'a'; print 'b';
+          #b
+ 
     ##multiline
 
       if (1)
@@ -186,12 +216,27 @@ use warnings;
       }
 
   ##unless
+  
+    #``unless``, ``&&`` and ``and`` are exact same as
+    #``if``, ``||`` and ``or`` but negated.
 
-    print 'true' unless 1 == 0;
+    print 'a' unless 0;
+    unless(0)
+    {
+      print 'a'
+    }
+    0 || print 'a'
+    1 || print 'b'
+    0 or print 'a'
+    1 or print 'b'
+    0 || 0 || print 'a'
+    0 or 0 or print 'a'
 
   ##for
 
-    print for (1 .. 10);
+    ##single line
+
+      print for (1 .. 10);
 
   ##foreach
 
@@ -247,10 +292,13 @@ use warnings;
 
   ##$_
 
-    #default arg to functions
+    #default arg to functions:
 
-    $_ = 'Hello';
-    print;
+      $_ = 'Hello';
+      print;
+        #prints hello
+
+    #gets modified by functions:
 
   ##$.
   
@@ -308,6 +356,13 @@ use warnings;
 
     print $ARGV[0];
 
+  ##environment
+
+    foreach $key (keys %ENV)
+    {
+      print "$key --> $ENV{$key}\n";
+    }
+
 ##process call
 
   ##system
@@ -337,69 +392,97 @@ use warnings;
     `echo a | grep a`;
     print $?, "\n";
 
-##diamond
-
-  open(FH,"<file");
-  @ARRAY = <FH>;
-
-  ##read from stdin
-
-    #while($l = <STDIN>)
-    #{
-      #chomp $l;
-    #}
-
-    #while($l = <>)
-    #{
-      #chomp;
-    #}
-
 ##functions
 
-  #called **subrpocess**
+  #called **subprocess**
 
-  sub miles_to_kilometers
-  {
-    my ($miles) = @_;
-    return $miles * 1.609344;
-  }
+    sub f
+    {
+      my($a,$b) = @_;
+      $a+$b;
+        #return value is value of last evaluated expression
+      return $a+$b
+        #can also use return statement
+    }
 
-  print miles_to_kilometers(5);
+    print f(1,2);
+    print f 1,2;
 
-  sub modify
-  {
-    my($text, $code) = @_;
-  }
+##file io
+
+  ##file handles
+
+    #readonly:
+      open(FH,"<path/to/file.txt")           or die "Opening: $!";
+      while(<FH>){print}
+      close(FH)                              or die "Closing: $!";
+
+    #writeonly:
+      open(FH,">path/to/file.txt")           or die "Opening: $!";
+      print FH a, "\n"
+      print FH b, "\n"
+      close(FH)                              or die "Closing: $!";
+
+    ##default
+
+      #STDOUT:
+        print STDOUT "stdout"
+
+      #STDERR:
+        print STDERR "stderr"
+
+      #STDIN:
+        print STDERR "stderr"
+
+  ##diamond
+
+    #read from filehandle linewise
+
+    #if no filehandle given:
+    #- if ARGV not empty, treat $ARGV[i] as files and read from them
+    #- else, read from STDIN filehandle.
+      #As usual, if no pipe is comming in, wait for user input.
+
+    #lines are automatically stored in ``$_``, newline included
+
+      @ARGV = ("file1.txt", "file2.txt");
+      while (<>)
+      {
+          print;
+      }
+
+
+      #perl -pe 'YOUR CODE HERE'
+        while(<>)
+        {
+          #YOUR CODE HERE
+          print;
+        }
+
+      #same as:
+        while ( $_ = <STDIN> )
+        {
+          print;
+        }
+      #stdin is a filehandle open by default
+
+      #same as:
+        while ( $_ = <STDIN> )
+        {
+          print($_);
+        }
+
+  #get all lines from file:
+    open(FH,"<file/path.txt")           or die "Opening: $!";
+    @ARRAY = <FH>;
+      #works beause of context
+    close(FH)                           or die "Closing: $!";
 
 ##file io
 
   #<http://www.troubleshooters.com/codecorn/littperl/perlfile.htm>
 
-  #transfor into another
-
-    #open(MYINPUTFILE, "<filename.in");
-    #open(MYOUTPUTFILE, ">filename.out");
-    #while(<MYINPUTFILE>)
-    #{
-    #my($line) = $_;
-    #chomp($line);
-    #if($line =~ m|(\d{5})(.{20})(\d\d)/(\d\d)/(\d\d)|)
-    #{
-    #my($zip,$name,$mm,$dd,$yy) = ($1,$2,$3,$4,$5);
-    #if($yy > 10)
-    #{$yy += 1900}
-    #else
-    #{$yy += 2000}
-    #my($first, $last) = split(/ /, $name);
-    #$line = sprintf("%-16s%-10s%02d/%02d/%04d%5d",
-    #$last,$first,$mm,$dd,$yy,$zip);
-    #print MYOUTPUTFILE "$line\n";
-    #}
-    #}
-    #close(MYINPUTFILE);
-    #close(MYOUTPUTFILE);
-
-  #modify file
+  #modify file inline. store it all on ram
 
     #open(FH, "+< FILE")                 or die "Opening: $!";
     #@ARRAY = <FH>;
@@ -409,4 +492,3 @@ use warnings;
     #seek(FH,0,0)                        or die "Seeking: $!";
     #print FH @ARRAY                     or die "Printing: $!";
     #truncate(FH,tell(FH))               or die "Truncating: $!";
-    #close(FH)                           or die "Closing: $!";
