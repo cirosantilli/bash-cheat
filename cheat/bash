@@ -432,6 +432,8 @@ echo "$#"' > a
 
     #{}
 
+    #*very useful*
+
     ##alternatives
 
       assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
@@ -463,7 +465,7 @@ echo "$#"' > a
 
       for i in {1..5}; do echo $i; done
 
-      mkdir {a..c}
+      mkdir very/long/path/{a,b}
 
       cp a{,.bak}
     
