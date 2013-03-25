@@ -15,22 +15,19 @@ usage()
 {
 	echo 'Usage: synctex-forward [options] basename-noext tex-line
 
-Example: $(synctex-forward mytexfile 77)
+EXAMPLES
 
-will get you the pdf page corresponding to line 77 in your tex file.
+  get the pdf page corresponding to line 77 in your tex file:
+    synctex-forward basename-no-extension 77
+  assumes .tex, .pdf and .synctex.gz all with same basename except for extension.
 
-A typical usage of this function would be for calls from inside an editor, where you
-would replace mytexfile and 77 by their actual values.
+  use custom directories:
+    synctex-forward -t ./ -p ./_out/ -s ./_aux/ basename-no-extension 77
+  -t: directory of .tex
+  -p:              .pdf
+  -s:              .synctex.gz
 
-Returns corresponding pdf page for a given tex file line number.
-
-Assumes that all files have the same basename. This cannot be
-overwriden as of this version.
-
-By default, assumes that all files are in the current dir.
-This could be changed by options, but I cant get synctex -d
-option to work!!! so for the time being you are forced to
-put all files in the same dir.
+  use custom basenames-no-extension: cannot be done.
 ' 1>&2
 }
 
@@ -86,10 +83,10 @@ SYN_PATH="$SYN_DIR"/"$BNAME_NOEXT".synctex.gz
 PARENT_DIR="$( parent-path "$TEX_PATH" )"
 
 # get synctex pdf position
-SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$PARENT_DIR./$TEX_PATH" -o "$PDF_PATH"  )"
+#SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$PARENT_DIR./$TEX_PATH" -o "$PDF_PATH"  )"
 
-# can't make the syntex command line interface work!!!
-#SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$PARENT_DIR./$TEX_PATH" -o "$PDF_PATH" -d "$SYN_DIR" )"
+# can't make the syntex command line -d interface work!!!
+SYNCTEX_OUT="$( synctex view -i "$TEX_LINE:1:$TEX_PATH" -o "$PDF_PATH" -d "$SYN_DIR" )"
 
 #echo "$SYNCTEX_OUT"
 

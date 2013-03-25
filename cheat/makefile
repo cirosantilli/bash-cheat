@@ -136,6 +136,12 @@
 			#$? 	The names of all the prerequisites that are newer than the target, with spaces between them.
 			#$^ and $+ 	The names of all the prerequisites, with spaces between them. The value of $^ omits duplicate prerequisites, while $+ retains them and preserves their order.
 
+##spaces
+
+	#you simply cannot have filenames with spaces in them.
+
+	#use hyphens '-' or '_' instead
+
 #include
 	#sources a file
 	include make.inc

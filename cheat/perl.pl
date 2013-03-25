@@ -240,39 +240,45 @@ use warnings;
 
   ##foreach
 
-    foreach my $e (1, 2, 3)
-    {
-        print $e;
-    }
-
-    @a = (1 .. 3);
-    foreach my $e (@a)
-    {
-        print $e;
-    }
-
-    #alters value
-
-      @a = (1 .. 5);
-      foreach my $e (@a)
+    #example:
+      foreach my $e (1 .. 3)
       {
           print $e;
-          $e *= 2;
       }
+
+    #default argument:
+      foreach (1..3)
+      {
+          print;
+      }
+
+    #single line:
+      print foreach (1 .. 3)
+    #like if, only single command (no ``;`` allowed)
+
+    #uses references:
+      @a = (1 .. 5);
+      foreach (@a)
+      {
+          $_ *= 2;
+      }
+      print @a[0]
 
   ##while
 
-    $i = 10;
-    while ($i > 0)
-    {
-      print $i;
-      $i = $i - 1;
-    }
+    #example:
+      $i = 10;
+      while ( $i > 0 )
+      {
+        print $i;
+        $i = $i - 1;
+      }
 
     ##last = break
 
       $i = 0;
-      while ($i < 100) {
+      while ( $i < 100 )
+      {
           last if $i == 10;
           print $i;
           $i = $i + 1;
@@ -336,13 +342,13 @@ use warnings;
 
     #cur process number
 
-    print $$;
+      print $$;
 
-  ##status of last process close
+  ##$0
 
     #name of file of script being executed
 
-    print $0;
+      print $0;
   
   ##regex
 
@@ -354,43 +360,14 @@ use warnings;
 
   ##command line arguments
 
-    print $ARGV[0];
+      print $ARGV[0];
 
   ##environment
 
-    foreach $key (keys %ENV)
-    {
-      print "$key --> $ENV{$key}\n";
-    }
-
-##process call
-
-  ##system
-
-    #on background
-
-    #cannot get stdout nor return status
-
-    system("echo", "-n", "a", "b");
-
-  ##qx
-
-    #program waits for end
-
-    #can get stdout and return status
-
-    my $a = qx(echo -n a b);
-    my $a = `echo -n a b`;
-
-  ##$?
-  
-    #status of last process close
-
-    `echo a | grep b`;
-    print $?, "\n";
-
-    `echo a | grep a`;
-    print $?, "\n";
+      foreach $key (keys %ENV)
+      {
+        print "$key --> $ENV{$key}\n";
+      }
 
 ##functions
 
@@ -434,6 +411,16 @@ use warnings;
       #STDIN:
         print STDERR "stderr"
 
+  ##readline
+
+    #read from handle up to next line terminator char
+
+    #all the same:
+      $_ = readline(STDIN)
+      $_ = readline
+      $_ = <STDIN>
+      $_ = <>
+
   ##diamond
 
     #read from filehandle linewise
@@ -443,46 +430,40 @@ use warnings;
     #- else, read from STDIN filehandle.
       #As usual, if no pipe is comming in, wait for user input.
 
-    #lines are automatically stored in ``$_``, newline included
-
       @ARGV = ("file1.txt", "file2.txt");
-      while (<>)
+      while(<>)
       {
           print;
       }
 
+      #perl -ne 'YOUR CODE HERE'
+        while ( <> )
+        {
+          #YOUR CODE HERE
+        }
 
       #perl -pe 'YOUR CODE HERE'
-        while(<>)
+        while ( <> )
         {
           #YOUR CODE HERE
           print;
         }
 
-      #same as:
-        while ( $_ = <STDIN> )
-        {
-          print;
-        }
-      #stdin is a filehandle open by default
+    ##skip a line:
 
-      #same as:
-        while ( $_ = <STDIN> )
+        while ( <> )
         {
-          print($_);
+          /a/ && continue;
         }
 
-  #get all lines from file:
-    open(FH,"<file/path.txt")           or die "Opening: $!";
+  ##get all lines from file to an array of lines:
+
+    open(FH,"<a.txt")           or die "Opening: $!";
     @ARRAY = <FH>;
       #works beause of context
-    close(FH)                           or die "Closing: $!";
+    close(FH)                   or die "Closing: $!";
 
-##file io
-
-  #<http://www.troubleshooters.com/codecorn/littperl/perlfile.htm>
-
-  #modify file inline. store it all on ram
+  ##modify file inline
 
     #open(FH, "+< FILE")                 or die "Opening: $!";
     #@ARRAY = <FH>;
@@ -492,3 +473,32 @@ use warnings;
     #seek(FH,0,0)                        or die "Seeking: $!";
     #print FH @ARRAY                     or die "Printing: $!";
     #truncate(FH,tell(FH))               or die "Truncating: $!";
+
+##process call
+
+  ##system
+
+    #on background
+
+    #cannot get stdout nor return status
+
+    system("echo", "-n", "a", "b");
+
+  ##qx
+
+    #program waits for end
+
+    #can get stdout and return status
+
+    my $a = qx(echo -n a b);
+    my $a = `echo -n a b`;
+
+  ##$?
+  
+    #status of last process close
+      `false`;
+      print $?, "\n";
+        #
+
+      `true`;
+      print $?, "\n";

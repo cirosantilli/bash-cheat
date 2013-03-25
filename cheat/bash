@@ -1,57 +1,14 @@
 #!/usr/bin/env bash
-#^^
-#1
-#1: shebang
-
-##shebang
-
-  #she: name for '#', bang: name for '!'
-
-  #tells linux which interpreter to use to run the program
-
-  #*must* be first line
-
-  #if this were a phython script for example,
-  #we'd use ``/bin/python``
-
-  ##env
-
-    #you could use ``!#/bin/bash`` instead
-    #but if you go on a system where bash is located
-    #at ``/usr/bin/bash``, your script breaks
-
-    #with env, path is used instead
-    #so if ``bash`` is in the users $PATH,
-    #and /usr/bin/env exists 
-    #it works
-
-    ##why it works
-
-      #``env cmd`` simply executes a program in current environment
-
-      #in our case, the bash program
-
-    #the advantage of this is that:
-      #- env is more often located in ``/usr/bin`` than bash in ``/usr`` acros *NIX TODO check
-      #- all you interpreters
-
-  ##why not from extension
-
-    #in windows, interpreter is determined by extension
-
-    ##advantage os extension
-    
-      #easier to spot program type.
-
-    ##disadvantage os extension
-
-      #you need an extra EXT env var that says: you can execute a.py as py, a.sh as a
-
-      #it is important to execute a.sh as ``a`` because if someday you decide that
-      #it sould be written in python istead, you don't break all dependant programs
-      #by using ``a.py``
 
 #no complex programs shown: only language "basics"
+
+##comments
+
+    echo #
+
+  #can escape comment:
+    echo \#
+  #prints '#'
 
 #sources
 
@@ -194,10 +151,10 @@ echo "$#"' > a
     
       #exit status of last program run
 
-      if echo a | grep a ; then : ; fi
+      if false; then :; fi
       echo $?
         #0
-      if echo a | grep b ; then : ; fi
+      if true; then :; fi
       echo $?
         #1
 
@@ -418,15 +375,10 @@ echo "$#"' > a
 
   #tilde expansion
 
-    su a
-    echo ~
-      #/home/a
-    echo ~test
-      #/home/test
-    echo ~root
-      #/root
-    echo ~idonthaveahome
-      #~idonthaveahome
+    assert [ "`sudo -u a echo ~`"  = /home/a ]
+    assert [ "`echo ~a`" = /home/a ]
+    assert [ "`echo ~root`" = /root ]
+    assert [ "`echo ~homeless`" = '~homeless' ]
 
   ##brace expansion
 
@@ -436,10 +388,9 @@ echo "$#"' > a
 
     ##alternatives
 
-      assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
+        assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
 
-      ##nested ok
-
+      #nested ok:
         assert [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ]
 
     ##number ranges
@@ -1141,11 +1092,17 @@ echo string
       FCEDIT=/bin/vi
       fc
 
+  ##ctrl-r
+
+    #*very useful*
+    
+    #good tutorial: <http://ruslanspivak.com/2010/11/20/bash-history-reverse-intelligent-search/>
+
 ##clear
 
   #clear terminal screen
 
-  clear
+    clear
 
 ##shopt
 

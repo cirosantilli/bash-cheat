@@ -1,4 +1,6 @@
-#cur !/usr/bin/env bash
+#!/usr/bin/env bash
+
+#"#!" is the <#shebang>
 
 ##meta
 
@@ -253,7 +255,7 @@
     #non official
     #ubuntu: devices
 
-  #~
+  ##~
     #~/.profile
       #sourced when root bash starts
       #consequences:
@@ -267,12 +269,34 @@
       #applications:
         #remap keys
   
-  ##*.d
+  ##basename conventions
+  
+    #not in the fhs, but you should know about
 
-    #many theories, a plausible one:
-    #differentiate ``a.conf file`` from ``a.conf.d`` dir
-    #normally, all files in the ``a.conf.d`` dir will be sourced
-    #as if they wre inside ``a.conf``
+    ##^\.
+    
+      #hidden files
+      
+      #it is up to programs to decide how to treat them
+    
+    ##\.~$
+    
+      #backup file
+
+    ##\.bak$
+
+      #backup file
+
+    ##\.orig$
+  
+      #original installation file
+
+    ##\.d$
+
+      #many theories, a plausible one:
+      #differentiate ``a.conf file`` from ``a.conf.d`` dir
+      #normally, all files in the ``a.conf.d`` dir will be sourced
+      #as if they wre inside ``a.conf``
 
 ##licences
 
@@ -764,13 +788,30 @@
         sudo aspell --add-filter=$f
         sudo aspell --remove-filter=$f
 
-#text
+##text
 
-  #pandoc. convert to/from extended markdown / latex / html
+  ##pandoc
+  
+    #convert to/from extended markdown / latex / html
     #http://johnmacfarlane.net/pandoc/demos.html
-    sudo aptitude install -y pandoc
 
-    pandoc -s --toc -c pandoc.css -A footer.html README -o example3.html
+      sudo aptitude install -y pandoc
+
+    ##output type is recognized by extension
+
+      #generate html from markdown:
+
+        pandoc a.md -o a.html
+
+      #generate pdf from markdown:
+
+        pandoc a.md -o a.pdf
+
+      
+
+
+      pandoc -s --toc -c pandoc.css -A footer.html README -o example3.html
+
     #-s : standalone. header and everything
     #--toc : headers are links to toc and have ids
     #-A : include after
@@ -1039,39 +1080,41 @@
 
     ##pdftk
 
+      #pdf Tool Kit
+
       sudo aptitude install -y pdftk
 
-      #Merge Two or More PDFs into a New Document
+      #merge two or more pdfs into a new document:
           pdftk 1.pdf 2.pdf 3.pdf cat output 123.pdf
-      #or (Using Handles):
+      #or using handles:
           pdftk A=1.pdf B=2.pdf cat A B output 12.pdf
-      #or (Using Wildcards):
+      #or using wildcards:
           pdftk *.pdf cat output combined.pdf
-      #slice pdf: get pagets 1 to 7 only
+      #slice pdf: get pagets 1 to 7 only:
           pdftk A="$f.pdf" cat A1-7 output "$f.pdf"
-      #Split Select Pages from Multiple PDFs into a New Document
+      #split select pages from multiple pdfs into a new document:
           pdftk A=one.pdf B=two.pdf cat A1-7 B1-5 A8 output combined.pdf
-      #Rotate the First Page of a PDF to 90 Degrees Clockwise
+      #rotate the first page of a pdf to 90 degrees clockwise:
           pdftk in.pdf cat 1E 2-end output out.pdf
-      #Rotate an Entire PDF Document’s Pages to 180 Degrees
+      #rotate an entire pdf document’s pages to 180 degrees:
           pdftk in.pdf cat 1-endS output out.pdf
-      #Encrypt a PDF using 128-Bit Strength (the Default) and Withhold All Permissions (the Default)
+      #encrypt a pdf using 128-bit strength (the default) and withhold all permissions (the default):
           pdftk mydoc.pdf output mydoc.128.pdf owner_pw foopass
-      #Same as Above, Except a Password is Required to Open the PDF
+      #Same as Above, Except a Password is Required to Open the PDF:
           pdftk mydoc.pdf output mydoc.128.pdf owner_pw foo user_pw baz
-      #Same as Above, Except Printing is Allowed (after the PDF is Open)
+      #Same as Above, Except Printing is Allowed (after the PDF is Open):
           pdftk mydoc.pdf output mydoc.128.pdf owner_pw foo user_pw baz allow printing
-      #Decrypt a PDF
+      #Decrypt a PDF:
           pdftk secured.pdf input_pw foopass output unsecured.pdf
-      #Join Two Files, One of Which is Encrypted (the Output is Not Encrypted)
+      #Join Two Files, One of Which is Encrypted (the Output is Not Encrypted):
           pdftk A=secured.pdf mydoc.pdf input_pw A=foopass cat output combined.pdf
-      #Uncompress PDF Page Streams for Editing the PDF Code in a Text Editor
+      #Uncompress PDF Page Streams for Editing the PDF Code in a Text Editor:
           pdftk mydoc.pdf output mydoc.clear.pdf uncompress
-      #Repair a PDF’s Corrupted XREF Table and Stream Lengths (If Possible)
+      #Repair a PDF’s Corrupted XREF Table and Stream Lengths (If Possible):
           pdftk broken.pdf output fixed.pdf
-      #Burst a Single PDF Document into Single Pages and Report its Data to doc_data.txt
+      #Burst a Single PDF Document into Single Pages and Report its Data to doc_data.txt:
           pdftk mydoc.pdf burst
-      #Report on PDF Document Metadata, Bookmarks and Page Labels
+      #Report on PDF Document Metadata, Bookmarks and Page Labels:
           pdftk mydoc.pdf dump_data output report.txt
 
     ##djvulibre-bin
@@ -2581,12 +2624,15 @@ int main(void)
     #ignores .git .svn, backup, swap files
     #can detect and filter by filetype via extension and shebangs
 
-    #install:
-      sudo aptitude install -y ack-grep
-    #``ack`` package was already taken by a kanji converter!
-    
-    #this begs for an alias:
-      alias ack="ack-grep"
+    ##install
+
+        sudo aptitude install -y ack-grep
+      #``ack`` package was already taken by a kanji converter!
+
+      #this begs for an alias:
+        alias ack="ack-grep"
+
+    ##
     
     ack --py perl_regex
       #recursive find grep for perl_regex in python files only, detects shebangs
@@ -2598,19 +2644,33 @@ int main(void)
     #prints only include names in cpp files
     #--sh for bash
 
-    ack -f | xargs perl -lane 'print if s/z/Z/g'
-    #recursive find
-    #print changes only
+    ##-f
 
-    ack -f | xargs perl -pi -e 's/z/Z/g'
-    #recursive replace in files
-    #prints nothing
+      #list all filenames of known types:
 
-    ack -g '\.py$'
-    #f, only stuff matching regex
+        ack -f
+    
+    ##-g
+    
+      #list files of known types that match regex:
+
+        ack -g '\.py$'
 
     ack --thpppt
     #bill the cat
+    
+    ##combos
+    
+      #find lines in files:
+        ack -f | xargs grep 'find'
+
+      #dry run replace in files with regex::
+        ack -f | xargs -lne 'print if s/a/A/g'
+      #only prints modified lines
+
+      #non-dry run replace in files:
+        ack -f | xargs perl -pie 's/z/Z/g'
+      #prints nothing
     
   ##exuberant-ctags
 
@@ -3010,15 +3070,41 @@ int main(void)
 
       echo $'a\nb' | grep -E '(a|b)'
 
-    #-n: show line numbers
-    #-v: select non matching
-    #-r: recurse.
-      #while tepmting, not posix
+    ##-n
+    
+      #show matching line Numbers
 
-      echo 'abc' | grep -oE 'a.'
-        #ab
-        #-o: print mathing part only
-          #rudimentary grouping
+    #-v
+      
+      #inVert selection: select non matching
+
+    ##gnu grep
+    
+      #non posix, so be warned
+
+      ##-r
+      
+        #recurse, print filenames. *VERY* tempting... no more ``find . -type f | xargs`` !!
+        
+          grep -r 'a'
+
+      ##-A
+      
+        #also print n lines following the match
+        
+        #example:
+          assert [ "`echo $'a\nb' | grep -A1 a`" = $'a\nb' ]
+
+        ##application
+
+          #get the nth line after matching line:
+            assert [ "`echo $'a\nb' | grep -A1 a | tail -n1`" = $'b' ]
+
+        ##-B
+        
+          #before
+          
+          assert [ "`echo $'a\nb' | grep -B1 b`" = $'a\nb' ]
 
   ##cat
 
@@ -4468,7 +4554,7 @@ int main(void)
 
       sudo aptitude install -y gparted
 
-      ##format an external hd:
+      ##format an external hd
         #- erase partition table and create new one
         #- gpt seems to be a good choice of partition table type.
         #- create a partiion on the hd.
@@ -4936,9 +5022,8 @@ int main(void)
 
   #$$
   
-    #cur pid
-  
-    echo $$
+    #cur pid:
+      echo $$
 
   ##sleep
 
@@ -4948,25 +5033,30 @@ int main(void)
   ##wait
 
     #wait for process with given pid to terminate
+    
+    #sets $! to the pid of the waited process
 
-    sleep 3 &
-    wait $!
-    echo $?
-      #sleep 3 seconds and then echo done
+    #sleep 2 seconds and echo done:
+      sleep 3 &
+      wait $!
+      echo $?
 
-    ##wait gets ``$?`` even if process over already
-
-      echo a | grep b &
+    #gets ``$?`` right even if process over already:
+      false &
       sleep 2
+      true
       wait $!
       assert [ "`echo $?`" = 1 ]
 
-      echo a | grep a &
+      true &
       sleep 2
+      false
       wait $!
       assert [ "`echo $?`" = 0 ]
 
   ##ps
+  
+    #list current executing processes and their info
   
     #psmisc package
 
@@ -5557,29 +5647,33 @@ int main(int argc, char** argv)
   
     #change owner and group of files
     
-    ##owner
+      su a
+      mkdir d
+      touch d/f
+      sudo chown newuser:newgroup d
+        #must use sudo to chown
+      assert [ ``stat -c '%U' d`` = newuser ]
+      assert [ ``stat -c '%G' d`` = newgroup ]
+      assert [ ``stat -c '%U' d/f`` = a ]
+      
+    #``-R`` for recursive operation:
 
       su a
       mkdir d
       touch d/f
       sudo chown b d
-        #must use sudo to chown
-      assert [ ``stat -c '%U' d`` = b ]
-      assert [ ``stat -c '%U' d`` = a ]
-      
-      #-R: recursive
-        su a
-        mkdir d
-        touch d/f
-        sudo chown b d
-        assert [ ``stat -c '%U' d`` = b ]
-        assert [ ``stat -c '%U' d`` = b ]
+      assert [ ``stat -c '%U' d`` = newuser ]
+      assert [ ``stat -c '%G' d`` = newgroup ]
+      assert [ ``stat -c '%U' d/f`` = newuser ]
+      assert [ ``stat -c '%G' d/f`` = newgroup ]
 
-    ##group
-    
-      g=``id -gn``
-      touch f
-      assert [ ``stat -c '%G' f`` = $g ]
+    #to change only user:
+
+      sudo chown newuser
+
+    #to change only group:
+
+      sudo chown :newgroup
 
   ##chmod
   
@@ -5617,7 +5711,9 @@ int main(int argc, char** argv)
       #chmod =rwx
 
     #sticky bit, suid sgid bits
+
       #sticky
+
         chmod 1000 "$f"
         chmod o=t "$f"
         chmod a=t "$f"
@@ -5646,6 +5742,15 @@ int main(int argc, char** argv)
         chmod a-st f
         stat -c "%A" "$f"
           #----------
+
+    #can only change permissions for files you own
+    #even if you have all the permissions on the file:
+
+      su a
+      touch a
+      chmod 777 a
+      su b
+      if ! chmod 770 a; then assert true; fi
 
   ##umask
 
@@ -5691,36 +5796,55 @@ int main(int argc, char** argv)
       stat -c "%A" f
         #-r--r--r-T
 
-  ##ln
+  ##links
 
-    #make hardlinks and symlinks
+    ##hard vs soft
 
-    ln from to
-      #hardlink
+      #TODO lazy
 
-    ln -s from to
-      #symlink
+    ##ln
 
-  ##realpath
+      #make hardlinks and symlinks
 
-    #resolve all symbolic links and '.' and '..' entries of a path
+      #hardlink:
+        ln dest name
 
-    sudo aptitude install -y realpath
+      #symlink files only:
+        ln -s dest name
 
-    mkdir a
-    ln -s a b
-    cd b
-    touch a
-    ln -s a b
-    cd ..
-    realpath ./b/b
-      #= "``pwd``/a/a"
+      #symlink dir:
+        ln -ds dest name
 
-    #readlink -f
+      #note: if you give a relative destination,
+      #the link will contain this relative destination.
+      #to current link location. Ex:
 
-      readlink ./b/b
-        #same
+      #relative link:
+        ln ../dest dest
 
+      #absolute link:
+        ln /full/path/to/dest dest
+
+    ##realpath
+
+      #resolve all symbolic links and '.' and '..' entries of a path recursivelly
+
+      sudo aptitude install -y realpath
+
+      mkdir a
+      ln -s a b
+      cd a
+      touch a
+      ln -s a b
+      cd ..
+      realpath ./b/b
+        #= "``pwd``/a/a"
+
+      #readlink -f
+
+        readlink ./b/b
+          #same
+  
   ##cmp 
 
     cmp "$F" "$G"
@@ -5793,15 +5917,18 @@ int main(int argc, char** argv)
         #only use this for very simple commands, or you are in for an escaping hell!
         #use the next pattern instead: TODO
 
-      ##combos
+      ##applications
+      
+        #find and replace in files with regex:
+          find . -type f | xargs perl -pie 's/a/A/g'
 
-        find . | sort -f | uniq -di
-          #find files whose path differ from other files only by case
-          #useful when copying from linux to a system that does not accept
-          #files that differ only by case (the case for MacOS and Windows)
+        #find files whose path differ from other files only by case
+        #useful when copying from linux to a system that does not accept
+        #files that differ only by case (the case for MacOS and Windows)
+          find . | sort -f | uniq -di
 
-        find . | sort -f | uniq -di | xargs -I'{}' rm '{}'
-          #remove them
+        #remove them:
+          find . | sort -f | uniq -di | xargs -I'{}' rm '{}'
   
   ##locate
   
@@ -6120,8 +6247,8 @@ int main(int argc, char** argv)
       #1000: user id. 0: root. 1-99: predefined. 100-999: reserved by system. 1000: first ``normal`` user
       #1000: primary user group
       #ciro,,, : comment field. used by finger command.
-      #/home/ciro : home dir
-      #/bin/bash : login shell
+      #/home/ciro: home dir
+      #/bin/bash: login shell
 
   cat /etc/group
     #show groups
@@ -6396,19 +6523,30 @@ int main(int argc, char** argv)
 
     #add/remove users to groups
 
-    usermod -g $g $u
-      #change primary group of user u to g
+    #if you are the user, you have to logout/login again for changes to take effect
+
+    #change primary group of user u to g:
+      usermod -g $g $u
+
     g=1000,1001
-    usermod -G $g $u
-      #sets exactly the supplementary groups of user u
-      #remove from non listed ones
-    usermod -aG $g $u
-      #append (-a) groups g to supplementary groups of user u
-    usermod -d $d $u
-      #change home dir of user u to d
-      #the old contents are not moved
-    usermod -md $d $u
-      #also move his current dir contents to new dir
+
+    #Sets exactly the supplementary groups of user u.
+    #Remove from non listed ones:
+
+      usermod -G $g $u
+
+    #Append (-a) groups g to supplementary groups of user u:
+
+      usermod -aG $g $u
+
+    #Change home dir of user u to d.
+    #The old contents are not moved:
+
+      usermod -d $d $u
+
+    #Also move his current dir contents to new dir
+
+      usermod -md $d $u
 
   ##passwd
 
@@ -6857,77 +6995,128 @@ int main(int argc, char** argv)
     #-N : timestamping. only down if newer than already downloaded
 
   ##curl
+  
+    #does several web protocols
+    
+    #only use <#wget> for recursive mirroring
 
     sudo aptitude install -y curl
 
-    curl ifconfig.me
-      #external ip address of your computer
+    #make GET request, reponse body to stdout:
+      curl amazon.com
 
-    curl "$URL"
-    #make get resquest, stdout server response
-    #
-    #<form method="GET" action="junk.cgi">
-      #<input type=text name="birthyear">
-      #<input type=submit name=press value="OK">
-    #</form>
+    ##-d
 
-    curl -d "birthyear=1905&press=%20OK%20" $URL
-    curl --data-urlencode "name=I am Daniel" $URL
-    #post requests. --data-urlencode adds %20 for the spaces!
-    #
-    #<form method="POST" action="junk.cgi">
-      #<input type=text name="birthyear">
-      #<input type=submit name=press value=" OK ">
-    #</form>
+      #makes POST request
+        curl -Ld "q=asdf" $URL
+        curl -L "google.com?q=asdf" $URL
+
+      ##--data-urlencode
+      #encodes spaces and other signs for you:
+        curl -d               "name=I%20am%20Ciro" $URL
+        curl --data-urlencode "name=I am Ciro"     $URL
 
     curl -C - -O http://www.gnu.org/software/gettext/manual/gettext.html
     #resume download from where it stopped
 
-    curl -u ftpuser:ftppass -O ftp://ftp_server/public_html/xss.php
-    #curl downloads tfp
+    ##a-z range
+    
+      #example:
+        curl ftp://ftp.uk.debian.org/debian/pool/main/[a-z]/
 
-    curl -u ftpuser:ftppass -T myfile.txt ftp://ftp.testserver.com
-    curl -u ftpuser:ftppass -T "{file1,file2}" ftp://ftp.testserver.com
-    #curl uploads ftp
+    ##protocols
 
-    curl ftp://ftp.uk.debian.org/debian/pool/main/[a-z]/
-    #curl does a-z ranges
+      ##ftp
 
-    curl --mail-from user@gmail.com --mail-rcpt user@gmail.com smtp://gmail.com
-    #curl does mail
-    #end body with a single dot '.' on a line
+        #download:
+          curl -u ftpuser:ftppass -O ftp://ftp_server/public_html/xss.php
 
-    #dict!
-      curl dict://dict.org/show:db #dictionnaries
-      curl dict://dict.org/d:bash #general
-      curl dict://dict.org/d:bash:foldoc #computing
+        #upload:
+          curl -u ftpuser:ftppass -T myfile.txt ftp://ftp.testserver.com
+          curl -u ftpuser:ftppass -T "{file1,file2}" ftp://ftp.testserver.com
+
+      ##mail
+
+        #send mail:
+          echo $'sent by curl!\n.' | curl --mail-from user@gmail.com --mail-rcpt user@gmail.com smtp://gmail.com
+        #body ends with a single dot '.' on a line
+
+      ##dict
+        curl dict://dict.org/show:db #dictionnaries
+        curl dict://dict.org/d:bash #general
+        curl dict://dict.org/d:bash:foldoc #computing
 
     #-v , --trace $FILE, --trace-ascii $FILE: increasing levels of output showing
-    #-L : follows redirects
-    #-u user:pass : basic authentication. --digest and --ntlm exist too
-    # if no :pass, will ask for pass on command line.
-    #-x proxysever.test.com:3128 : proxy
-    #-X DELETE : make a DELETE request. defaults to GET, if no -data nor ftp.
-    #-z 21-Dec-11 : download iff it is modified after given time (sounds like crawlers!)
     
-    #-i
+      curl -Lv google.com
+
+    ##-L
+    
+      #follows redirects
+
+      #ommits redirect page if any:
+        curl google.pn
+        curl -L google.pn
+      #good example if you are not one of the 100 people who live in Pitcairn island.
+      #google redirects you to your country domain.
+      
+      #with ``-v`` you can see the full transaction:
+        curl -vL google.pn
+
+    ##-u user:pass
+
+      #does <#basic authentication>
+
+      #``--digest`` and ``--ntlm`` can be used together
+
+      #if no ``:pass``, will ask for pass on command line.
+
+      #examples:
+        curl          -u user:pass site.with.basic.auth.com
+        curl --digest -u user:pass site.with.digest.auth.com
+
+    ##-x
+    
+      #specifies proxy server
+      
+      #example:
+        curl -x proxysever.test.com:3128
+    
+    ##-z
+    
+      #download iff it is modified after given date time (sounds like crawlers!)
+    
+      #example:
+        curl -z 01-Jan-00 google.com
+      #I assure you, it has changed since then =).
+
+    ##-i
     
       #show received http header received. see: <#http>
     
-      curl -i google.com
+      #example:
+        curl -i google.com
 
-    #-I
+    ##-I
     
       #make http HEAD request. see: <#http>
       
       #implies ``-i`` of course
       
-      curl -I google.com
+      #example:
+        curl -I google.com
+
+    ##-X
+    
+      #make custom request
+      
+      #example:
+        curl -X $'GET / HTTP/1.1\n\n' google.com
   
   ##md5sum
   
     #generates/checks md5 checksums
-    
+  
     echo a > a
     echo b > b
     md5sum a b > f
@@ -6945,6 +7134,30 @@ int main(int argc, char** argv)
       
       #it is *very* difficult to make another file
       #with the same checksum
+  
+  ##base64
+    
+    #-d to decode:
+      assert [ "`echo abc | base64 | base64 -d`" = abc ]
+    
+    #to understand see wiki: <http://en.wikipedia.org/wiki/Base64#Examples>
+    
+    ##application
+    
+      #transforms binary data which may contain non printable bytes like 0
+      #into data that contain only printed bytes.
+      
+      #this makes it easier for humans input the data
+      
+      #tradeoff: data gets larger
+    
+      ##why 64?
+      
+        #there are 64 printable chars, but not 128.
+      
+      ##alternative
+      
+        #use base 16. Much easier for humans, but data gets much larger.
   
   ##ifup
   
@@ -7128,6 +7341,16 @@ int main(int argc, char** argv)
     sudo aptitude install -y samba
 
   ##browser
+
+    ##firefox
+    
+      #comes by default
+      
+      #search with default engine:
+        firefox -search asdf
+
+      #starts with disabled extensions in case they are causing a crash:
+        firefox -safe-mode
   
     ##w3m
     
@@ -7190,17 +7413,27 @@ int main(int argc, char** argv)
         #before doing anything, make this test dir:
           mkdir test
           cd test
-          echo '<html><body><h1>test/index.html</h1></body></html>' > index.html
-          echo '<html><body><h1>test/a.html</h1></body></html>' > a.html
+          echo '<html><body><h1>index.html</h1></body></html>' > index.html
+          echo '<html><body><h1>a.html</h1></body></html>' > a.html
+
           mkdir a
           cd a
-          echo '<html><body><h1>test/a/index.html</h1></body></html>' > index.html
-          echo '<html><body><h1>test/a/a.html</h1></body></html>' > a.html
+          echo '<html><body><h1>a/index.html</h1></body></html>' > index.html
+          echo '<html><body><h1>a/a.html</h1></body></html>' > a.html
           cd ..
+
           mkdir auth
           cd auth
-          echo '<html><body><h1>test/auth/index.html</h1></body></html>' > index.html
-          echo '<html><body><h1>test/auth/a.html</h1></body></html>' > a.html
+          echo '<html><body><h1>auth/index.html</h1></body></html>' > index.html
+          echo '<html><body><h1>auth/a.html</h1></body></html>' > a.html
+          cd ..
+
+          mkdir noindex
+          cd noindex
+          echo '<html><body><h1>noindex/a.html</h1></body></html>' > a.html
+          echo '<html><body><h1>noindex/b.html</h1></body></html>' > b.html
+          cd ..
+
           cd ../..
         
         #finally move our test dir to the serve root:
@@ -7214,7 +7447,7 @@ int main(int argc, char** argv)
         #usually this user is a different user from ``root`` for sercurity.
         
       ##default operation
-      
+
         #"web subdirs" map directly to local dirs
         
         #ubuntu default is currently ``/var/www/``
@@ -7224,8 +7457,15 @@ int main(int argc, char** argv)
 
         #going to a dir on the web browser opens the contained index.html file by default:
           firefox localhost/test/
+        #this can be configured with the <#DirectoryIndex> directive
         
+        #if no index is contained, apache generates an html index:
+          firefox localhost/test/noindex/
+
       ##conf file
+
+        #configurations only apply when you restart apache:
+          sudo service apache2 restart
         
         #move our test dir to the serve root:
           sudo mv test /var/www/
@@ -7233,11 +7473,10 @@ int main(int argc, char** argv)
         #ubuntu default location:
           sudo vim /etc/apache2/apache2.conf
 
-        #configurations only work if you restart apache:
-          sudo service apache2 restart
-
         #set apache serve root at given dir:
-          DocumentRoot "/var/www"
+          DocumentRoot "/var/www/root"
+        #for this ot work, make sure ``DocumentRoot`` is not set anywhere else.
+        #(by default it was included in the include files, ``grep -r DocumenRoot`` shows where)
 
         #listen those ports on all interfaces (for example, first wireless card, first ethernet card, etc...):
           Listen 80
@@ -7261,9 +7500,59 @@ int main(int argc, char** argv)
           Deny from 10.252.46.165 
           Deny from host.example.com
 
+        ##DirectoryIndex
+
+          #what to do when user acesses a directory location:
+            DirectoryIndex index.html index.php /cgi-bin/index.pl 
+
+            #SAME:
+            DirectoryIndex index.html
+            DirectoryIndex index.php
+            DirectoryIndex /cgi-bin/index.pl 
+          #with this, for the entire site, first looks in order for:
+            #- ``index.html``
+            #- ``index.php``
+            #- ``/cgi-bin/index.pl``
+          #note how you can specify a script outside of that dir
+
+          #in case none of those actions match, the default is for
+          #<#mod_autoindex> to generate an html directory listing
+
+          #for specific dirs, use the <#Directory> directive
+
+          ##mod_autoindex
+
+            #generates automatic html listings for dirs
+          
+            #turn off automatic listings for a given dir:
+              <Directory /var/www/root/test/dontlist>
+                Options -Indexes
+              </Directory>
+            #will simply give a not found
+
+            #ignore certain files in the listing:
+              IndexIgnore tmp* ..
+
+            #add headers/footers before/after index:
+              HeaderName header.html
+              ReadmeName footer.html
+
+            #same header/footer for every dir
+              HeaderName header.html
+              HeaderName /site/header.html
+              ReadmeName /site/footer.html
+
+            #use predefined styles:
+              IndexOptions FancyIndexing HTMLTable
+
+            #use given css style:
+              IndexStyleSheet /css/autoindex.css
+
       ##sections
       
-        <http://httpd.apache.org/docs/2.2/sections.html#mergin>
+        ##sources
+          
+          #official manual: <http://httpd.apache.org/docs/2.2/sections.html#mergin>
       
         ##Files
 
@@ -7326,15 +7615,18 @@ int main(int argc, char** argv)
           #man: <http://httpd.apache.org/docs/2.2/mod/mod_alias.html>
         
         #create virtual directory:
-          Alias /testalias /var/www/test
 
-          firefox localhost/testalias &
+          Alias /test/alias /var/www/test
+
+          firefox localhost/test/alias &
 
         #also works for subdirs:
-          firefox localhost/testalias/a.html &
-          firefox localhost/testalias/a      &
+
+          firefox localhost/test/alias/a.html &
+          firefox localhost/test/alias/a      &
 
         #also works for files:
+
           Alias /testfile/ /var/www/test/index.html
 
           firefox localhost/testfile &
@@ -7344,35 +7636,35 @@ int main(int argc, char** argv)
           cd
           echo "TEST" > index.html
 
-          Alias /test-alias-out-root/ /home/ciro/
+          Alias /test/alias-out-root/ /home/ciro/
 
-          firefox test-alias-out-root
+          firefox localhost/test/alias-out-root
         
         ##first match takes precedence
 
-            Alias /testalias/a /var/www/test
-            Alias /testalias   /var/www/test
+            Alias /test/alias/a /var/www/test
+            Alias /test/alias   /var/www/test
 
-            firefox localhost/testalias/  &
+            firefox localhost/test/alias/  &
               #test/index.html
-            firefox localhost/testalias/a &
+            firefox localhost/test/alias/a &
               #test/a/index.html
           
           #BAD: both go to test/index.html:
 
-            Alias /testalias   /var/www/test
-            Alias /testalias/a /var/www/test
+            Alias /test/alias   /var/www/test
+            Alias /test/alias/a /var/www/test
 
-            firefox localhost/testalias/  &
-            firefox localhost/testalias/a &
+            firefox localhost/test/alias/  &
+            firefox localhost/test/alias/a &
   
         ##Redirect
         
           #precedence over aliases
 
-            Alias /testredir /test
-            Redirect /testredir http://www.google.com
-            firefox localhost/testredir &
+            Alias /test/redir /test
+            Redirect /test/redir http://www.google.com
+            firefox localhost/test/redir &
               #goes to google
       
       ##http
@@ -7380,6 +7672,34 @@ int main(int argc, char** argv)
         #best way to start: <http://www.jmarshall.com/easy/http/#structure>
         
         ##http authentication
+          
+          ##sources
+          
+            #goode one: <http://www.httpwatch.com/httpgallery/authentication/>
+            #comparison to form auth, nice diagrams: <http://docs.oracle.com/javaee/1.4/tutorial/doc/Security5.html>
+        
+          ##form authentication
+          
+            #form authentication is the other form athentication
+            
+            ##sources
+            
+              #great post: <http://stackoverflow.com/questions/549/the-definitive-guide-to-forms-based-website-authentication>
+          
+            ##downsides of http
+            
+              #parameters are left to the browser. So for example:
+              #- the appearance of the login page
+              #- the time for which the user stays authenticated
+                #(time for which browser keeps resending user:pass automatically)
+              #therefore, you cannot cusomize them
+              #and users will get different interfaces on different browsers, bad user interface consistency
+            
+            ##updside of http
+            
+              #simple.
+            
+            #for those reasons, form authentication is used on most large sites today.
         
           ##401
 
@@ -7390,43 +7710,116 @@ int main(int argc, char** argv)
 
             #I get for example:
               WWW-Authenticate: Basic realm="AuthName value"
-            #so the type is basic, and ``AuthName value``
-            #is the value of the ``AuthName`` directive in my apache file
-            #which is only descriptive of the login.
+            #so the type is Basic
+            #
+            #``AuthName value`` is a any descriptive string
+            #set by the server operators.
+            #in Apache it is given by the ``AuthName`` directive
         
             ##401 vs 403
             
               #<http://stackoverflow.com/questions/3297048/403-forbidden-vs-401-unauthorized-http-responses>
-
-      ##cgi
-      
-        ##requires
           
-          #<#http>
-      
-        #**cgi** is a protocol of how a server communicates with a cgi script
-        
-        #a cgi script is simply a script/executable that outputs the part of http response
-        
-        #this part includes some last header lines which the server delegates to it,
-        #notably ``content type``, followed by "\n\n" followed by the entire body.
-        
-        #the server passes information to the script through environment variables only.
-        
-        ##fastcgi
-        
-          #a faster version of cgi that does not start a new process pre request
-
-          #implementations: mod_fastcgi vs mod_fcgid
-          #<http://superuser.com/questions/228173/whats-the-difference-between-mod-fastcgi-and-mod-fcgid>
+          ##basic authentication
           
-          #install mod_fastcgi:
-            sudo aptitude install -y libapache2-mod-fastcgi
+            #authentication is sent on the header *unencrypted*!
 
-        ##ScriptAlias
+            #example:
+              curl -vu u:p google.com
 
-          #the script:
-            echo '#!/usr/bin/perl
+            #you see the header line:
+              Authorization: Basic dTpw
+              #              ^^^^^ ^^^^
+              #              1     2
+            #1: auth type
+            #2: base 64 of u:p. not encryption!!
+            
+            #just checking:
+              assert [ "`echo dTpw | base64 -d`" = "u:p" ]
+
+            ##url convention
+            
+              #many programs accept urls strings with user/pass included:
+                curl -v u:p@google.com
+
+              #this is however just a convention, since programs that accept it
+              #parse the string to extract the ``u:p`` part, and then send it
+              #on the header.
+
+          ##digest authentication
+          
+            #pretty cool concept
+
+            #see: <http://en.wikipedia.org/wiki/Digest_access_authentication
+          
+            #authentication is sent on the header md5 hashed
+              curl --digest -vu u:p google.com
+            
+            ##why it works
+
+              #data is appended to the authentication with ``:`` before hashing:
+              #- domain (www.google.com)
+              #- method (GET, POST, etc.)
+              #- nonce
+                #- nonce is sent to client from server.
+                #- *nonces can only be used once per client*!!
+                #- nonce prevents requests from being repeated with an old captured hashed string!
+                #- also increases the difficulty of cracking each user/pass
+              
+              #this way, the unknown user and pass get mixed up with the extra data
+              #in the hash and it is very hard to separate them.
+              #and the nonce makes sure requests cannot be remade by resending the hash.
+            
+            #merits:
+            #- simples than a full ssl to authenticate
+          
+          ##ntml
+          
+            #safer than digest: replay attacks impossible.
+            
+            #requires server state, so http 1.1 only.
+            
+            #little current support/usage.
+        
+        ##https
+        
+          #assymetric key encryption between server and client.
+          
+          #encrypts both body and headers
+          
+          #downside: encrypt/decrypt costs time.
+          
+          #main usage: security critical operations such as authentication or payments.
+
+        ##cgi
+        
+          ##requires
+            
+            #<#http>
+        
+          #**cgi** is a protocol of how a server communicates with a cgi script
+          
+          #a cgi script is simply a script/executable that outputs the part of http response
+          
+          #this part includes some last header lines which the server delegates to it,
+          #notably ``content type``, followed by "\n\n" followed by the entire body.
+          
+          #the server passes information to the script through environment variables only.
+          
+          ##fastcgi
+          
+            #a faster version of cgi that does not start a new process pre request
+
+            #implementations: mod_fastcgi vs mod_fcgid
+            #<http://superuser.com/questions/228173/whats-the-difference-between-mod-fastcgi-and-mod-fcgid>
+            
+            #install mod_fastcgi:
+              sudo aptitude install -y libapache2-mod-fastcgi
+
+          ##ScriptAlias
+
+            #the script:
+              echo '#!/usr/bin/perl
 print "Content-type: text/html";
   #first output line must be "Content-type: text/html\n\n"
 #print "Status: 500  Internal Server Error"
@@ -7437,46 +7830,67 @@ print "<html><body><h1>environment</h1>"
 }
 print "</body></html>"
 ' > sudo tee /usr/lib/cgi-bin/test.pl
-            sudo chmod +x /usr/lib/cgi-bin/test.pl
-          
-          ##status 
-          
-            optional, if not given suposes ``200 OK``.
+              sudo chmod +x /usr/lib/cgi-bin/test.pl
+            
+            ##status 
+            
+              #optional, if not given suposes ``200 OK``.
 
-            if given as error, server will simply give the error and no data.
+              #if given as error, server will simply give the error and no data.
 
-            uncomment the status line on the test script to see what happens.
+              #uncomment the status line on the test script to see what happens.
+          
+            ##alias to dir
+            
+              #cgi scripts must be in the dir specified by script alias:
+
+                ScriptAlias /mycgi /usr/lib/cgi-bin
+
+              #same as:
+
+                Alias /mycgi /usr/lib/cgi-bin
+                <Location /mycti >
+                  #tell server that all files inside this dir are cgi scripts:
+                    SetHandler cgi-script
+                  #tell server that all .pl and .py files in dire are cgi scripts:
+                    AddHandler cgi-script .cgi .pl 
+                  #permit cgi execution for scripts in this dir:
+                    Options +ExecCGI
+                </Location> 
+
+              #run it:
+
+                firefox localhost/mycgi/test.pl
+
+              #note how ``ScriptAlias`` created a virtual directory
+              #not present in the actual filesystem.
+
+              #can also make individual script:
+
+                ScriptAlias /test/cgi-file /usr/lib/cgi-bin/test.pl
+
+            ##alias to script
+
+              #all subdirs of testpl are generated by the given test.pl:
+                
+                ScriptAlias /test/testpl /usr/lib/cgi-bin/test.pl
+
+                firefox localhost/testpl/       &
+                firefox localhost/testpl/a.html &
+
+          ##action
+
+            #run script whenever an html file is accessed:
+
+              Action test /cgi-bin/test.pl
+              AddHandler test .html 
+
+            #TODO: i get ``Action`` directive undefined... solve this.
+            
+            #try it:
+              firefox localhost/index.html
+            #this is how php does it!
         
-          ##alias to dir
-          
-            #cgi scripts must be in the dir specified by script alias:
-              ScriptAlias /mycgi/ /usr/lib/cgi-bin/
-
-            #run it:
-              firefox localhost/mycgi/test.pl
-            #note how ``ScriptAlias`` created a virtual directory
-            #not present in the actual filesystem.
-
-          ##alias to script
-
-            #all subdirs fall on script:
-              
-              ScriptAlias /mycgi/ /usr/lib/cgi-bin/test.pl
-
-              firefox localhost/mycgi/ &
-              firefox localhost/mycgi/a.html &
-
-        ##action
-
-          #run script whenever an html file is accessed:
-            Action test /cgi-bin/test.pl
-            AddHandler test .html 
-          #TODO: i get ``Action`` directive undefined... solve this.
-          
-          #try it:
-            firefox localhost/index.html
-          #this is how php does it!
-      
       ##modules
       
         #apache plugins are called modules
@@ -7513,76 +7927,77 @@ print "</body></html>"
         #handlers can be defined in modules
       
       ##authentication
-      
-        ##prerequisites
-
-          #<#http authentication>
 
         #you must chose *both* one <#method> and one <#provider>!
 
-      ##methods
+        ##methods
       
-        #what algorithm is used to store the passwords more or less safely
+          ##prerequisites
+
+            #<#http authentication>
         
-        ##basic authentication
-        
-          #provided by ``mod_auth_basic``
+          #what algorithm is used to store the passwords more or less safely
           
-          #user and pass are sent on the url plain as:
-            curl https://u:p@localhost/test/auth
-          #so make sure you use https! (it encodes the request too)
+          ##basic authentication
+          
+            #provided by ``mod_auth_basic``
         
-          #use <#digest> instead, safer.
-      
-          #apache conf:
-            LoadModule auth_basic_module /usr/lib/apache2/modules/mod_auth_basic.so
+            #apache conf:
+              LoadModule auth_basic_module /usr/lib/apache2/modules/mod_auth_basic.so
+              <Directory "/var/www/test/auth/">
+                  AuthType Basic
+                  AuthName "private dir"
+                  AuthBasicProvider file
+                  AuthUserFile /var/.htpasswd
+                  Require valid-user
+                  AllowOverride None
+              </Directory>
+
+          ##digest
+
+            #provided by ``mod_auth_digest``
+          
+            #mod_auth_digest is better than mod_auth_basic, so use digest!
+
+            LoadModule auth_digest_module /usr/lib/apache2/modules/mod_auth_digest.so
             <Directory "/var/www/test/auth/">
-                AuthType Basic
+                AuthType Digest
                 AuthName "private dir"
-                AuthBasicProvider file
+                AuthDigestProvider file
                 AuthUserFile /var/.htpasswd
                 Require valid-user
                 AllowOverride None
             </Directory>
 
-        ##digest
-
-          #provided by ``mod_auth_digest``
+        ##provider
         
-          #mod_auth_digest is better than mod_auth_basic, so use digest!
-
-          LoadModule auth_digest_module /usr/lib/apache2/modules/mod_auth_digest.so
-          <Directory "/var/www/test/auth/">
-              AuthType Digest
-              AuthName "private dir"
-              AuthDigestProvider file
-              AuthUserFile /var/.htpasswd
-              Require valid-user
-              AllowOverride None
-          </Directory>
-
-      ##provider
-      
-        #what type of storage is used for user password pairs
-        
-        ##file
-        
-          #a plain text file
+          #what type of storage is used for user password pairs
           
-          #safer to put outside serve root
+          #is specified by the ``AuthBasicProvider`` directive.
+          
+          ##file
+          
+            #a plain text file
+            
+            #safer to put outside serve root
+            
+            ##htpasswd
+            
+              #generate .htpasswd files
 
-          #generate user/pass pairs:
-            sudo htpasswd -bc /var/.htpasswd u p
-          #*-c: creates new file, destroying old one! necessary first time!*
-          #-b: use pass from command line. *less safe!!*
-            sudo htpasswd -b /var/.htpasswd u2 p
+              #generate user/pass pairs:
+                sudo htpasswd -bc /var/www/.htpasswd u p
+              #*-c: creates new file, destroying old one! necessary first time!*
+              #-b: use pass from command line. *less safe!!*
+                sudo htpasswd -b /var/www/.htpasswd u2 p
 
-          #lets take a look at the file:
-            sudo cat /var/.htpasswd
+              #lets take a look at the file:
+                sudo cat /var/www/.htpasswd
+              #note that the passwords are base64 enoded. See <#base64>
 
-        ##dbd
-        
-          #sql database
+          ##dbd
+          
+            #sql database
     
       ##try it out!!
 
@@ -7699,6 +8114,79 @@ print "</body></html>"
         #TODO service restart vs restart?
 
 ##interpreters
+
+  ##shebang
+
+    #she: name for '#', bang: name for '!'
+
+    #tells linux which interpreter to use to run the program
+
+    #*must* be first char of first line
+
+    #if this were a phython script for example,
+    #we'd use ``/bin/python``
+    
+    #in older linux versions, interpreter must be a compiled binary.
+    #in newer linux versions, it can an interpreted script also.
+
+    ##what it does exactly
+    
+      #<http://www.in-ulm.de/~mascheck/various/shebang/> at section "Test results from various systems"
+
+        echo "#!/progs/prog a b" > /scripts/script
+        chmod +x /scripts/script
+        ./scripts/script
+      
+      #the following happens:
+      #- prog runs
+      #- its command line arguments are:
+        #- 0: ``/progs/prog``
+        #- 1: ``a b``
+        #- 2: ``/scripts/cript``
+      
+      #how this works for python:
+      #- ``#!/bin/python`` runs ``/bin/python /scripts/script``
+        #which for the python interpreter means: execute ``/scripts/script``
+      #- python comments start with ``#``. Therefore: *the shebang line is ignored by ``/bin/python``.
+    
+        #Therefore: All interpreted languages should have ``#`` as a comment character!
+
+    ##env
+
+      #you could use ``!#/bin/bash`` instead
+      #but if you go on a system where bash is located
+      #at ``/usr/bin/bash``, your script breaks
+
+      #with env, path is used instead
+      #so if ``bash`` is in the users $PATH,
+      #and /usr/bin/env exists 
+      #it works
+
+      ##why it works
+
+        #``env cmd`` simply executes a program in current environment
+
+        #in our case, the bash program
+
+      #the advantage of this is that:
+        #- env is more often located in ``/usr/bin`` than bash in ``/usr`` acros *NIX TODO check
+        #- all you interpreters
+
+    ##why not from extension
+
+      #in windows, interpreter is determined by extension
+
+      ##advantage os extension
+      
+        #easier to spot program type.
+
+      ##disadvantage os extension
+
+        #you need an extra EXT env var that says: you can execute a.py as py, a.sh as a
+
+        #it is important to execute a.sh as ``a`` because if someday you decide that
+        #it sould be written in python istead, you don't break all dependant programs
+        #by using ``a.py``
 
   ##bc
 
@@ -7907,6 +8395,13 @@ print "</body></html>"
         
       #install:
         sudo aptitude install -y python-pip
+        sudo pip install --upgrade pip 
+
+      #install virtualenv:
+        sudo pip install --upgrade virtualenv
+      #it allows you to run programs in a virtual envirnoment,
+      #that is, in which you control the versions of all dependencies
+      #such as modules.
 
       #search package:
         pip search $pkg
@@ -7916,6 +8411,11 @@ print "</body></html>"
 
       #list installed packages on stdout:
         pip freeze
+
+      #install packages listed on a pip file:
+        pip install -r requirements.pip
+      #a pip files is just a newline separated list of filenames
+      #the format is exactly the same generated by pip freeze
 
       #uninstall package:
         sudo pip uninstall $pkg
@@ -7956,10 +8456,16 @@ print "</body></html>"
           #not written in django unfortunatelly
 
           #dependency:
+
             sudo aptitude install -y python-mysqldb
 
           #install:
+
             sudo pip install trac
+
+          ##prerequesites
+
+            #Learn how to use <#apache> if you ever want to do serious deployment.
 
           ##create project
 
@@ -7977,8 +8483,8 @@ print "</body></html>"
 
               test
               mysql://user:pass@host:3306/dbname
-                                    ^^^^        
-                                    default mysql port
+              #                     ^^^^        
+              #                     default mysql port
 
             ##test server
               
@@ -8010,12 +8516,39 @@ print "</body></html>"
                   username=www-data
                   groupname=www-data
 
+              ##authentication
+
+                #trac uses <#http authentication> and cookies.
+
+                #you have to set http authentication to the (virtual) location ``/trac/projectname/login``.
+
+                #when an user hits this url authenticated, trac sends session cookies back to him.
+
+                #to create an admin user, choose the htpasswd user you want to promote to admin,
+                #and do:
+                  
+                  trac-admin "$project_dir" permission add "$admin_username" TRAC_ADMIN
+
+                #where ``"$admin_username"`` is exactly one of the htpasswd users.
+
               ##fastgci
               
                 #install fastgci. see: <#fastcgi>.
-                
-                #add to apache conf:
+
                   FastCgiConfig -initial-env TRAC_ENV_PARENT_DIR=/usr/share/trac/projects/
+
+                #TRAC_ENV_PARENT_DIR is the parent of all trac projects.
+
+              ##automated
+
+                #this section automates full project creation and setup
+
+                #it uses:
+                #- multiple projects on a dir
+                #- http basic authentication with cookies
+                #- shared authentication for all projects
+
+                #add to apache config:
 
                 #inputs:
                   root="/usr/share/trac/"
@@ -8029,21 +8562,27 @@ print "</body></html>"
                   project_name=test3
                   project_dir="$projects_dir/$project_name"
                   db=trac_$project_name
+                  passwd_file="$root/passwd"
+                  admin_username="admin"
 
                 #first time:
                   sudo mkdir -p "$projects_dir" "$deploy_dir"
                   sudo chown $u.$g "$project_dir" "$deploy_dir"
                   mysql -u root -p -e "CREATE USER $db_user@$db_host IDENTIFIED BY $db_pass;"
+                  htpasswd -c "$passwd_file" "$admin_username"
 
                 #new project:
                   mysql -u root -p -e "create database $db character set utf8; grant all on $db.* to $db_user@localhost;"
                   sudo -u $u mkdir -p "$project_dir"
                   echo -e "$project_name\nmysql://$db_user:$db_pass@localhost:3306/$db" | sudo -u $u trac-admin "$project_dir" initenv
+                  trac-admin "$project_dir" permission add "$admin_username" TRAC_ADMIN
 
                 #first time after first new project:
                   sudo -u $u trac-admin "$r" deploy "$d"
                   sudo mv "$deploy_dir"/* "$root"
                   sudo rmdir "$deploy_dir"
+
+      ##hosting
 
 ##x11
 

@@ -1,0 +1,43 @@
+#compiles all .md files in current directory into pdf and html.
+
+#can mkdir and output that dir.
+
+override CCC ?= pandoc
+override FLAGS ?= -s --toc #flags that apply to all kinds of output (html, pdf, etc)
+override IN_EXT ?= .md
+override OUT_DIR ?= _out/
+override RUN_NOEXT ?= a #basename without extension of file to view (with firefox, okular, etc.)
+
+SRCS := $(wildcard *$(IN_EXT))
+
+OUTEXT := .html
+OUT_HTML := $(patsubst %$(IN_EXT),$(OUT_DIR)%$(OUTEXT),$(SRCS))
+
+OUTEXT := .pdf
+OUT_PDF = $(patsubst %$(IN_EXT),$(OUT_DIR)%$(OUTEXT),$(SRCS))
+
+.PHONY: all mkdir html pdf firefox okular clean
+
+all: mkdir html pdf
+
+mkdir:
+	mkdir -p $(OUT_DIR)
+
+html: $(OUT_HTML)
+
+pdf: $(OUT_PDF)
+
+firefox: html
+	firefox "$(OUT_DIR)$(RUN_NOEXT).html"
+
+okular: pdf
+	okular "$(OUT_DIR)$(RUN_NOEXT).pdf"
+
+$(OUT_DIR)%.html: %.md
+	$(CCC) $(FLAGS) -o $@ $<
+
+$(OUT_DIR)%.pdf: %.md
+	$(CCC) $(FLAGS) -o $@ $<
+
+clean:
+	rm -r "$(OUT_DIR)"
