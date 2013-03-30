@@ -1,18 +1,8 @@
+thie repo contains my bash scripts and cheats.
+
 # featured
 
 scripts that you may like follow. the others may be useless.
-
-## cheat/linux
-
-my most important file.
-
-how to do install and use stuff on Ubuntu/Linux.
-
-I put every program I install there, and how to use it.
-
-For programs that are too large, they may get their own files in this repo like git.cheatsheet.
-
-Look for the cheatsheet extension.
 
 ## find-music-make-m3u
   
@@ -38,7 +28,7 @@ becomes:
 
 where the all.m3u contains all music files under its parent dir.
 
-##why not to use bash!
+#why not to use bash!
 
 bash is evil:
 

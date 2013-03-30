@@ -8,7 +8,7 @@
 
   #can escape comment:
     echo \#
-  #prints '#'
+   echo $1 #prints '#'
 
 #sources
 
@@ -19,7 +19,7 @@
   #full list:
     #<http://pubs.opengroup.org/onlinepubs/9699919799/>
 
-set -u # error on undefined variable1&>2
+set -u # error on undefined variable
 set -e # stop execution if one command return != 0
 
 function init_test {
@@ -336,44 +336,68 @@ echo "$#"' > a
 
     #simple regex like expanded before command is evaluated
 
-    echo *
-      #files cur dir
-    echo '*'
-      #literal
-    echo a*
-      #start with a
-    echo ?a*
-      #second letter a
-      #* matches ""
-    echo [ab]*
-      #start with a or b
-    echo [a-c]*
-      #start with a, b or c
-    
-    #combos:
+    #nonhidden files cur dir:
 
-      for f in *; do echo "$f"; done
-        #only non hidden
-      for f in .*; do echo "$f"; done
-        #only hidden
-      for f in * .*; do echo "$f"; done
-        #both hidden and not hidden
+      echo *
+
+    #hidden files cur dir:
+
+      echo .*
+
+    #escape:
+
+      echo '*'
+      echo "*"
+
+    #start with a:
+
+      echo a*
+
+    #second letter a:
+
+      echo ?a*
+
+    #* matches "".
+
+    #start with a or b:
+
+      echo [ab]*
+
+    #start with a, b or c:
+
+      echo [a-c]*
+
+    #works with vars:
+
+      a=b
+      "$a"*
+
+    #shows all the files that start with b
+
+    #only nonhidden:
+    
+    ##combos
+
+      #for loop in cur dir:
+
+        for f in .* *; do echo "$f"; done
 
     ##extended globbing
 
       #glob with ERE-like expressions instead of BREs
 
-      shopt -s extglob
-        #extended globbing
+      #activate:
 
-        #glob              ERE mnemonic
-        #?(pattern-list)   (...|...)?
-        #*(pattern-list)   (...|...)*
-        #+(pattern-list)   (...|...)+
-        #@(pattern-list)   (...|...)    [@ not a RE syntax]
-        #!(pattern-list)   "!" used as for negative assertions in RE syntax
+        shopt -s extglob
 
-  #tilde expansion
+      #glob              ERE mnemonic
+      #?(pattern-list)   (...|...)?
+      #*(pattern-list)   (...|...)*
+      #+(pattern-list)   (...|...)+
+      #@(pattern-list)   (...|...)    [@ not a RE syntax]
+      #!(pattern-list)   "!" used as for negative assertions in RE syntax
+
+  ##tilde expansion
 
     assert [ "`sudo -u a echo ~`"  = /home/a ]
     assert [ "`echo ~a`" = /home/a ]
@@ -384,7 +408,7 @@ echo "$#"' > a
 
     #{}
 
-    #*very useful*
+    #quite useful
 
     ##alternatives
 
@@ -658,10 +682,10 @@ echo string
 
   #[[ ]] extended logical test
 
-#functions
+##functions
 
   function f {
-    echo f $1
+    echo $1
   }
 
   #f
@@ -670,6 +694,12 @@ echo string
     #f a
   f a b
     #f a
+
+  #ERROR:
+
+    #function f { echo $1 }
+
+  #must have newlines.
 
 #redirection
 
