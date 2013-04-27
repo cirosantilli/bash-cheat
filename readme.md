@@ -39,7 +39,9 @@ bash is evil:
 - lacks good libraries
 - slow
 
-bash has 2 good things:
+bash has the following good things:
 
-- pipes
-- calling methods
+- process management (pipes, stdout, jobs)
+- file io (`echo a > b`)
+- history
+- tab completion (partially circunvented by other languages editor autocompletion)

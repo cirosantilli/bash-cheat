@@ -1,1180 +1,1255 @@
 #!/usr/bin/env bash
 
-#no complex programs shown: only language "basics"
+#bash cheatsheet
 
 ##comments
 
-    echo #
+            echo #
 
-  #can escape comment:
-    echo \#
-   echo $1 #prints '#'
+    #can escape comment:
+            echo \#
+          echo $1 #prints '#'
 
 #sources
 
-  #<http://tldp.org/LDP/abs/html/abs-guide.html>
+    #<http://tldp.org/LDP/abs/html/abs-guide.html>
 
 # bash shell follows POSIX standards
-  #this includes common commands such as ``ls``, ``cd`` and many more
-  #full list:
-    #<http://pubs.opengroup.org/onlinepubs/9699919799/>
+    #this includes common commands such as ``ls``, ``cd`` and many more
+    #full list:
+        #<http://pubs.opengroup.org/onlinepubs/9699919799/>
 
 set -u # error on undefined variable
 set -e # stop execution if one command return != 0
 
 function init_test {
-  wd="`pwd`"
-  tmp="`mktemp -d`"
-  cd $tmp
+        wd="`pwd`"
+        tmp="`mktemp -d`"
+        cd $tmp
 }
 
 function cleanup_test {
-  cd "$wd"
-  rm -r "$tmp"
+        cd "$wd"
+        rm -r "$tmp"
 }
 
 #execute outside path
-  
-  echo "echo a" > a
-  chmod 777 a
-  ./a
-    #a
-  `realpath a`
-    #a
+    
+        echo "echo a" > a
+        chmod 777 a
+        ./a
+        #a
+        `realpath a`
+        #a
 
 ##variables
 
-  a="abc"
-  assert [ $a = abc ]
+        a="abc"
+        assert [ $a = abc ]
 
-  a="abc"
-  assert [ "0${a}1" = "0abc1" ]
+        a="abc"
+        assert [ "0${a}1" = "0abc1" ]
 
-  ##you can use vars as commands
+    ##you can use vars as commands
 
-    a="echo b"
-    $a
-      #b
-    #assert [ `$a` = b ]
-    #assert [ $(a) = b ]
-    #assert [ "$a"   = "echo b" ]
+            a="echo b"
+            $a
+            #b
+        #assert [ `$a` = b ]
+        #assert [ $(a) = b ]
+        #assert [ "$a"   = "echo b" ]
 
-  ##vars are not expand recursivelly
-  
-    b=c
-    a='$b'
-    assert [ "$a" = '$b' ]
-    a="$b"
-    assert [ "$a" = c ]
-
-  ##unset
-
-    a=b
-    unset a
-    assert [ -z "`echo $a`" ]
-
-  ##readonly
-
-    readon=b
-    readonly readon
-    #readon=c
-      #error: a is readonly
-
-    #TODO how to undo readonly?
-
-  ##special vars
-
-    ##$0
-
-      #path of cur scrip relative to cd
-
-      echo '#!/bin/bash
-  echo "$0"' > a
-      chmod +x a
-      ./a
-        #./a
-
-      DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        #for the full path
-
-    ##$1
-
-      echo '#!/bin/bash
-  echo "$1"
-  echo "$2"' > a
-    ./a a b
-      #a
-      #b
-
-    ##$#
-
-      #number of cli args
-
-      echo '#!/bin/bash
-echo "$#"' > a
-      ./a a b
-        #2
-      ./a a b c d
-        #4
-
-      #usage
-
-        #safe opt arg getting with shift
-
-        if [ $# -gt 0 ]; then
-          arg1="$1"
-            #argument 1
-          shift
-            #destroy arg 1
-        fi
-
-        if [ $# -gt 0 ]; then
-          arg2="$1"
-            #argument 2
-          shift
-            #destroy arg 2
-        fi
-
-    ##$*
-
-      DJVU_PATH="$*"
-        #List of all arguments separated by SPACES.
-        #Each argument is NOT quoted individually. 
-
-    ##$@
-
-      DJVU_PATH="$@"
-        #List of all arguments separated by SPACES.
-        #Each argument IS quoted individually.
-
-    #$?
+    ##vars are not expand recursivelly
     
-      #exit status of last program run
+            b=c
+            a='$b'
+            assert [ "$a" = '$b' ]
+            a="$b"
+            assert [ "$a" = c ]
 
-      if false; then :; fi
-      echo $?
-        #0
-      if true; then :; fi
-      echo $?
-        #1
+    ##unset
 
-    ##$$
+            a=b
+            unset a
+            assert [ -z "`echo $a`" ]
 
-      current_process="$$"
-        #returns current process name. Useful to create unique temporary files that have a recognizable component.
+    ##readonly
 
-      TFILE="/tmp/$(basename $0).$$.tmp"
-        #APPLICATION
-        #create temp filename
+            readon=b
+            readonly readon
+        #readon=c
+            #error: a is readonly
 
-    ##PPID
+        #TODO how to undo readonly?
 
-      echo $PPID
-        #id of parent process
-        #linux processes contain this info
+    ##special vars
 
-    ##LINENO
+        ##$0
 
-      #cur line number!
+            #path of cur scrip relative to cd
 
-      echo $LINENO
+                echo '#!/bin/bash
+        echo "$0"' > a
+                chmod +x a
+                ./a
+                #./a
+
+                DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+                #for the full path
+
+        ##$1
+
+                echo '#!/bin/bash
+        echo "$1"
+        echo "$2"' > a
+            ./a a b
+            #a
+            #b
+
+        ##$#
+
+            #number of cli args
+
+                echo '#!/bin/bash
+echo "$#"' > a
+                ./a a b
+                #2
+                ./a a b c d
+                #4
+
+            #usage
+
+                #safe opt arg getting with shift
+
+                    if [ $# -gt 0 ]; then
+                        arg1="$1"
+                        #argument 1
+                        shift
+                        #destroy arg 1
+                    fi
+
+                    if [ $# -gt 0 ]; then
+                        arg2="$1"
+                        #argument 2
+                        shift
+                        #destroy arg 2
+                    fi
+
+        ##$*
+
+                DJVU_PATH="$*"
+                #List of all arguments separated by SPACES.
+                #Each argument is NOT quoted individually. 
+
+        ##$@
+
+                DJVU_PATH="$@"
+                #List of all arguments separated by SPACES.
+                #Each argument IS quoted individually.
+
+        #$?
+        
+            #exit status of last program run
+
+                if false; then :; fi
+                echo $?
+                #0
+                if true; then :; fi
+                echo $?
+                #1
+
+        ##$$
+
+                current_process="$$"
+                #returns current process name. Useful to create unique temporary files that have a recognizable component.
+
+                TFILE="/tmp/$(basename $0).$$.tmp"
+                #APPLICATION
+                #create temp filename
+
+        ##PPID
+
+                echo $PPID
+                #id of parent process
+                #linux processes contain this info
+
+        ##LINENO
+
+            #cur line number!
+
+                echo $LINENO
 
 ##quoting
 
-  ##double
+    ##double
 
-    ##space to var
+        ##space to var
 
-      a="a b"
-      assert [ "$a" = "a b" ]
+                a="a b"
+                assert [ "$a" = "a b" ]
 
-    ##dollar interpreted
+        ##dollar interpreted
 
-      a=b
-      b="$a"
-      assert [ $b = b ]
+                a=b
+                b="$a"
+                assert [ $b = b ]
 
-    ##dollar backlash escaped
+        ##dollar backlash escaped
 
-      a=b
-      assert [ "\$a" = '$a' ]
+                a=b
+                assert [ "\$a" = '$a' ]
 
-    ##single dollar ok
+        ##single dollar ok
 
-      assert [ "\$" = "$" ]
+                assert [ "\$" = "$" ]
 
-    ##backslash not interpreted
+        ##backslash not interpreted
 
-      echo "a\nb"
-        #ab
+                echo "a\nb"
+                #ab
 
-  ##single
+    ##single
 
-    #dollar not interpreted
-    a=b
-    b='$a'
-    assert [ "$b" = '$a' ]
+        #dollar not interpreted:
 
-  ##dollar single
+            a=b
+            b='$a'
+            assert [ "$b" = '$a' ]
 
-    #interprets backslash
+    ##dollar single
 
-    #does not interpret dollars
+        #interprets backslash
 
-    #backquote assumed
+        #does not interpret dollars
 
-    a=$'a\nb'
-    assert [ "$a" = `echo -e "a\nb"` ]
-      #not "$'a\nb'" = ...
+        #backquote assumed
 
-    #cannot be quoted
+            a=$'a\nb'
+            assert [ "$a" = `echo -e "a\nb"` ]
+            #not "$'a\nb'" = ...
 
-    assert [ "$'a'" = "'\$a'" ]
+        #cannot be quoted
 
-  ##back
+            assert [ "$'a'" = "'\$a'" ]
 
-    #same as <#eval expression>
-    assert [ `echo a` = a ]
+    ##backquote
 
-    #external double quote not assumed
-    assert [ ! `echoa "a b"`  = "a b" ]
-    assert [  "`echoa "a b"`" = "a b" ]
+        #same as <#eval expression>
 
-    #double quote escape not needed
-      assert [ "`echoa "a b"`" = "a b" ]
-    #not:
-      #assert [ "`echoa \"a b\"`" = "a b" ]
+            assert [ `echo a` = a ]
 
-#parenthesis
+        #external double quote not assumed.
 
-  #spawn subshell
+            assert [ ! `echo "a b"`  = "a b" ]
+            assert [ "`echo "a b"`" = "a b" ]
 
-  cd; pwd
-    #changes current dir
-    #prints previous dir
-  ( cd; pwd )
-    #does not  change current dir
-    #but still prints home
+        #both work:
 
-  #equivalent to
-    bash -c 'cd; pwd'
-  #EXCEPT you don't have to do escaping or quoting!
+            assert [ "`echo "a b"`" = "a b" ]
+            assert [ "`echo \"a b\"`" = "a b" ]
+
+##parenthesis
+
+    #spawn subshell
+
+        cd; pwd
+        #changes current dir
+        #prints previous dir
+        ( cd; pwd )
+        #does not  change current dir
+        #but still prints home
+
+    #equivalent to
+            bash -c 'cd; pwd'
+    #EXCEPT you don't have to do escaping or quoting!
 
 ##evaluate expression
 
-  #$()
+    #$()
 
-  assert [ "$(echo abc)" = "abc" ]
-  assert [ "`echo abc`"  = "abc" ]
+        assert [ "$(echo abc)" = "abc" ]
+        assert [ "`echo abc`"  = "abc" ]
 
 ##eval
 
-  #exec string in current bash
-  eval "a=b"
-  assert [ $a = b ]
+    #exec string in current bash
+        eval "a=b"
+        assert [ $a = b ]
 
-  #concatenates arguments, space separated:
-  assert [ `eval echo a` = a ]
+    #concatenates arguments, space separated:
+        assert [ `eval echo a` = a ]
 
-  ##applications
+    ##applications
 
-    #make varname from var
+        #make varname from var
 
-    a=b
-    eval "$a=c"
-    assert [ $b = c ]
+            a=b
+            eval "$a=c"
+            assert [ $b = c ]
 
 ##string
 
-  ##interpret scapes
+    ##interpret scapes
 
-    echo $'$a\nb'
-      #no $ expansion
-    #echo $"a\nb"
-      #does not exist
-    a=b
-    echo -e "$a\nb"
-      #solution
-    assert [ '' = $'\0' ]
-      #null charcter
+            echo $'$a\nb'
+            #no $ expansion
+        #echo $"a\nb"
+            #does not exist
+            a=b
+            echo -e "$a\nb"
+            #solution
+            assert [ '' = $'\0' ]
+            #null charcter
 
-  s='abcd'
-  echo ${#s}
-    #4
-      #string length
-  echo ${s:0:1}
-    #a
-  echo ${s:1:1}
-    #b
-  echo ${s:0:2}
-    #ab
-  echo ${s:2}
-    #cd
+        s='abcd'
+        echo ${#s}
+        #4
+            #string length
+        echo ${s:0:1}
+        #a
+        echo ${s:1:1}
+        #b
+        echo ${s:0:2}
+        #ab
+        echo ${s:2}
+        #cd
 
-  ##string shell glob operations
+    ##string shell glob operations
 
-    s='abcd'
-    echo ${s#pattern}
-    echo ${s##pattern}
-    echo ${s%pattern}
-    echo ${s%%pattern}
+            s='abcd'
+            echo ${s#pattern}
+            echo ${s##pattern}
+            echo ${s%pattern}
+            echo ${s%%pattern}
 
-    ##applications
-     
-      #get file extension or path without extension
+        ##applications
+          
+            #get file extension or path without extension
 
-  s='a/b.ext'
-  echo ${s%.*}
-    #a/b
-      #simple remove ext
+        s='a/b.ext'
+        echo ${s%.*}
+        #a/b
+            #simple remove ext
 
-##expansion
+##expansion ##glob
 
-  ##pathname expansion
+    ##pathname expansion ##globbing
 
-    #formal name: #<pathname expansion>
+        #formal name: #<pathname expansion>
 
-    #simple regex like expanded before command is evaluated
+        #simple regex like expanded before command is evaluated
 
-    #nonhidden files cur dir:
+        #nonhidden files cur dir:
 
-      echo *
+            echo *
 
-    #hidden files cur dir:
+        #hidden files cur dir:
 
-      echo .*
+            echo .*
 
-    #escape:
+        #escape:
 
-      echo '*'
-      echo "*"
+            echo '*'
+            echo "*"
 
-    #start with a:
+        #start with a:
 
-      echo a*
+            echo a*
 
-    #second letter a:
+        #second letter a:
 
-      echo ?a*
+            echo ?a*
 
-    #* matches "".
+        #* matches "".
 
-    #start with a or b:
+        #start with a or b:
 
-      echo [ab]*
+            echo [ab]*
 
-    #start with a, b or c:
+        #start with a, b or c:
 
-      echo [a-c]*
+            echo [a-c]*
 
-    #works with vars:
+        #works with vars:
 
-      a=b
-      "$a"*
+            a=b
+            "$a"*
 
-    #shows all the files that start with b
+        #shows all the files that start with b
 
-    #only nonhidden:
-    
-    ##combos
+        #only nonhidden:
+        
+        ##combos
 
-      #for loop in cur dir:
+            #for loop in cur dir:
 
-        for f in .* *; do echo "$f"; done
+                for f in .* *; do echo "$f"; done
 
-    ##extended globbing
+        ##extended globbing
 
-      #glob with ERE-like expressions instead of BREs
+            #glob with ERE-like expressions instead of BREs
 
-      #activate:
+            #activate:
 
-        shopt -s extglob
+                shopt -s extglob
 
-      #glob              ERE mnemonic
-      #?(pattern-list)   (...|...)?
-      #*(pattern-list)   (...|...)*
-      #+(pattern-list)   (...|...)+
-      #@(pattern-list)   (...|...)    [@ not a RE syntax]
-      #!(pattern-list)   "!" used as for negative assertions in RE syntax
+            #glob              ERE mnemonic
+            #?(pattern-list)   (...|...)?
+            #*(pattern-list)   (...|...)*
+            #+(pattern-list)   (...|...)+
+            #@(pattern-list)   (...|...)    [@ not a RE syntax]
+            #!(pattern-list)   "!" used as for negative assertions in RE syntax
 
-  ##tilde expansion
+    ##tilde expansion
 
-    assert [ "`sudo -u a echo ~`"  = /home/a ]
-    assert [ "`echo ~a`" = /home/a ]
-    assert [ "`echo ~root`" = /root ]
-    assert [ "`echo ~homeless`" = '~homeless' ]
+        assert [ "`sudo -u a echo ~`"  = /home/a ]
+        assert [ "`echo ~a`" = /home/a ]
+        assert [ "`echo ~root`" = /root ]
+        assert [ "`echo ~homeless`" = '~homeless' ]
 
-  ##brace expansion
+    ##brace expansion
 
-    #{}
+        #{}
 
-    #quite useful
+        #quite useful
 
-    ##alternatives
+        ##alternatives
 
-        assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
+                assert [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ]
 
-      #nested ok:
-        assert [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ]
+            #nested is ok:
 
-    ##number ranges
+                assert [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ]
 
-      assert [ "`for a in a{1..3}b; do echo -n "$a"; done`" = $'a1b a2b a3b ' ]
-      assert [ "`for a in a{-1..-3}b; do echo "$a"; done`" = $'a-1b\na-2b\na-3b' ]
-      assert [ "`for a in a{1..5..2}b; do echo "$a"; done`" = $'a1b\na3b\na5b' ]
-      assert [ "`for a in a{5..1..2}b; do echo "$a"; done`" = $'a5b\na3b\na1b' ]
+        ##number ranges
 
-    ##letter ranges
+                assert [ "`for a in a{1..3}b; do echo -n "$a"; done`" = $'a1b a2b a3b ' ]
+                assert [ "`for a in a{-1..-3}b; do echo "$a"; done`" = $'a-1b\na-2b\na-3b' ]
+                assert [ "`for a in a{1..5..2}b; do echo "$a"; done`" = $'a1b\na3b\na5b' ]
+                assert [ "`for a in a{5..1..2}b; do echo "$a"; done`" = $'a5b\na3b\na1b' ]
 
-      assert [ "`for a in 0{a..c}1; do echo "$a"; done`" = $'0a1\n0b1\n0c1' ]
-      assert [ "`for a in 0{a..e..2}1; do echo "$a"; done`" = $'0a1\n0c1\n0e1' ]
-    
-    ##single quotes
+        ##letter ranges
 
-      #prevens expansion
+                assert [ "`for a in 0{a..c}1; do echo "$a"; done`" = $'0a1\n0b1\n0c1' ]
+                assert [ "`for a in 0{a..e..2}1; do echo "$a"; done`" = $'0a1\n0c1\n0e1' ]
+        
+        #escape:
 
-      echo "{1..3}"
-        #{1..3}
+            echo "{1..3}"
 
-    ##applications
+        #applications:
 
-      for i in {1..5}; do echo $i; done
+            for i in {1..5}; do echo $i; done
 
-      mkdir very/long/path/{a,b}
+            mkdir very/long/path/{a,b}
 
-      cp a{,.bak}
-    
-echo array
+            cp a{,.bak}
+        
+##list
 
-  #declare
-    a=()
-    a=( a b c "d d" )
+    #declare
 
-  a+=( "e e" )
-    #append
+            a=()
+            a=( a b c "d d" )
 
-  #access
+    #append:
 
-  a[0]=1
-  a[1]=2
-  a[2]=3
-  assert [ ${a[0]} = 1 ]
-  assert [ ${a[1]} = 2 ]
-  assert [ ${a[2]} = 3 ]
-    #{} is obligatory here
+        a+=( "e e" )
 
-  is=( a b "a b" )
-  for i in "${is[@]}"; do echo $i; done
-    #a
-    #b
-    #a b
+    #access:
 
-  for i in "${a[@]}"; do echo $i; done
-    #four lines. @ with quotes "" expands similary to "$@"
-    #quotes for each element are actually put on the terminal
+        a[0]=1
+        a[1]=2
+        a[2]=3
+        assert [ ${a[0]} = 1 ]
+        assert [ ${a[1]} = 2 ]
+        assert [ ${a[2]} = 3 ]
 
-  echo ${a[@]:1}
-    #subarray
+    #`{}` is obligatory here
 
-  echo ${a[@]:1:2}
-    #subarray: from 1, select 2
 
-  #associative array
-  declare -A aa
-  aa=([hello]=world [ab]=cd)
-  echo ${aa[hello]}
-    #world
-  echo ${aa[ab]}
-    #cd
+    #loop:
 
-echo string
+        is=( a b "a b" )
+        for i in "${is[@]}"; do echo $i; done
+        #a
+        #b
+        #a b
 
-  if [ abc = abc ]; then echo true; fi
-  if [ abc = a*c ]; then echo false; fi
-    #no glob pattern
+        for i in "${a[@]}"; do echo $i; done
+        #four lines. @ with quotes "" expands similary to "$@"
+        #quotes for each element are actually put on the terminal
 
-  if [[ abcd == a*d ]]; then echo true; fi
-  if [[ abc == a?c ]]; then echo 'abc == a?c'; fi
-  if [[ abc == a[bB]c ]]; then echo 'abc == a[bB]c'; fi
-    #shell glob pattern
+    #range:
 
-  if [[ abcd == "a*d" ]]; then echo false; fi 
-    #don't quote right
+        echo ${a[@]:1}
 
-  a=""
-  if [ -z "$a" ]; then echo true; fi
-  a="not empty"
-  if [ -z "$a" ]; then echo true; fi
+    #TODO ?
+
+        echo ${a[@]:1:2}
+
+##map ##associative array
+
+        declare -A aa
+        aa=([a]=1 [b]=2)
+        assert [ ${aa[a]} = 1 ]
+        assert [ ${aa[b]} = 2 ]
+
+##string
+
+    #equality:
+
+        assert [   abc = abc ]
+
+    #glo boes not work:
+
+        assert [ ! abc = a*c ]
+
+    #check empty:
+
+        assert [ -z "" ]
+        assert [ ! -z "a" ]
+
+    ##double square brackets
+
+        #glob works:
+
+            assert [[ abcd == a*d ]]
+            assert [[ abc == a?c ]]
+            assert [[ abc == a[bB]c ]]
+
+        #cannot quote right:
+
+            assert [[ abcd != "a*d" ]]
 
 ##if
 
-  ##true false
+    ##true false
 
-    which true
-      #/bin/true
-      #it is a program that does one thing: ``exit(1);`` !
+            which true
+            #/bin/true
+            #it is a program that does one thing: ``exit(1);`` !
 
-    assert [ `if true; then echo a; fi` = a ]
-    assert [ -z `if false; then echo a; fi` ]
+            assert [ `if true; then echo a; fi` = a ]
+            assert [ -z `if false; then echo a; fi` ]
 
-    v=true
-    assert [ `if $v; then echo a; fi` = a ]
+            v=true
+            assert [ `if $v; then echo a; fi` = a ]
 
-  ##square brackets
+    ##square brackets
 
-    #bash built-in
+        #bash built-in
 
-    #does the same as <#test>
+        #does the same as <#test>
 
-    [ 1 = 1 ]
-    [ $? = 0 ]
-    if [ 1 = 1 ]; then echo true; fi
-    if [ ! 1 = 1 ]; then echo true; fi
+            [ 1 = 1 ]
+            [ $? = 0 ]
+            if [ 1 = 1 ]; then echo true; fi
+            if [ ! 1 = 1 ]; then echo true; fi
 
-    #integer
+        #integer
 
-      if [ 1 -eq 1 ]; then echo true; fi
-      if [ 1 -lt 2 ]; then echo true; fi
-      if [ 2 -gt 2 ]; then echo true; fi
-      if [ 1 -le 2 ]; then echo true; fi
-      if [ 2 -ge 2 ]; then echo true; fi
-
-  ##logical
-
-    #&& only execute next command if previous command gives status = 1
-    #||                                                            = 0
-
-    #if they don't execute, status is unchanged
-
-    #therefore, for if ``&&`` has the same effect as and and ``||`` the same effect as or!
-
-    assert [ `true && echo a` = a ]
-    assert [ -z `false && echo a` ]
-    assert [ `false || echo a` = a ]
-    assert [ -z `true || echo a` ]
-
-    assert [ `if true && true; then echo a; fi` = a ]
-    assert [ -z `if false && true; then echo a; fi` ]
-    assert [ -z `if true && false; then echo a; fi` ]
-    assert [ -z `if false && false; then echo a; fi` ]
-
-    assert [ `if true || true; then echo a; fi` = a ]
-    assert [ `if false || true; then echo a; fi` = a ]
-    assert [ `if true || false; then echo a; fi` = a ]
-    assert [ -z `if false || false; then echo a; fi` ]
-
-  ##not
-
-    #! here is part of the if
-
-    #note that <#test> also understands !
-
-    assert [ `if ! false; then echo a; fi` = a ]
-
-  ##test
-
-    #compare values and check files, answer on exit status
-
-    #has built-in form in bash since it is so useful for bash: [ ]
-
-    #but test is a program!
-
-    which test
-      #/bin/test
-
-    ##value compare
-
-      test a = a && echo a
-        #a
-      test a = b && echo a
-        #
-
-    ##file ops
-
-      ##-f
-
-        #exists and is regular file
-
-        init_test
-        touch a
-        assert test -f a
-        cleanup_test
-
-      ##-s
-
-        #exists and has size > 0
-
-        rm -rf a
-        touch a
-        assert test -f a
+                assert [ 1 -eq 1 ]
+                assert [ 1 -lt 2 ]
+                assert [ 2 -gt 2 ]
+                assert [ 1 -le 2 ]
+                assert [ 2 -ge 2 ]
 
     ##logical
 
-      test ! a = a        && echo a
-        #
-      test a = a -a b = b && echo a
-        #a
-      test a = a -a a = b && echo a
-        #
-      test a = a -o a = b && echo a
-        #a
-      test a = b -o a = b && echo a
+        #&& only execute next command if previous command gives status = 1
+        #||                                                            = 0
 
-  ##colon
+        #if they don't execute, status is unchanged
 
-    #do nothing
+        #therefore, for if ``&&`` has the same effect as and and ``||`` the same effect as or!
 
-    if true; then : ; fi
+            assert [ `true && echo a` = a ]
+            assert [ -z `false && echo a` ]
+            assert [ `false || echo a` = a ]
+            assert [ -z `true || echo a` ]
+
+            assert [ `if true && true; then echo a; fi` = a ]
+            assert [ -z `if false && true; then echo a; fi` ]
+            assert [ -z `if true && false; then echo a; fi` ]
+            assert [ -z `if false && false; then echo a; fi` ]
+
+            assert [ `if true || true; then echo a; fi` = a ]
+            assert [ `if false || true; then echo a; fi` = a ]
+            assert [ `if true || false; then echo a; fi` = a ]
+            assert [ -z `if false || false; then echo a; fi` ]
+
+    ##not
+
+        #! here is part of the if
+
+        #note that <#test> also understands !
+
+            assert [ `if ! false; then echo a; fi` = a ]
+
+    ##test
+
+        #compare values and check files, answer on exit status
+
+        #has built-in form in bash: [ ]
+
+        #but test is a program!
+
+            which test
+
+        ##string compare
+
+                test a = a && echo a
+                #a
+                test a = b && echo a
+                #
+
+        ##integer compare
+
+            #always use `-eq` family, never `=` family:
+
+                assert [ 1 -eq 1 ]
+                assert [ 1 -eq 01 ]
+                assert [ 1 -lt 2 ]
+                assert [ 2 -gt 2 ]
+                assert [ 1 -le 2 ]
+                assert [ 2 -ge 2 ]
+
+        ##file ops
+
+            ##-f
+
+                #exists and is regular file
+
+                    init_test
+                    touch a
+                    assert test -f a
+                    cleanup_test
+
+            ##-s
+
+                #exists and has size > 0
+
+                    rm -rf a
+                    touch a
+                    assert test -f a
+
+        ##logical
+
+                test ! a = a        && echo a
+                #
+                test a = a -a b = b && echo a
+                #a
+                test a = a -a a = b && echo a
+                #
+                test a = a -o a = b && echo a
+                #a
+                test a = b -o a = b && echo a
+
+    ##colon
+
+        #do nothing
+
+            if true; then : ; fi
 
 ##case
 
-  #each case is a <#pathname expansion> pattern
-  #or an pattern | pattern:
+    #each case is a <#pathname expansion> pattern
+    #or an pattern | pattern:
 
-  a=
-  case $a in
-    [a-c])
-      echo "1"
-      ;;
-    [d-e]|[1-3])
-      echo "2"
-      ;;
-    *)
-      echo "3"
-      ;;
-  esac
+        a=
+        case $a in
+            [a-c])
+                echo "1"
+                ;;
+            [d-e]|[1-3])
+                echo "2"
+                ;;
+            *)
+                echo "3"
+                ;;
+        esac
 
 ##for while
 
-  for f in a b; do echo "$f"; done
-    #'a b'
-  for f in 'a  b'; do echo "$f"; done
-    #'a  b'
+        for f in a b; do echo "$f"; done
+        #'a b'
+        for f in 'a  b'; do echo "$f"; done
+        #'a  b'
 
-  echo {1..5..2}
-    #'1 3 5'
-  for i in {1..5..2}; do echo $i; done
-    #$'1\n3\n5\n'
+        echo {1..5..2}
+        #'1 3 5'
+        for i in {1..5..2}; do echo $i; done
+        #$'1\n3\n5\n'
 
-  i=0
-  while [ $i -lt 10 ]; do
-      echo $i
-      let i=i+1 
-      if [ $i -eq 5 ]; then
-        break
-      fi
-  done
+        i=0
+        while [ $i -lt 10 ]; do
+                echo $i
+                let i=i+1 
+                if [ $i -eq 5 ]; then
+                    break
+                fi
+        done
 
-#arithmetic
+##arithmetic
 
-  TWO=$(( 1+1 ))
-  echo $TWO
-    #obviously, bash was not made with this in mind, VERY cumbersome.
-    #bash is all about strings and files, not numbers. 
+        TWO=$(( 1+1 ))
+        echo $TWO
+        #obviously, bash was not made with this in mind, VERY cumbersome.
+        #bash is all about strings and files, not numbers. 
 
-  if (( 1>2 )); then echo '1>2'; fi
+        if (( 1>2 )); then echo '1>2'; fi
 
-  #let
-    let i=1+1
-    let i=i+1
-    echo $i
-    #3
+    ##let
 
-  #[[ ]] extended logical test
+        #comput and assign arigthmetic
+
+                let i=1+1
+                let i=i+1
+                assert [ $i -eq 3 ]
+
+        #this is the nicest way to do it i think
+
+        #NO SPACES ALLOWED! all fail:
+
+            #let i =1+1
+            #let i= 1+1
+            #let i=1 +1
+
+    #[[ ]] extended logical test
 
 ##functions
 
-  function f {
-    echo $1
-  }
+    #mandatory `;` on single line func:
 
-  #f
-    #unbound
-  f a
-    #f a
-  f a b
-    #f a
+        function f { echo $1; }
 
-  #ERROR:
+        function f
+        {
+            echo $1
+        }
 
-    #function f { echo $1 }
+    #unbound variable:
 
-  #must have newlines.
+        #f
+
+        assert [ "`f a`"    = $'a' ]
+        assert [ "`f a b`"  = $'a' ]
+
+    #ERROR:
+
+        #function f { echo $1; }
+
+    #must have newlines.
 
 #redirection
 
-  #0: stdin
-  #1: stdout
-  #2: stderr
+    #0: stdin
+    #1: stdout
+    #2: stderr
 
-  #applications
+    #echo to stderr:
 
-    #echo to stderr
+        echo "to stderr" 1>&2
 
-    echo "to stderr" 1>&2
+        M=1
+        N=2
+        f=file
 
-  M=1
-  N=2
-  f=file
-  echo a "$M">&"$N"
     #descriptor M to descriptor N
-  echo a "$M">"$f"
-    #descriptor M to file f
-  echo a >&"$N"
-  echo a >"$f"
-    #defaults to descriptor 1 (stdout)
-  echo a &>"$f"
-    #descriptors 1 and 2
-  echo a >>"$f"
-    #append stdout to file
 
-  #descriptors
-    function outerr {
-      echo out
-      echo err 1>&2
-    }
+        echo a "$M">&"$N"
 
-    outerr
-      #out
-      #err
-    outerr &>/dev/null
-      #
-    outerr >/dev/null
-      #err
-    outerr 2>/dev/null
-      #out
-    outerr >/dev/null 2>&1
-      #
-      #writes stderr *and* stdout to /dev/null
-      #- first redirects stderr to stdout
-      #- then stdout to f
-      #so they both go to f
-      #rightmost comes first
+    #descriptor M to file f:
 
-  #< input
+        echo a "$M">"$f"
 
-    cat <"$f"
-      #file f to stdin
-    cat < <(echo -e "a\nb\na b")
-    echo -e "a\nb\na b" | cat 
-      #echo to stdin
+    #defaults to descriptor 1 (stdout):
 
-  #| pipe
+        echo a >&"$N"
+        echo a >"$f"
 
-    assert [ "`outerr | cat`" = $'out\nerr' ]
-      #out
-      #err
-        #pipes out *and* err
-    outerr |& cat
-    outerr >/dev/null | cat
-      #err
+    #descriptors 1 and 2:
 
-  #other fd
-    exec 3<&1
-      #create 3
-      #write 3 to 1
-    echo 3 >&3
-      #1 to 3 to 1
-    exec 3>&-
-      #close 3
+        echo a &>"$f"
 
-    exec 3<> "$f"
-      #open f and assign fd 3 to it
-    read <&3
-      #read the first line
-    exec 3>&-
-      #close 3
-    echo $REPLY
+    #append stdout to file:
+
+        echo a >>"$f"
+
+    #descriptors
+            function outerr {
+                echo out
+                echo err 1>&2
+            }
+
+            outerr
+            #out
+            #err
+            outerr &>/dev/null
+            #
+            outerr >/dev/null
+            #err
+            outerr 2>/dev/null
+            #out
+            outerr >/dev/null 2>&1
+            #
+            #writes stderr *and* stdout to /dev/null
+            #- first redirects stderr to stdout
+            #- then stdout to f
+            #so they both go to f
+            #rightmost comes first
+
+    ##< ##input
+
+            cat <"$f"
+            #file f to stdin
+            cat < <(echo -e "a\nb\na b")
+            echo -e "a\nb\na b" | cat 
+            #echo to stdin
+
+    ##| ##pipe
+
+            assert [ "`outerr | cat`" = $'out\nerr' ]
+            #out
+            #err
+                #pipes out *and* err
+            outerr |& cat
+            outerr >/dev/null | cat
+            #err
+
+    ##other fd
+
+            exec 3<&1
+            #create 3
+            #write 3 to 1
+            echo 3 >&3
+            #1 to 3 to 1
+            exec 3>&-
+            #close 3
+
+        #open f and assign fd 3 to it
+
+            exec 3<> "$f"
+
+        #read the first line
+
+            read <&3
+
+        #close 3:
+
+            exec 3>&-
+
+            echo $REPLY
 
 ##process
 
-  ##exec
+    ##exec
 
-    #bash interface similar to an exec system call:
-    #ends current shell and runs given command instead
+        #bash interface similar to an exec system call:
+        #ends current shell and runs given command instead
 
-    #destroys the calling bash!
+        #destroys the calling bash!
 
-    assert [ $SHLVL = 1 ]
-    exec bash
-    assert [ $SHLVL = 1 ]
-    #exec bash
-      #ls then exits bash!
-      #you don't see anything
+            assert [ $SHLVL = 1 ]
+            exec bash
+            assert [ $SHLVL = 1 ]
+        #exec bash
+            #ls then exits bash!
+            #you don't see anything
 
-    ##application
-      
-      #start a new bash with a custom environment
+        ##application
+            
+            #start a new bash with a custom environment
 
-      #and discard the old one
+            #and discard the old one
 
-      exec env -i a=b c=d bash --norc --noprofile
-      env
-      exit
+                exec env -i a=b c=d bash --norc --noprofile
+                env
+                exit
 
-  ##background
+    ##background
 
-    ##jobs
+        ##jobs
 
-      jobs
-        #shows:
-        #  jobspec : a local job id
-        #  status : runnning, stopped, done
-        #  invocation : exact program call, including command line args. Ex: ``ls ~``
+            #shows:
+            #- jobspec : a local job id
+            #- status : runnning, stopped, done
+            #- invocation : exact program call, including command line args. Ex: ``ls ~``
 
-      jobs -p
-        #shows pids of background jobs
+                jobs
 
-      ##jobspecs
+            #show pids of background jobs:
 
-        #local job id, found by using <#jobs>
+                jobs -p
 
-        #certain commands such as ``kill``, ``fg`` them in addition to pids
+            ##jobspecs
 
-        #they are:
-        #- %N	Job number [N]
-        #- %S	Invocation (command line) of job begins with string S
-          #if several matches, ambiguous, and does nothing
-        #- ?S	Invocation (command line) of job contains within it string S
-        #- %%	"current" job (last job stopped in foreground or started in background)
-        #- %+	"current" job (last job stopped in foreground or started in background)
-        #- %-	last job
+                #local job id, found by using <#jobs>
 
-      ##$!
-        
-        #contains the pid of last background process
+                #certain commands such as ``kill``, ``fg`` them in addition to pids
 
-    #ls &
-    #sleep 100 &
-    #sleep 100 &
-    #sleep 100 &
-      #runs on background
-      #
-      #[1] 12345678
-      #means local id 1
-      #process number 12345678
-      #
-      #when process ends, it prints ``[n] 1234`` and disappears
-      #
-      #stdout continues to go to cur terminal, even if in bg
+                #they are:
+                #- %N	Job number [N]
+                #- %S	Invocation (command line) of job begins with string S
+                    #if several matches, ambiguous, and does nothing
+                #- ?S	Invocation (command line) of job contains within it string S
+                #- %%	"current" job (last job stopped in foreground or started in background)
+                #- %+	"current" job (last job stopped in foreground or started in background)
+                #- %-	last job
 
-    #firefox
-      #Ctrl z
-      #puts currently foreground running on background stopped
+            ##$!
+                
+                #contains the pid of last background process
 
-    #bg %3
-      #starts running job 3 which was stopped on background
-    #bg
-    #bg %+
-    #bg %%
-      #last bg job [+]
-    #bg %-
-      #before last bg job [-]
+        #ls &
+        #sleep 100 &
+        #sleep 100 &
+        #sleep 100 &
+            #runs on background
+            #
+            #[1] 12345678
+            #means local id 1
+            #process number 12345678
+            #
+            #when process ends, it prints ``[n] 1234`` and disappears
+            #
+            #stdout continues to go to cur terminal, even if in bg
 
-    #fg %3
-      #starts running job 3 which was on background on foreground
-    #fg
-      #last job
+        #firefox
+            #Ctrl z
+            #puts currently foreground running on background stopped
 
-    #kill %1
-      #kill subprocess [1]
-    #kill $PID
-      #kill by process id
+        #bg %3
+            #starts running job 3 which was stopped on background
+        #bg
+        #bg %+
+        #bg %%
+            #last bg job [+]
+        #bg %-
+            #before last bg job [-]
 
-    #wait && ls
-      #wait for all bg jobs to finish
-    #wait %3 && ls
-      #job 3
+        #fg %3
+            #starts running job 3 which was on background on foreground
+        #fg
+            #last job
 
-    #vlc 100 &
-    #vlc 100 &
-    #vlc 100 &
-    #disown %3
-      #remove job 3 from list of sub jobs
-      #closing bash will not kill it anymore
+        #kill %1
+            #kill subprocess [1]
+        #kill $PID
+            #kill by process id
+
+        #wait && ls
+            #wait for all bg jobs to finish
+        #wait %3 && ls
+            #job 3
+
+        #vlc 100 &
+        #vlc 100 &
+        #vlc 100 &
+        #disown %3
+            #remove job 3 from list of sub jobs
+            #closing bash will not kill it anymore
 
 ##commands aliases built-ins
 
-  #commands: programs in path
-  #aliases: alias a="b"
-    #can only be run on interctive section, not on scripts
-  #built-ins: 
-    #hard coded in bash
-    #like commands
-    #examples:
-      #echo, printf, read
-      #let, eval, set export
+    #commands: programs in path
+    #aliases: alias a="b"
+        #can only be run on interctive section, not on scripts
+    #built-ins: 
+        #hard coded in bash
+        #like commands
+        #examples:
+            #echo, printf, read
+            #let, eval, set export
 
-    ##good way to find that command is not a built-in:
-      which cmd
-      #if it has a path, then it is not a built-in
-  #keywords: 
-    #hard coded in bash
-    #not commands, but parts of commands
-      #if, do, for, while, end*
-    #source:
-      #http://tldp.org/LDP/abs/html/internal.html
+        ##good way to find that command is not a built-in:
+                which cmd
+            #if it has a path, then it is not a built-in
+    #keywords: 
+        #hard coded in bash
+        #not commands, but parts of commands
+            #if, do, for, while, end*
+        #source:
+            #http://tldp.org/LDP/abs/html/internal.html
 
-  ##compgen
+    ##compgen
 
-    #list all available commands/built-ins/functions
+        #list all available commands/built-ins/functions
 
-    #compgen -c #commands
-    #compgen -a #aliases
-    #compgen -ac #both
-    #compgen -b #built-ins
-    #compgen -k #keywords
-    #compgen -A function #functions
-    #compgen -A function -abck #all above at once
+        #compgen -c #commands
+        #compgen -a #aliases
+        #compgen -ac #both
+        #compgen -b #built-ins
+        #compgen -k #keywords
+        #compgen -A function #functions
+        #compgen -A function -abck #all above at once
 
-  ##set
+    ##set
 
-    #view/modify vars, functions and SHELLOPTS
+        #view/modify vars, functions and SHELLOPTS
 
-    set
-      #list all vars and functions that are set
-    set -e
-      #sets the -e option
-    set +e
-      #unsets the -e option
+        #list all vars and functions that are set
 
-    man bash
-      #/SHELLOPTS
+            set
+
+        #sets the -e option:
+
+            set -e
+
+        #unsets the -e option:
+
+            set +e
+
+            man bash
+            #/SHELLOPTS
 
 ##alias
 
-  alias echo="echo a"
-  assert [ `echo` = a ]
-  assert [ `echo b` = "a b" ]
+        alias echo="echo a"
+        assert [ `echo` = a ]
+        assert [ `echo b` = "a b" ]
 
-  ##command
+    ##command
 
-    assert [ `command echo b` = b ]
-      #ignores aliases
+        #run without alias:
 
-  ##unalias
+            assert [ `command echo b` = b ]
 
-    unalias echo
-    assert [ `command echo a` = a ]
+    ##unalias
 
-  ##aliases are not exported
+            unalias echo
+            assert [ `command echo a` = a ]
 
-    alias a="echo a"
-    assert [ `a` = a ]
-    bash
-    assert [ `a` = a ]
-      #not found, unless you have another a!
+    ##aliases are not exported
+
+            alias a="echo a"
+            assert [ `a` = a ]
+            bash
+            assert [ `a` = a ]
+            #not found, unless you have another a!
 
 ##login
 
-  #login shells source:
+    #login shells source:
 
-  #/etc/profile
-    #sourced by all login shells of all users
-  #~/.bash_profile, ~/.bash_login, and ~/.profile
-    #the first one *and only* the first one that is found and readable
-    #is sourced by login shells of the user
+    #/etc/profile
+        #sourced by all login shells of all users
+    #~/.bash_profile, ~/.bash_login, and ~/.profile
+        #the first one *and only* the first one that is found and readable
+        #is sourced by login shells of the user
 
-  ##how to make a login shell:
-    
-    #start your system with it
+    ##how to make a login shell:
+        
+        #start your system with it
 
-    bash -l
+            bash -l
 
-    #this is not usually necessary since exported environment variables
-    #are inherited by child shells
+        #this is not usually necessary since exported environment variables
+        #are inherited by child shells
 
 ##interactive
 
-  #normally: a shell with std(in|out|err) linket to console
+    #normally: a shell with std(in|out|err) linket to console
 
-  #sources ``/etc/bash.bashrc`` and ``~/.bashrc`` in that order
-  #after any login sources
+    #sources ``/etc/bash.bashrc`` and ``~/.bashrc`` in that order
+    #after any login sources
 
-  ##non-interactive
+    ##non-interactive
 
-    #does not source the interactive files,
-    #but sources $BASH_ENV file if not empty
+        #does not source the interactive files,
+        #but sources $BASH_ENV file if not empty
 
-  ##how to start non interactive bash:
+    ##how to start non interactive bash:
 
-    ##subshells
+        ##subshells
 
-      bash -c 'echo a'
-      echo "echo a" | bash
-      ( echo a )
+                bash -c 'echo a'
+                echo "echo a" | bash
+                ( echo a )
 
-  ##how to start interactive bash:
+    ##how to start interactive bash:
 
-    #the one you start your system with
+        #the one you start your system with
 
-    bash
-      #you are now inside and interactive bash!
+            bash
+            #you are now inside and interactive bash!
 
 ##environment variables
 
-  #huge list: <http://wiki.bash-hackers.org/syntax/shellvars>
+    #bash automatically sets lots of environment variables for its child processes.
 
-  ##env
+    #commented list : <http://wikibash-hackers.org/syntax/shellvars>
+    #also see man bash / shell variables.
 
-    env
-      #shows all environment variables and their values
+    #home dir. /home/ciro/ for me:
 
-    #change environment for a single command
+        echo $HOME
 
-      a=b
-      env a=c echo $a
-        #c
-      echo $a
-        #b
-    
-    ##-i
-    
-      #exec in a clean environment
+    #cur username:
 
-      assert [ "`env -i a=b env`" = "a=b" ]
+        echo $USER
 
-      ##start a subshell in the cleanest env possible
-      
-        #don't forget: subshells inherit all exported vars
+    #cur hostname:
 
-        env -i bash --noprofile --norc
-        env
-          #some default vars might still be there!
-          #I get: SHLVL, PWD
-        exit
+        echo $HOSTNAME
 
-  ##some important ones
-    
-    echo $HOME
-      #home dir. /home/ciro/
-    echo $USER
-      #cur username. ciro
-    echo $HOSTNAME
-      #cur hostname. ciro-thinkpad
-    echo $HOSTTYPE
-      #i686
-      #x86_64
-    echo $SHELL
-      #cur default shell. /bin/bash
-    echo $TERM
-      #xterm on terminals run from x
-      #linux on ctrl+alt+f1 terminal
-      #not sure what it means
-    echo $PWD
-      #cur working dir. ``pwd``
-    echo $OLDPWD
-      #last working dir. ``pwd``
-    echo $PS1
-      #is printed on every terminal line
-      #very large due to coloring
-    echo $PS2
-      #second line terminal. default '>' !
-    echo $BASHOPTS
-      #list of current on bash options
-      #readonly, modified indirectly by ``shopts``
-      #on subshell startup, options in this list are set
-      #``man bash`` ``/shopts`` for full list
-    echo $SHELLOPTS
-      #same as BASHOPTS
-      #but set with ``set`` command instead
-    echo $BASH_VERSION
-      #4.2.37(1)-release
-    echo $RANDOM
-    echo $RANDOM
-      #random number between 0 and 32767
-    echo $SECONDS
-    echo $SECONDS
-      #seconds since shell started
-    echo $LANG
-      #en_US.UTF-8
-    echo $COLUMNS
-    echo $LINES
-      #terminal width/height
+    #i686:
+
+        echo $HOSTTYPE
+
+        #x86_64
+    #cur default shell. /bin/bash
+
+        echo $SHELL
+
+    #xterm on terminals run from x
+
+        echo $TERM
+
+    #not sure what it means
+
+        #linux on ctrl+alt+f1 terminal
+
+    #cur working dir. ``pwd``
+
+        echo $PWD
+
+    #last working dir. ``pwd``
+
+        echo $OLDPWD
+
+    #is printed on every terminal line:
+
+        echo $PS1
+
+    #may be very large due to coloring ansi coloring sequences.
+
+    #second line terminal. default '>' !
+
+        echo $PS2
+
+    #list of current on bash options
+
+        echo $BASHOPTS
+
+    #readonly, modified indirectly by ``shopts``
+    #on subshell startup, options in this list are set
+    #``man bash`` ``/shopts`` for full list
+
+    #similar to `BASHOPTS but set with ``set`` command instead:
+
+        echo $SHELLOPTS
+
+    #4.2.37(1)-release
+
+        echo $BASH_VERSION
+
+    #random number between 0 and 32767:
+
+        echo $RANDOM
+        echo $RANDOM
+
+    #seconds since shell started:
+
+        echo $SECONDS
+        echo $SECONDS
+
+    #en_US.UTF-8:
+
+        echo $LANG
+
+    #terminal width/height:
+
+        echo $COLUMNS
+        echo $LINES
+
     ##shlvl
 
-      #depth level of cur shell
-      
-      assert [ "`echo $SHLVL`" = 1 ]
-      bash
-      assert [ "`echo $SHLVL`" = 2 ]
-      exit
-      assert [ "`echo $SHLVL`" = 1 ]
-      bash &
-      assert [ "`echo $SHLVL`" = 1 ]
-        #does not increase
-        #only increases in nested bashes
-      kill %+
+        #depth level of cur shell
+        
+            assert [ "`echo $SHLVL`" = 1 ]
+            bash
+            assert [ "`echo $SHLVL`" = 2 ]
+            exit
+            assert [ "`echo $SHLVL`" = 1 ]
+            bash &
+            assert [ "`echo $SHLVL`" = 1 ]
+            #does not increase
+            #only increases in nested bashes
+            kill %+
 
 ##history
 
-  ##fc
+    ##fc
 
-    #posix 7
-  
-    echo a
-    fc
-      #opens "echo a" in vim for editing
-      #when you quit, executes what you wrote
+        #posix 7
     
-    #set default editor
+            echo a
+            fc
+            #opens "echo a" in vim for editing
+            #when you quit, executes what you wrote
+        
+        #set default editor
 
-      FCEDIT=/bin/vi
-      fc
+                FCEDIT=/bin/vi
+                fc
 
-  ##ctrl-r
+    ##ctrl-r
 
-    #*very useful*
-    
-    #good tutorial: <http://ruslanspivak.com/2010/11/20/bash-history-reverse-intelligent-search/>
+        #*very useful*
+        
+        #good tutorial: <http://ruslanspivak.com/2010/11/20/bash-history-reverse-intelligent-search/>
 
 ##clear
 
-  #clear terminal screen
+    #clear terminal screen
 
-    clear
+            clear
 
 ##shopt
 
-  #builtin
+    ##builtin
 
-  shopt
-    #show options
-  shopt -s op
-    #set option
-  shopt -u op
-    #unset option
-  
-  ##hash
+        #show all options:
 
-    set -h
-    mkdir d
-    echo "echo 2" > d/echon
-    chmod +x d/echon
-    PATH="$PATH:`pwd`:`pwd`/d"
-    assert [ `echon` = 2 ]
-    for i in {}
-    echo "echo 1" > echon
-    chmod +x echon
-    assert [ `echon` = 2 ]
-      #surprise!
-    rm -r d
-    rm echon
+            shopt
 
-      #./echon is first in path
-      #and sould print 1!
+        #set option:
 
-      #with ``set -h``
-      #bash does not search the path every time
-      #it would take too long
-      #it remembers paths!
-  
-    #shows used commands in current session
-    #with usage count
+            shopt -s op
+
+        #unset option:
+
+            shopt -u op
     
-    hash
+    ##hash
 
+            set -h
+            mkdir d
+            echo "echo 2" > d/echon
+            chmod +x d/echon
+            PATH="$PATH:`pwd`:`pwd`/d"
+            assert [ `echon` = 2 ]
+            for i in {}
+            echo "echo 1" > echon
+            chmod +x echon
+            assert [ `echon` = 2 ]
+            #surprise!
+            rm -r d
+            rm echon
+
+            #./echon is first in path
+            #and sould print 1!
+
+            #with ``set -h``
+            #bash does not search the path every time
+            #it would take too long
+            #it remembers paths!
+    
+        #shows used commands in current session
+        #with usage count
+        
+            hash
 echo '
-##################################################
-# ALL ASSERTS PASSED
-##################################################'
+ALL ASSERTS PASSED'
