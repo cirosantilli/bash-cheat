@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#?ubuntu-deps=moreutils curl
 
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong
