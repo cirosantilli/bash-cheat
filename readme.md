@@ -1,4 +1,4 @@
-thie repo contains my bash scripts and cheats.
+simple bash scripts and cheats 
 
 # featured
 
