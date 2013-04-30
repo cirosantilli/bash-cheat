@@ -842,6 +842,19 @@ echo "$#"' > a
 
             echo $REPLY
 
+    ##gotcha
+
+        #YOU CANNOT MODIFY A FILE INLINE WITH REDIRECTION LIKE THIS:
+
+            echo $'0\n1' > a
+            grep 0 a | cat > a
+
+        #this simply erases a
+
+        #reason: 
+
+        #workaround: use sponge from moreutils.
+
 ##process
 
     ##exec
@@ -1028,6 +1041,34 @@ echo "$#"' > a
             bash
             assert [ `a` = a ]
             #not found, unless you have another a!
+
+##type
+
+    #tell type of command (shell keyword, shell buit-in, alias, function or executable in path
+
+        type if
+            #keyword
+
+        type cd
+            #builtin
+
+        alias a cd
+        type a
+            #alias
+
+        function f { echo f; }
+        type f
+            #function
+
+        type mkdir
+            #shows path
+
+    #`-t`: machine readable output
+    #`-P`: forces to search PATH for command. possible application: detect if program is installed and in path:
+
+        if [ "`type -P vim`" = "" ]; then
+            echo 'vim not installed'
+        fi
 
 ##login
 
