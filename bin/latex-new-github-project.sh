@@ -18,6 +18,10 @@ this:
 
 - clones the latex template as reponame
 - creates a github repo called reponame and pushes there
+
+this begs to be aliased as:
+
+    alias lngp="$F username"
 " 1>&2
 }
 
@@ -37,7 +41,6 @@ else
     git submodule update
 
     DESCRIPTION="`echo -e "\n#enter repo description\n#only first line will be considered" | vipe | head -n1 | perl -pe "chomp"`"
-    echo -n "$DESCRIPTION"
     curl -u "$USERNAME" https://api.github.com/user/repos -d '{
         "name": "'"$NEW_REPO_NAME"'",
         "description": "'"$DESCRIPTION"'"

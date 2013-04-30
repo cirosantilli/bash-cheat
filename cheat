@@ -402,10 +402,16 @@ echo "$#"' > a
 
     ##tilde expansion
 
-        assert [ "`sudo -u a echo ~`"  = /home/a ]
-        assert [ "`echo ~a`" = /home/a ]
-        assert [ "`echo ~root`" = /root ]
-        assert [ "`echo ~homeless`" = '~homeless' ]
+            assert [ "`sudo -u a echo ~`"  = /home/a ]
+            assert [ "`echo ~a`" = /home/a ]
+            assert [ "`echo ~root`" = /root ]
+            assert [ "`echo ~homeless`" = '~homeless' ]
+
+        #escape:
+
+            assert [ "`echo "~a"`" = "~a" ]
+
+        #*obvioustly* this does not work from scripts since scripts can be run as any user
 
     ##brace expansion
 
