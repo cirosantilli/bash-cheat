@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-#! deps = [PYTHON/unidecode_wrap.py]
+#?python-deps=unidecode
 
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong

@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-
-#!install_requires="sudo apt-get install realpath"
-#!install_requires="cd \"$SOMEWHERE_IN_YOUR_PATH\"; wget https://github.com/cirosantilli/bash/blob/48dd9d10f7d094291b246b02a6b08fc650e81e2d/find-music"
+#?ububtu-deps=realpath
 
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong

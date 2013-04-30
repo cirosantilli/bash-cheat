@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-# dependencies=["./find-music-make-m3u"]
+#?deps=find-music-make-m3u
 
 #------------------------------------------------------------
 #

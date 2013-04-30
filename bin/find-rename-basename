@@ -1,17 +1,5 @@
 #!/usr/bin/env bash
-
-#------------------------------------------------------------
-#
-# Ciro D. Santilli 
-#
-# Find using bash find and Rename baseneme only using perl regex.
-#
-# dependency=["perl"]
-#
-# I'm having some problems with parameter passing, for the moment this will
-# just be a edit here and run command.
-#
-#------------------------------------------------------------
+#?ubuntu-deps=perl
 
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong

@@ -1,19 +1,6 @@
 #!/usr/bin/env bash
-
-# dependencies = ['sudo apt-get install perl',
-# './basename-noext'
-# './ext-nodot'
-# ]
-
-#------------------------------------------------------------
-#
-# Ciro D. Santilli 
-#
-#NOTABLE CALLS:
-#
-#  find-books | rename-basename 's/(.*) - (.*)/$2 - $1/g' 0
-#
-#------------------------------------------------------------
+#?ubuntu-deps=perl
+#?deps=basename-noext ext-nodot
 
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong
