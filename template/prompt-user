@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+#default value for empty input
+
+msg="do something? (y/n): "
+echo -n "$msg"
+while true; do
+read yn
+    case $yn in
+        n|y ) break;;
+        *   ) echo -n "$msg";;
+    esac
+done
+echo "$yn"
+
+#default value for empty input
+
+msg="do something? ([y]/n): "
+echo -n "$msg"
+while true; do
+read yn
+    case $yn in
+        y|n )           break;;
+        ''  ) yn=y;     break;;
+        *   ) echo -n "$msg";;
+    esac
+done
+echo "$yn"
+
+exit 0

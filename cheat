@@ -20,7 +20,7 @@
         #<http://pubs.opengroup.org/onlinepubs/9699919799/>
 
 set -u # error on undefined variable
-set -e # stop execution if one command return != 0
+set -e # stop execution if one command returns != 0
 
 function init_test {
         wd="`pwd`"
@@ -183,30 +183,37 @@ echo "$#"' > a
 
     ##double
 
-        ##space to var
+        #space to var:
 
-                a="a b"
-                assert [ "$a" = "a b" ]
+            a="a b"
+            assert [ "$a" = "a b" ]
 
-        ##dollar interpreted
+        #dollar interpreted
 
-                a=b
-                b="$a"
-                assert [ $b = b ]
+            a=b
+            b="$a"
+            assert [ $b = b ]
 
-        ##dollar backlash escaped
+        #dollar backlash escaped
 
-                a=b
-                assert [ "\$a" = '$a' ]
+            a=b
+            assert [ "\$a" = '$a' ]
 
-        ##single dollar ok
+        #single dollar ok
 
-                assert [ "\$" = "$" ]
+            assert [ "\$" = "$" ]
 
-        ##backslash not interpreted
+        #backslash not interpreted
 
-                echo "a\nb"
-                #ab
+            echo "a\nb"
+            #ab
+
+        #newline ignored:
+
+            echo "a\
+b"
+
+        #produces "ab"
 
     ##single
 
@@ -215,6 +222,13 @@ echo "$#"' > a
             a=b
             b='$a'
             assert [ "$b" = '$a' ]
+
+        #newline not ignored:
+
+            echo 'a\
+b'
+
+        #produces $'a\\\nb'
 
     ##dollar single
 
@@ -243,10 +257,20 @@ echo "$#"' > a
             assert [ ! `echo "a b"`  = "a b" ]
             assert [ "`echo "a b"`" = "a b" ]
 
-        #both work:
+        #inner double or single quotes are fine:
 
             assert [ "`echo "a b"`" = "a b" ]
-            assert [ "`echo \"a b\"`" = "a b" ]
+            assert [ "`echo 'a b'`" = "a b" ]
+
+        #inner backquotes are not fine:
+
+            #`echo `echo a``
+
+        #this is why `$()` is better: you can nest it because it has an open/close pair:
+
+            #$( echo $( echo a ))
+
+        #therfore consider always using `$()`
 
 ##parenthesis
 
@@ -331,7 +355,7 @@ echo "$#"' > a
         #a/b
             #simple remove ext
 
-##expansion ##glob
+##expansion
 
     ##pathname expansion ##globbing
 
@@ -366,9 +390,9 @@ echo "$#"' > a
 
             echo [ab]*
 
-        #start with a, b or c:
+        #start with 0, 1 or 2.
 
-            echo [a-c]*
+            echo [0-2]*
 
         #works with vars:
 
@@ -661,7 +685,7 @@ echo "$#"' > a
 ##case
 
     #each case is a <#pathname expansion> pattern
-    #or an pattern | pattern:
+    #or an pattern | pattern (not a feature in regular glob):
 
         a=
         case $a in
@@ -1298,5 +1322,6 @@ echo "$#"' > a
         #with usage count
         
             hash
+
 echo '
 ALL ASSERTS PASSED'

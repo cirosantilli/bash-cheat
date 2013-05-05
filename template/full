@@ -35,11 +35,11 @@ usage()
 
 
 
-# side effect
+# side effects
 
 
 
-# example
+# examples
 
         $F
 
@@ -104,6 +104,7 @@ if [ $# -gt 0 ]; then
     ="$1"
     shift
 else
+    echo "too few arguments" 1>&2
     usage
     exit 2
 fi
@@ -118,6 +119,7 @@ fi
 
 #there must be no args left
 if [ $# -gt 0 ]; then
+    echo "too many arguments" 1>&2
     usage
     exit 2
 fi
