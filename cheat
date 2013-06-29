@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#bash cheatsheet
-
 #sources
 
     #http://tldp.org/LDP/abs/html/abs-guide.html
@@ -330,47 +328,76 @@ b'
 
 ##string
 
-    ##interpret scapes
+    ##interpret scapes sequences
 
+        #`$'` strings interpret backslash escapes:
+
+            a=b
             echo $'$a\nb'
-            #no $ expansion
-        #echo $"a\nb"
-            #does not exist
+
+        #but `$` is not interpreted as a variable
+
+        #double quote analogue does not exist:
+
+            a=b
+            #echo $"a\nb"
+
+        #solution: use `echo -e`:
+
             a=b
             echo -e "$a\nb"
-            #solution
-            assert [ '' = $'\0' ]
-            #null charcter
+
+    #null charcter shorthand:
+
+        assert [ '' = $'\0' ]
+
+    #string length
 
         s='abcd'
-        echo ${#s}
-        #4
-            #string length
-        echo ${s:0:1}
-        #a
-        echo ${s:1:1}
-        #b
-        echo ${s:0:2}
-        #ab
-        echo ${s:2}
-        #cd
+        assert [ ${#s} -eq 4 ]
 
-    ##string shell glob operations
+    #substrings:
 
-            s='abcd'
-            echo ${s#pattern}
-            echo ${s##pattern}
-            echo ${s%pattern}
-            echo ${s%%pattern}
+        s='abcd'
+        assert [ ${s:0:1}   = a   ]
+        assert [ ${s:1:1}   = b   ]
+        assert [ ${s:0:2}   = ab  ]
+        assert [ ${s:2}     = cd  ]
+
+    ##glob operations
+
+        #you can do certain glob operations on strings
+
+            s='12223'
+
+        #remove shortest matching preffix
+
+            assert [ ${s#1*2} = 223 ]
+
+        #mnemonic: `#` (under 3) comes before `%` (under 5),
+        #so it is the prefix, and not suffix
+
+        #remove longest matching preffix
+
+            assert [ ${s##1*2} = 3 ]
+
+        #mnemonic: two `##` is for long, one `#` is for short
+
+        #remove shortest matching suffix:
+
+            assert [ ${s%2*3} = 122 ]
+
+        #remove shortest matching suffix:
+
+            assert [ ${s%%2*3} = 1 ]
 
         ##applications
 
-            #get file extension or path without extension
+            #get file extension or path without the extension:
 
-        s='a/b.ext'
-        echo ${s%.*}
-        #a/b
-            #simple remove ext
+                s='a/b.ext'
+                assert [ ${s%.*} = a/b ]
+                assert [ ${s##*.} = ext ]
 
 ##expansion
 
@@ -494,12 +521,25 @@ b'
 
 ##list
 
-    #declare
+    #declare all:
 
-            a=()
-            a=( a b c "d d" )
+        a=()
+        a=( a b c "d d" )
 
-    #append:
+    #cannot nest:
+
+        #a=( (b) (c) )
+
+    #declare elements:
+
+        a[10]=b
+        a[20]=c
+
+    #cannot nest:
+
+        #a[0]=(1 2)
+
+    #concat:
 
         a+=( "e e" )
 
@@ -513,7 +553,6 @@ b'
         assert [ ${a[2]} = 3 ]
 
     #`{}` is obligatory here
-
 
     #loop:
 
@@ -530,8 +569,6 @@ b'
     #range:
 
         echo ${a[@]:1}
-
-    #TODO ?
 
         echo ${a[@]:1:2}
 
@@ -1237,9 +1274,6 @@ b'
         echo $HOSTTYPE
 
         #x86_64
-    #cur default shell. /bin/bash
-
-        echo $SHELL
 
     #xterm on terminals run from x
 

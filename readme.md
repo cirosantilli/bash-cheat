@@ -1,11 +1,21 @@
-simple bash scripts and cheats 
+simple bash scripts and cheats
+
+bash is a version of `sh`, and it is backwards compatible with `sh` but with extensions
+
+it is probably the most widespread version of `sh` today
+
+`sh` is POSIX 7 compliant, but bash extensions are not
+
+if a feature is present on `bash` but not on `sh` it shall be sated on the cheats
+
+you should avoid relying on those features when writing portable code
 
 # featured
 
 scripts that you may like follow. the others may be useless.
 
 ## find-music-make-m3u
-  
+
 check the recursive function which for each directory, makes an m3u all.m3u with all music under that directory.
 
 ex:
@@ -28,7 +38,7 @@ becomes:
 
 where the all.m3u contains all music files under its parent dir.
 
-#why not to use bash!
+# why not to use bash!
 
 bash is evil:
 
