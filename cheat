@@ -2,7 +2,35 @@
 
 #sources
 
-    #http://tldp.org/LDP/abs/html/abs-guide.html
+    #<http://tldp.org/LDP/abs/html/abs-guide.html>
+
+#POSIX
+
+    #Bash is a POSIX compliant extension of sh, which is POSIX
+
+    #This means that it must include:
+
+    #- POSIX language features, which account for a large part of its language features.
+
+    #- commands which can only be implemented as built-ins such as:
+
+        #- cd
+        #- read
+
+    #- commands which could be implemented as separate binaries, but which bash chooses to implement as built-ins
+        #such as:
+
+        #- echo
+        #- printf
+        #- test
+
+        #POSIX does not specify if commands must be built-ins or separate binaries in path.
+
+        #It is possible that those commands also have a separate binary implementation in the path.
+
+        #In that case, the built-in version will be used.
+
+    #If you aim at portability, watch out not to rely on non POSIX features!
 
 ##comments
 
@@ -26,13 +54,6 @@
         echo b
 
     #so you can't use newlines at will as you can in c
-
-# bash shell follows POSIX standards
-
-    #this includes common commands such as ``cd`` and many more
-
-    #full list:
-        #<http://pubs.opengroup.org/onlinepubs/9699919799/>
 
 set -u # error on undefined variable
 set -e # stop execution if one command returns != 0
@@ -175,18 +196,16 @@ echo "$#"' > a
 
         ##$$
 
-                current_process="$$"
-                #returns current process name. Useful to create unique temporary files that have a recognizable component.
+            #PID of current process
 
-                TFILE="/tmp/$(basename $0).$$.tmp"
-                #APPLICATION
-                #create temp filename
+                echo $$
 
         ##PPID
 
+            #id of parent process
+            #linux processes contain this info
+
                 echo $PPID
-                #id of parent process
-                #linux processes contain this info
 
         ##LINENO
 
@@ -261,6 +280,148 @@ b'
 
             assert [ "$'a'" = "'\$a'" ]
 
+        #cannote be nested:
+
+            #a=`echo `echo a``
+
+        #because both characters are equal, there is no opening and closing like parenthesis.
+
+        #See `$(` for a solution.
+
+        #Trailing newlines are all removed!:
+
+            assert [ a`printf "\n\n"` = a ]
+
+##parenthesis ##() ##command groups
+
+    #Formal name: command group.
+
+    #Spawn subshell and exec command in it.
+
+    #Change current dir, prints previous dir:
+
+        cd; pwd
+
+    #Does not  change current dir and prints home dir:
+
+        ( cd; pwd )
+
+    #Equivalent to
+
+        bash -c 'cd; pwd'
+
+    #EXCEPT you don't have to do escaping or quoting!
+
+##subshell
+
+    #Good soure: <http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/subshells.html>
+
+    #Many bash operations are run inside subshells.
+
+    ##create subshells
+
+        #Operations that create subshells:
+
+        #- command groups:
+
+                ( echo a )
+
+            #Commands inside braces do not generate subshells.
+
+        #- both sides of pipes run on subshells:
+
+            a=0
+            echo a | a=1
+            [ $a = 0 ] || exit 1
+
+            a=0
+            a=1 | echo
+            [ $a = 0 ] || exit 1
+
+        #- for and whil do *not* create a subshell:
+
+            a=0
+            for i in 0 1; do
+                a=$i
+            done
+            [ $a = 1 ] || exit 1
+
+            a=0
+            while read l; do
+                a=$l
+            done < <( printf "0\n1\n" )
+            [ $a = 1 ] || exit 1
+
+    ##properties of subshells
+
+        #Unexported variables carry over:
+
+            a=0
+            [ `( echo $a )` = 0 ] || exit 1
+
+        #Assignments do not affect parent:
+
+            a=0
+            ( a=1 )
+            [ $a = 0 ] || exit 1
+
+        #Directory changes do not affect parent:
+
+            cd
+            ( cd .. )
+            [ "$(pwd)" = "$HOME" ] || exit 1
+
+        #Subshell output can be piped:
+
+            [ $( ( printf a; printf b ) | cat ) = ab ] || exit 1
+
+        #Subshell input for the first command can come from a pipe:
+
+            [ $( echo a | ( cat; cat ) ) = a ] || exit 1
+
+        #PID may TODO0 must? be the same as parent:
+
+            [ `echo $$` = `( echo $$ )` ] || echo different
+
+    ##subshell vs shell inside shell
+
+        #A subshell is different from a shell launched inside a shell.
+
+        #For example, subshells inherit variables from parent even it they were not exported:
+
+            a=0
+            [ `( echo $a )` = 0 ] || exit 1
+
+        #But a shell inside a shell does not unless they are exported:
+
+            a=0
+            bash
+            [ -z $a ] || exit 1
+            exit 0
+
+            a=0
+            bash
+            [ -z $a ] || exit 1
+            exit 0
+
+##braces ##{} ##inline group
+
+    #Formal name: inline group.
+
+    #Excutes in current context.
+
+        a=0
+        b=1
+        { printf $a; printf $b; } | cat
+
+    #Prints `01`.
+
+    #Does not spawn a subshell.
+
+##command substitution
+
+    #<http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_03>
+
     ##backquote
 
         #same as <#eval expression>
@@ -287,27 +448,20 @@ b'
 
         #therfore consider always using `$()`
 
-##parenthesis
-
-    #spawn subshell
-
-        cd; pwd
-        #changes current dir
-        #prints previous dir
-        ( cd; pwd )
-        #does not  change current dir
-        #but still prints home
-
-    #equivalent to
-            bash -c 'cd; pwd'
-    #EXCEPT you don't have to do escaping or quoting!
-
-##evaluate expression
-
     #$()
 
-        assert [ "$(echo abc)" = "abc" ]
-        assert [ "`echo abc`"  = "abc" ]
+        #Similar to backquote:
+
+            assert [ "$(echo abc)" = "abc" ]
+            assert [ "`echo abc`"  = "abc" ]
+
+        #Better than backquote because it can be nested:
+
+            assert [ "$(echo $(echo a))" = "a" ]
+
+        #Trailing newlines **are removed**!:
+
+            assert [ a"$(printf "\n\n")" = "a" ]
 
 ##eval
 
@@ -411,11 +565,15 @@ b'
 
             echo *
 
-        #hidden files cur dir:
+        #hidden files cur dir + `.` + `..`
 
             echo .*
 
-        #escape:
+        #hidden files cur dir except `.` and `..`: <http://stackoverflow.com/questions/2910049/how-to-use-the-wildcard-in-bash-but-exclude-the-parent-directory>
+
+            echo .[^.]* ..?*
+
+        #all files in cur dir except `.` and `..`: `ls -A` is the best POSIX option IMHO
 
             echo '*'
             echo "*"
@@ -639,67 +797,6 @@ b'
             assert [ 1 -le 2 ]
             assert [ 2 -ge 2 ]
 
-##test
-
-    #compare values and check files, answer on exit status
-
-    #has built-in form in bash: [ ]
-
-    #can do tons of different tests
-
-    #but test is a program!
-
-        which test
-
-    ##string compare
-
-            test a = a && echo a
-            #a
-            test a = b && echo a
-            #
-
-    ##integer compare
-
-        #always use `-eq` family, never `=` family:
-
-            assert [ 1 -eq 1 ]
-            assert [ 1 -eq 01 ]
-            assert [ 1 -lt 2 ]
-            assert [ 2 -gt 2 ]
-            assert [ 1 -le 2 ]
-            assert [ 2 -ge 2 ]
-
-    ##file ops
-
-        ##-f
-
-            #exists and is regular file
-
-                init_test
-                touch a
-                assert test -f a
-                cleanup_test
-
-        ##-s
-
-            #exists and has size > 0
-
-                rm -rf a
-                touch a
-                assert test -f a
-
-##logical
-
-        test ! a = a        && echo a
-        #
-        test a = a -a b = b && echo a
-        #a
-        test a = a -a a = b && echo a
-        #
-        test a = a -o a = b && echo a
-        #a
-        test a = b -o a = b && echo a
-
 ##arithmetic
 
     ##let
@@ -881,6 +978,7 @@ b'
         echo a >>"$f"
 
     #descriptors
+
             function outerr {
                 echo out
                 echo err 1>&2
@@ -957,6 +1055,142 @@ b'
         #reason:
 
         #workaround: use sponge from moreutils.
+
+##test ##[]
+
+    #Compare values and check files, answer on exit status.
+
+    #Equivalent convenient shorthand form via squre brackets: `[ ]`
+
+    #Can do tons of different tests.
+
+    #May also exist as a separate binary implementation on certain systems,
+    #but the built-in has precedence:
+
+        which test
+
+    ##string compare
+
+            test a = a && echo a
+            #a
+            test a = b && echo a
+            #
+
+    ##integer compare
+
+        #always use `-eq` family, never `=` family:
+
+            assert [ 1 -eq 1 ]
+            assert [ 1 -eq 01 ]
+            assert [ 1 -lt 2 ]
+            assert [ 2 -gt 2 ]
+            assert [ 1 -le 2 ]
+            assert [ 2 -ge 2 ]
+
+    ##file ops
+
+        ##-e
+
+            #file exists
+
+            #may be a symlink or directory
+
+            #useful to avoid overwriting useful files
+
+        ##-r
+
+            #file exists and is readable
+
+            #useful before taking input from a file, since just checking its exsitence
+            #is not enough in that case
+
+        ##-s
+
+            #exists and has size > 0
+
+                rm -rf a
+                touch a
+                assert test -f a
+
+        ##-f
+
+            #exists and is regular file (not a symlink or directory)
+
+                init_test
+                touch a
+                assert test -f a
+                cleanup_test
+
+    ##logical
+
+            test ! a = a        && assert false
+            test a = a -a b = b && assert false
+            test a = a -a a = b && assert false
+            test a = a -o a = b && assert false
+            test a = b -o a = b && assert false
+
+##read
+
+    #Reads from stdin and stores in shell variables.
+
+    #Therefore, this *must* be a shell BUILTIN, since it modifies shell variables directly
+
+    #POSIX 7.
+
+    #Get string from user into variable `a`:
+
+        #read a
+        #echo "$a"
+
+    #Cannot write with pipe into read because the pipe spawns a subshell,
+    #which cannot modify a variable in its parent shell:
+    #<http://stackoverflow.com/questions/13763942/bash-why-piping-input-to-read-only-works-when-fed-into-while-read-const>
+
+        a=a
+        echo b | read a         #`read a` is executed in a subshell!
+        [ $a = a ] || exit 1
+
+    #Creating a subshell does work however:
+
+        echo abc | ( read b; [ $b = abc ] || exit 1 ) || echo fail
+
+    #and so do while combos, which also create one subshell per loop body:
+
+        while read l; do
+            echo "$l"
+        done < <( echo -e "a\nb\na b" )
+
+    #Read from file descriptor linewise and assign to variable.
+
+        ##applications
+
+            #Read file linewise:
+
+                #while read l; do
+                #    echo "$l";
+                #done < "$f"
+
+            #Read stdout linewise:
+
+                while read l; do
+                    echo "$l"
+                done < <( echo -e "a\nb\na b" )
+
+            #Split into fields:
+
+                #IFS_OLD="$IFS"
+                #while IFS=' : ' read f1 f2
+                #do
+                #    echo "$f1 $f2"
+                #done < <( echo -e "a : b\nc : d" )
+                #IFS="$IFS_OLD"
+
+    ##GNU extensions
+
+        #-p print a prompt message:
+
+            read -p "enter string: " s
+            echo "you entered $s"
 
 ##exec
 
@@ -1096,15 +1330,34 @@ b'
 
     ##compgen
 
-        #list all available commands/built-ins/functions
+        #list all available commands / built-ins / functions / aliases,
+        #in short, all "commands" you can issue from your shell
 
-        #compgen -c #commands
-        #compgen -a #aliases
-        #compgen -ac #both
-        #compgen -b #built-ins
-        #compgen -k #keywords
-        #compgen -A function #functions
-        #compgen -A function -abck #all above at once
+        #commands TODO
+
+            #compgen -c
+
+        #aliases
+
+            #compgen -a
+
+        #aliases and commands:
+
+            #compgen -ac
+
+        #built-ins
+
+            #compgen -b
+
+        #keywords
+
+            #compgen -k
+
+        #functions
+
+            #compgen -A function
+
+            #compgen -A function -abck #all above at once
 
     ##set
 
@@ -1232,16 +1485,10 @@ b'
 
     ##non-interactive
 
-    #- does not source the interactive files,
-    #- sources "$BASH_ENV" file if not empty
+        #- does not source the interactive files,
+        #- sources "$BASH_ENV" file if not empty
 
-    ##how to start non interactive bash:
-
-        ##subshells
-
-                bash -c 'echo a'
-                echo "echo a" | bash
-                ( echo a )
+        #Can be started via subshells.
 
     ##how to start interactive bash:
 
