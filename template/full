@@ -7,7 +7,7 @@ usage()
 {
     F="$(basename "$0")"
     echo "# usage
-    
+
         $F
 
 

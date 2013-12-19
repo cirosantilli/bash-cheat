@@ -1,36 +1,20 @@
 #!/usr/bin/env bash
 
+set -u # error on undefined variable
+set -e # stop execution if one command returns != 0
+
 #sources
 
     #<http://tldp.org/LDP/abs/html/abs-guide.html>
 
 #POSIX
 
-    #Bash is a POSIX compliant extension of sh, which is POSIX
-
-    #This means that it must include:
-
-    #- POSIX language features, which account for a large part of its language features.
-
-    #- commands which can only be implemented as built-ins such as:
-
-        #- cd
-        #- read
-
-    #- commands which could be implemented as separate binaries, but which bash chooses to implement as built-ins
-        #such as:
-
-        #- echo
-        #- printf
-        #- test
-
-        #POSIX does not specify if commands must be built-ins or separate binaries in path.
-
-        #It is possible that those commands also have a separate binary implementation in the path.
-
-        #In that case, the built-in version will be used.
-
     #If you aim at portability, watch out not to rely on non POSIX features!
+
+    #Utilities in general will not be described here, only:
+
+    #- language features:
+    #- POSIX extensions to utilities that have a built-in implementation
 
 ##comments
 
@@ -39,6 +23,23 @@
     #escape comment:
 
         echo \#
+
+##help
+
+    #Prints help on a built-in commands.
+
+    #Bash extension.
+
+    #Bash built-in
+
+    #View all built-in commands:
+
+        help
+
+    #Get help on an specific command:
+
+        help help
+        help for
 
 ##spaces
 
@@ -54,9 +55,6 @@
         echo b
 
     #so you can't use newlines at will as you can in c
-
-set -u # error on undefined variable
-set -e # stop execution if one command returns != 0
 
 function init_test {
         wd="`pwd`"
@@ -215,120 +213,136 @@ echo "$#"' > a
 
 ##quoting
 
-    ##double
+    ##double quotes
 
-        #space to var:
+        # Space to var:
 
             a="a b"
             assert [ "$a" = "a b" ]
 
-        #dollar interpreted
+        # Command substitution is done inside them:
 
-            a=b
-            b="$a"
-            assert [ $b = b ]
+            assert [ "`printf a`" = a ]
 
-        #dollar backlash escaped
+        ##backslash escapes
 
-            a=b
-            assert [ "\$a" = '$a' ]
+            # Backslash is not interpreted on literals.
 
-        #single dollar ok
+            # `printf` does interpret them.
 
-            assert [ "\$" = "$" ]
+            # What `echo` does with them is POSIX undefined behaviour.
 
-        #backslash not interpreted
+                assert [ ! "$(printf "a\nb")" = "a\nb" ]
 
-            echo "a\nb"
-            #ab
+            # Backslash interpretation can also be achieved by using the dollar single quote extension.
 
-        #newline ignored:
+        ##multiline literals
 
-            echo "a\
-b"
+            # Multiline literals include newlines by default:
 
-        #produces "ab"
+                assert [ "$(echo "a
+b")" = "$(printf "a\nb" )" ]
 
-    ##single
+            # To avoid adding newlines at multiline literals, use a backslash `\`:
 
-        #dollar not interpreted:
+                assert [ "$(echo "a\
+b")" = ab ]
+
+        ##heredoc
+
+            # Set stdin of command from a string.
+
+            # Interprets variable expansion and command expansion in its interior like `""` quoted strings.
+
+                assert [ "$(cat <<ANYTHING
+`printf a`
+ANYTHING
+)" = a ]
+
+        # One line heredoc:
+
+            assert [ "$(cat <<< "a")" = a ]
+
+    ##single quotes
+
+        # Does not do variable expansion nor command expansion.
 
             a=b
             b='$a'
             assert [ "$b" = '$a' ]
 
-        #newline not ignored:
+        # Newlines are not ignored on multiline literals.
 
             echo 'a\
 b'
 
-        #produces $'a\\\nb'
+        # Produces $'a\\\nb'
 
-    ##dollar single
+    ##dollar single quote ##$''
 
-        #interprets backslash
+        # Interprets backslash.
 
-        #does not interpret dollars
+        # Does not do
 
-        #backquote assumed
+        # Backquote assumed
 
             a=$'a\nb'
             assert [ "$a" = `echo -e "a\nb"` ]
             #not "$'a\nb'" = ...
 
-        #cannot be quoted
+        # Cannot be quoted
 
             assert [ "$'a'" = "'\$a'" ]
 
-        #cannote be nested:
+        # Cannote be nested:
 
             #a=`echo `echo a``
 
-        #because both characters are equal, there is no opening and closing like parenthesis.
+        # Because both characters are equal, there is no opening and closing like parenthesis.
 
-        #See `$(` for a solution.
+        # See `$(` for a solution.
 
-        #Trailing newlines are all removed!:
+        # Trailing newlines are all removed!:
 
             assert [ a`printf "\n\n"` = a ]
 
 ##parenthesis ##() ##command groups
 
-    #Formal name: command group.
+    # Formal name: command group.
 
-    #Spawn subshell and exec command in it.
+    # Spawn subshell and exec command in it.
 
-    #Change current dir, prints previous dir:
+    # Change current dir, prints previous dir:
 
         cd; pwd
 
-    #Does not  change current dir and prints home dir:
+    # Does not  change current dir and prints home dir:
 
         ( cd; pwd )
 
-    #Equivalent to
+    # Equivalent to
 
         bash -c 'cd; pwd'
 
-    #EXCEPT you don't have to do escaping or quoting!
+    # EXCEPT you don't have to do escaping or quoting!
 
 ##subshell
 
-    #Good soure: <http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/subshells.html>
+    # Good soure: <http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/subshells.html>
 
-    #Many bash operations are run inside subshells.
+    # Many bash operations are run inside subshells.
 
     ##create subshells
 
-        #Operations that create subshells:
+        # Operations that create subshells:
 
-        #- command groups:
+        # - command groups:
 
                 ( echo a )
 
             #Commands inside braces do not generate subshells.
 
-        #- both sides of pipes run on subshells:
+        # - both sides of pipes run on subshells:
 
             a=0
             echo a | a=1
@@ -338,7 +352,7 @@ b'
             a=1 | echo
             [ $a = 0 ] || exit 1
 
-        #- for and whil do *not* create a subshell:
+        # - for and whil do *not* create a subshell:
 
             a=0
             for i in 0 1; do
@@ -354,45 +368,45 @@ b'
 
     ##properties of subshells
 
-        #Unexported variables carry over:
+        # Unexported variables carry over:
 
             a=0
             [ `( echo $a )` = 0 ] || exit 1
 
-        #Assignments do not affect parent:
+        # Assignments do not affect parent:
 
             a=0
             ( a=1 )
             [ $a = 0 ] || exit 1
 
-        #Directory changes do not affect parent:
+        # Directory changes do not affect parent:
 
             cd
             ( cd .. )
             [ "$(pwd)" = "$HOME" ] || exit 1
 
-        #Subshell output can be piped:
+        # Subshell output can be piped:
 
             [ $( ( printf a; printf b ) | cat ) = ab ] || exit 1
 
-        #Subshell input for the first command can come from a pipe:
+        # Subshell input for the first command can come from a pipe:
 
             [ $( echo a | ( cat; cat ) ) = a ] || exit 1
 
-        #PID may TODO0 must? be the same as parent:
+        # PID may TODO0 must? be the same as parent:
 
             [ `echo $$` = `( echo $$ )` ] || echo different
 
     ##subshell vs shell inside shell
 
-        #A subshell is different from a shell launched inside a shell.
+        # A subshell is different from a shell launched inside a shell.
 
-        #For example, subshells inherit variables from parent even it they were not exported:
+        # For example, subshells inherit variables from parent even it they were not exported:
 
             a=0
             [ `( echo $a )` = 0 ] || exit 1
 
-        #But a shell inside a shell does not unless they are exported:
+        # But a shell inside a shell does not unless they are exported:
 
             a=0
             bash
@@ -406,19 +420,50 @@ b'
 
 ##braces ##{} ##inline group
 
-    #Formal name: inline group.
+    # Formal name: inline group.
 
-    #Excutes in current context.
+    # Excutes in current context.
 
         a=0
         b=1
         { printf $a; printf $b; } | cat
 
-    #Prints `01`.
+    # Prints `01`.
 
-    #Does not spawn a subshell.
+    # Does not spawn a subshell.
 
-##command substitution
+##variable substitution ##${}
+
+    # Replace a variable by its value.
+
+        a="printf b"
+        assert [ $($a) = b ]
+
+    # Inside double quotes, variable substitution can happen.
+
+        a=b
+        b="$a"
+        assert [ $b = b ]
+
+        a=b
+        b="${a}c"
+        assert [ $b = bc ]
+
+    # Cannot happens inside single quoted strings.
+
+    # Escape:
+
+        a=b
+        assert [ "\$a" = '$a' ]
+
+    # Single dollars become literal dolars:
+
+        assert [ "$"  = "\$" ]
+        assert [ "$ " = "\$ " ]
+
+    # But I woud not rely on such obscure behaviour.
+
+##command substitution ##`` ##$()
 
     #<http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_03>
 
@@ -463,22 +508,22 @@ b'
 
             assert [ a"$(printf "\n\n")" = "a" ]
 
-##eval
+##process substitution
 
-    #exec string in current bash
-        eval "a=b"
-        assert [ $a = b ]
+    # bash extension.
 
-    #concatenates arguments, space separated:
-        assert [ `eval echo a` = a ]
+    # Expands a line of the type `<(echo a)` to either a FIFO or a `/dev/fd`
+    # open file descriptor that contains whatever was echoed.
 
-    ##applications
+    # Typical application: pass variables as file contents to utilities
+    # that expect files.
 
-        #make varname from var
-
-            a=b
-            eval "$a=c"
-            assert [ $b = c ]
+        echo "Process substitution:"
+        A="file content"
+        echo <(echo "$A")
+            # Possible output:
+            #/dev/fd/63
+        assert [ "$(cat < <(echo "$A"))" = "$A" ]
 
 ##string
 
@@ -565,7 +610,7 @@ b'
 
             echo *
 
-        #hidden files cur dir + `.` + `..`
+        #hidden in files cur dir. Includes the annoying `.` and `..`:
 
             echo .*
 
@@ -573,7 +618,20 @@ b'
 
             echo .[^.]* ..?*
 
-        #all files in cur dir except `.` and `..`: `ls -A` is the best POSIX option IMHO
+        # Consequence of the above: all files in current dir except `.` and `..`:
+
+        #all files in cur dir except `.` and `..`:
+
+            #- `ls -A` is good but fails if filenames have spaces
+
+            echo * .[^.]* ..?*
+
+        # This is really horrible when listing a given directory since it
+        # requires to repeat it 3 times (there is no alternation for basic glob):
+
+            echo a/* a/.[^.]* a/..?*
+
+        # Escape:
 
             echo '*'
             echo "*"
@@ -875,6 +933,11 @@ b'
                 ;;
         esac
 
+    #single line:
+
+        a=
+        case $a in a) echo "1" ;; *) echo "2" ;; esac
+
 ##if
 
     #either:
@@ -909,6 +972,8 @@ b'
         for i in {1..5..2}; do echo $i; done
             #$'1\n3\n5\n'
 
+    #break:
+
         i=0
         while [ $i -lt 10 ]; do
                 echo $i
@@ -942,106 +1007,131 @@ b'
 
     #must have newlines.
 
-#redirection
+##redirection
 
-    #0: stdin
-    #1: stdout
-    #2: stderr
+    # The following descriptors are always open by default:
 
-    #echo to stderr:
+    # - 0: stdin
+    # - 1: stdout
+    # - 2: stderr
+
+    # Echo to stderr:
 
         echo "to stderr" 1>&2
 
-        M=1
-        N=2
-        f=file
+    # Descriptor 3 to descriptor 4:
 
-    #descriptor M to descriptor N
+        echo a 3>&4
 
-        echo a "$M">&"$N"
+    # Descriptor 3 to file f:
 
-    #descriptor M to file f:
+        echo a 3>f
 
-        echo a "$M">"$f"
+    # If input descrpitor is not given it defaults 1 (stdout). Decriptor 1 to file f:
 
-    #defaults to descriptor 1 (stdout):
+        echo a >f
 
-        echo a >&"$N"
-        echo a >"$f"
+    # Descriptors 1 and 2 to file f:
 
-    #descriptors 1 and 2:
+        echo a &>f
 
-        echo a &>"$f"
+    # Same as above but desincouraged by the manual since it breaks if file name is a number:
 
-    #append stdout to file:
+        echo a >&f
+
+    # Append stdout to file:
 
         echo a >>"$f"
 
-    #descriptors
+        function outerr {
+            echo out
+            echo err 1>&2
+        }
 
-            function outerr {
-                echo out
-                echo err 1>&2
-            }
+        outerr
+        #out
+        #err
 
-            outerr
-            #out
-            #err
-            outerr &>/dev/null
-            #
-            outerr >/dev/null
-            #err
-            outerr 2>/dev/null
-            #out
+        outerr &>/dev/null
+        #
+
+        outerr >/dev/null
+        #err
+
+        outerr 2>/dev/null
+        #out
+
+    ##multiple redirections
+
+        # The order of multiple redirections matters.
+
+        # Think of them as variable assignments made from right to left.
+
             outerr >/dev/null 2>&1
             #
-            #writes stderr *and* stdout to /dev/null
-            #- first redirects stderr to stdout
-            #- then stdout to f
-            #so they both go to f
-            #rightmost comes first
 
-    ##< ##input
+            outerr 2>&1 >/dev/null
+            #err
 
-            cat <"$f"
-            #file f to stdin
-            cat < <(echo -e "a\nb\na b")
-            echo -e "a\nb\na b" | cat
-            #echo to stdin
+    ##stdin redirection
+
+        # Analogous to stdout redirection.
+
+        # Get stdin of previous command from given file.
+
+            printf abc >f
+            assert [ $(cat <f) = abc ]
+
+        # Combo combo with Process Substitution to pass a variable to stdin:
+
+            assert [ $(cat < <(printf abc)) = abc ]
 
     ##| ##pipe
 
+        # `a | b` connects stdout and stderr of `a` to stdin of `b`.
+
             assert [ "`outerr | cat`" = $'out\nerr' ]
-            #out
-            #err
-                #pipes out *and* err
+
+        # Make a pipe take only stderr:
+
             outerr |& cat
             outerr >/dev/null | cat
-            #err
 
     ##other fd
 
+        # It is possible to create further file descriptors.
+
+        # First, those descriptors must be made point somewhere,
+        # or you get a `bad file descriptor error`:
+
+            #echo a 1>&13
+
+        # The usual way to use them is to redirect them to existing files or other
+        # descriptors via the exec redirection combo.
+
+        # From now on, redirect `3` to `1`:
+
             exec 3<&1
-            #create 3
-            #write 3 to 1
+
+        # Echo to 3:
+
             echo 3 >&3
-            #1 to 3 to 1
+
+        # Close 3
+
             exec 3>&-
-            #close 3
 
-        #open f and assign fd 3 to it
+        # Open file `f` and assign fd 3 to it:
 
-            exec 3<> "$f"
+            exec 3<>f
 
-        #read the first line
+        # Read the first line
 
             read <&3
 
-        #close 3:
+        # Close `3`:
 
             exec 3>&-
-
-            echo $REPLY
 
     ##gotcha
 
@@ -1056,246 +1146,9 @@ b'
 
         #workaround: use sponge from moreutils.
 
-##test ##[]
+##[]
 
-    #Compare values and check files, answer on exit status.
-
-    #Equivalent convenient shorthand form via squre brackets: `[ ]`
-
-    #Can do tons of different tests.
-
-    #May also exist as a separate binary implementation on certain systems,
-    #but the built-in has precedence:
-
-        which test
-
-    ##string compare
-
-            test a = a && echo a
-            #a
-            test a = b && echo a
-            #
-
-    ##integer compare
-
-        #always use `-eq` family, never `=` family:
-
-            assert [ 1 -eq 1 ]
-            assert [ 1 -eq 01 ]
-            assert [ 1 -lt 2 ]
-            assert [ 2 -gt 2 ]
-            assert [ 1 -le 2 ]
-            assert [ 2 -ge 2 ]
-
-    ##file ops
-
-        ##-e
-
-            #file exists
-
-            #may be a symlink or directory
-
-            #useful to avoid overwriting useful files
-
-        ##-r
-
-            #file exists and is readable
-
-            #useful before taking input from a file, since just checking its exsitence
-            #is not enough in that case
-
-        ##-s
-
-            #exists and has size > 0
-
-                rm -rf a
-                touch a
-                assert test -f a
-
-        ##-f
-
-            #exists and is regular file (not a symlink or directory)
-
-                init_test
-                touch a
-                assert test -f a
-                cleanup_test
-
-    ##logical
-
-            test ! a = a        && assert false
-            test a = a -a b = b && assert false
-            test a = a -a a = b && assert false
-            test a = a -o a = b && assert false
-            test a = b -o a = b && assert false
-
-##read
-
-    #Reads from stdin and stores in shell variables.
-
-    #Therefore, this *must* be a shell BUILTIN, since it modifies shell variables directly
-
-    #POSIX 7.
-
-    #Get string from user into variable `a`:
-
-        #read a
-        #echo "$a"
-
-    #Cannot write with pipe into read because the pipe spawns a subshell,
-    #which cannot modify a variable in its parent shell:
-    #<http://stackoverflow.com/questions/13763942/bash-why-piping-input-to-read-only-works-when-fed-into-while-read-const>
-
-        a=a
-        echo b | read a         #`read a` is executed in a subshell!
-        [ $a = a ] || exit 1
-
-    #Creating a subshell does work however:
-
-        echo abc | ( read b; [ $b = abc ] || exit 1 ) || echo fail
-
-    #and so do while combos, which also create one subshell per loop body:
-
-        while read l; do
-            echo "$l"
-        done < <( echo -e "a\nb\na b" )
-
-    #Read from file descriptor linewise and assign to variable.
-
-        ##applications
-
-            #Read file linewise:
-
-                #while read l; do
-                #    echo "$l";
-                #done < "$f"
-
-            #Read stdout linewise:
-
-                while read l; do
-                    echo "$l"
-                done < <( echo -e "a\nb\na b" )
-
-            #Split into fields:
-
-                #IFS_OLD="$IFS"
-                #while IFS=' : ' read f1 f2
-                #do
-                #    echo "$f1 $f2"
-                #done < <( echo -e "a : b\nc : d" )
-                #IFS="$IFS_OLD"
-
-    ##GNU extensions
-
-        #-p print a prompt message:
-
-            read -p "enter string: " s
-            echo "you entered $s"
-
-##exec
-
-    #bash interface similar to an exec system call:
-    #ends current shell and runs given command instead
-
-    #destroys the calling bash!
-
-        assert [ $SHLVL = 1 ]
-        exec bash
-        assert [ $SHLVL = 1 ]
-    #exec bash
-        #ls then exits bash!
-        #you don't see anything
-
-    ##application
-
-        #start a new bash with a custom environment
-
-        #and discard the old one
-
-            exec env -i a=b c=d bash --norc --noprofile
-            env
-            exit
-
-    ##jobs
-
-        #shows:
-        #- jobspec : a local job id
-        #- status : runnning, stopped, done
-        #- invocation : exact program call, including command line args. Ex: ``ls ~``
-
-            jobs
-
-        #show pids of background jobs:
-
-            jobs -p
-
-        ##jobspecs
-
-            #local job id, found by using <#jobs>
-
-            #certain commands such as ``kill``, ``fg`` them in addition to pids
-
-            #they are:
-            #- %N	Job number [N]
-            #- %S	Invocation (command line) of job begins with string S
-                #if several matches, ambiguous, and does nothing
-            #- ?S	Invocation (command line) of job contains within it string S
-            #- %%	"current" job (last job stopped in foreground or started in background)
-            #- %+	"current" job (last job stopped in foreground or started in background)
-            #- %-	last job
-
-        ##$!
-
-            #contains the pid of last background process
-
-    #ls &
-    #sleep 100 &
-    #sleep 100 &
-    #sleep 100 &
-        #runs on background
-        #
-        #[1] 12345678
-        #means local id 1
-        #process number 12345678
-        #
-        #when process ends, it prints ``[n] 1234`` and disappears
-        #
-        #stdout continues to go to cur terminal, even if in bg
-
-    #firefox
-        #Ctrl z
-        #puts currently foreground running on background stopped
-
-    #bg %3
-        #starts running job 3 which was stopped on background
-    #bg
-    #bg %+
-    #bg %%
-        #last bg job [+]
-    #bg %-
-        #before last bg job [-]
-
-    #fg %3
-        #starts running job 3 which was on background on foreground
-    #fg
-        #last job
-
-    #kill %1
-        #kill subprocess [1]
-    #kill $PID
-        #kill by process id
-
-    #wait && ls
-        #wait for all bg jobs to finish
-    #wait %3 && ls
-        #job 3
-
-    #vlc 100 &
-    #vlc 100 &
-    #vlc 100 &
-    #disown %3
-        #remove job 3 from list of sub jobs
-        #closing bash will not kill it anymore
+    # Same interface as the `test` command.
 
 ##commands vs aliases vs built-ins vs keywords
 
@@ -1380,7 +1233,7 @@ b'
 
     ##type
 
-        #tell type of command (shell keyword, shell buit-in, alias, function or executable in path
+        #Tell type of command (shell keyword, shell buit-in, alias, function or executable in path.
 
             type if
                 #keyword
@@ -1598,6 +1451,55 @@ b'
             #only increases in nested bashes
             kill %+
 
+##tab expansion
+
+    #Bash in interactive mode uses tab for command completion.
+
+    #`sh` does not implement this, so this is not required by POSIX.
+
+    #For example, if you type:
+
+        #ec
+
+    #and then hit `<tab>`, you will get a list like:
+
+        #echo      eclipse   econvert
+
+    #If there is only one possible command, it expands automatically.
+
+    #To avoid this and insert a literal tab, do `<c-v><tab>`, in analogy to the other
+    #escape characters input.
+
+##exec
+
+    #POSIX 7.
+
+    # Interface similar to an exec system call:
+    # ends current shell and runs given command instead
+
+    # Destroys the calling bash!
+
+        assert [ $SHLVL = 1 ]
+        exec bash
+        assert [ $SHLVL = 1 ]
+
+    ##exec and redirection
+
+        # Redirect all followint stdout to file a:
+
+            #exec >f
+            #printf a
+
+    ##application
+
+        # Start a new bash with a custom environment.
+        # and discard the old one
+
+            exec env -i a=b c=d bash --norc --noprofile
+            env
+            exit
+
+
 ##history
 
     ##fc
@@ -1644,6 +1546,15 @@ b'
 
     ##hash
 
+        # The first time bash calls an executable,
+        # it searches the path for it.
+
+        # It then stores the basename -> path
+        # in a hashmap, and only uses the hashmap from then on.
+
+        # If the command changes location, bash does not search for it
+        # again, and just gives an error.
+
             set -h
             mkdir d
             echo "echo 2" > d/echon
@@ -1661,15 +1572,22 @@ b'
             #./echon is first in path
             #and sould print 1!
 
-            #with ``set -h``
+            #with `set -h`
             #bash does not search the path every time
             #it would take too long
             #it remembers paths!
 
-        #shows used commands in current session
-        #with usage count
+        # Show usage count of used commands:
 
             hash
+
+        # Forget all paths:
+
+            hash -r
+
+        # Forget path for a single command:
+
+            hash -d firefox
 
 ##dirs stack
 
