@@ -10,87 +10,113 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-  echo 'USAGE nethack-save-load sl pref
+    echo 'usage: nethack-save-load [a|s|l] pref
 
-SUMMARY
+#Summary
 
-  Saves or loads nethack save state.
+Manages multiple nethack saves.
 
-DESCRIPTION
+#Installation
 
-  You must save before in nethack for this to work.
-  
-  You cannot use this script while nethack is running: nethack must be off for saving and loading!!!
+Nethack dir, output save dir must and save separtor must be specified by
+modifying the variables SEP, NETHACK_SAVE_DIR and NETHACK_STATE_DIR at the beginning
+of the source code of this script.
 
-  Output save dir is created automatically each time the script is run.
+If you do this after saving, old saves will be lost.
 
-  When saving, save state cannot contain "__"
+#Sample Calls
 
-  When loading, inputing "__" loads the last saved game
+First save nethack with S command and wait for the game to quit.
 
-INSTALLATION
+To save the game use one of the following:
 
-  Nethack dir, output save dir must and save separtor must be specified by
-  modifying the variables SEP, NETHACK_SAVE_DIR and NETHACK_STATE_DIR at the beginning
-  of the source code of this script.
+        nethack-save-load s 1; nethack        #saves state 1, and comes back to the game
+        nethack-save-load s "hard part"; nethack     #saves state "hard part"
+        nethack-save-load s "as__df";    # forbidden because name contains magic sequence "__"
 
-  If you do this after saving, old saves will be lost.
+To list All saved games do:
 
-SAMPLE CALLS
+        nethack-save-load a
 
-  #first save nethack with S command.
-  #while the game is quit use:
+To load a state, quit the current game then use one of the following:
 
-  nethack-save-load s 1; nethack    #saves state 1, and comes back to the game
-  nethack-save-load s "hard part"; nethack   #saves state "hard part"
-  nethack-save-load s "as__df";  # forbidden because name contains magic sequence "__"
+        nethack-save-load l 1; nethack        # loads state 1, and comes back to the game
+        nethack-save-load l "hard part"; nethack        # loads state "hard part"
+        nethack-save-load l __; nethack        # loads last saved game (magic sequence "__")
 
-  #to load a state, quit with #quit
-  #while the game is quit do:
+When you start the game it should be back at last place.
 
-  nethack-save-load l 1; nethack    # loads state 1, and comes back to the game
-  nethack-save-load l "hard part"; nethack    # loads state "hard part"
-  nethack-save-load l __; nethack    # loads last saved game (magic sequence "__")
+#Description
 
-  #when you start the game it should be back at last place.
-  #TIP: hit up on the terminal to access terminal history after loading and saving to quickly load and save.
+You must exit nethack by saving the game with `S` for the save to work.
 
-AUTHORS
+You cannot use this script while nethack is running: nethack must be off for saving and loading!
 
-  Ciro D. Santilli
+Save state names cannot contain "__".
+
+There is always a special save state called "__" that loads the last game you saved with
+this program (not the last game you saved from inside nethack with `S`).
 ' 1>&2
 }
 
-if [ $# -ne 2 ]; then
-  usage
-fi
-
-SL="$1"
-PREF="$2"
 SEP="__" #separator for the new save name. cannot appear on the prefix you give!!
 
-#check no separator SEP in prefix
-if [[ "$PREF" != "$SEP" && "$PREF" == *"$SEP"* ]]; then
-  echo "State name cannot contain \"$SEP\". Use another state name."
+if [ $# -eq 0 ]; then
+    usage
+    exit 2
 fi
+COMMAND="$1"
+
+#check no separator SEP in prefix
+function check_sep {
+    if [[ "$PREF" != "$SEP" && "$PREF" == *"$SEP"* ]]; then
+        echo "State name cannot contain \"$SEP\". Use another state name."
+        exit 2
+    fi
+}
 
 mkdir -p "$NETHACK_STATE_DIR"
 
-if [ "$SL" == s ]; then
-  for F in "$NETHACK_SAVE_DIR"/*; do
-      BNAME="$(basename "$F")"
-      echo "$F"
-      sudo cp -f "$F" "$NETHACK_STATE_DIR/${PREF}${SEP}${BNAME}"
-      sudo cp -f "$F" "$NETHACK_STATE_DIR/${SEP}${SEP}${BNAME}" #also saves to a separator
-      break
-  done
-elif [ "$SL" == l ]; then
-  for F in "$NETHACK_STATE_DIR/$PREF"*; do
-    BNAME="$(basename "$F")"
-    BNAME_OLD="${BNAME##*${SEP}}"
-    sudo cp -f "$F" "$NETHACK_SAVE_DIR/$BNAME_OLD"
-    break
-  done
-fi
+case "$COMMAND" in
+    a)
+        if [ $# -ne 1 ]; then
+            usage
+            exit 2
+        fi
+        ls -1 "$NETHACK_STATE_DIR" | sed -E "s/(.*)$SEP.*/\1/"
+    ;;
+    l)
+        if [ $# -ne 2 ]; then
+            usage
+            exit 2
+        fi
+        PREF="$2"
+        check_sep
+        for F in "$NETHACK_STATE_DIR/$PREF"*; do
+            BNAME="$(basename "$F")"
+            BNAME_OLD="${BNAME##*${SEP}}"
+            sudo cp -f "$F" "$NETHACK_SAVE_DIR/$BNAME_OLD"
+            break
+        done
+    ;;
+    s)
+        if [ $# -ne 2 ]; then
+            usage
+            exit 2
+        fi
+        PREF="$2"
+        check_sep
+        for F in "$NETHACK_SAVE_DIR/$(id -u)$(id -un)"*; do
+            BNAME="$(basename "$F")"
+            sudo cp -f "$F" "$NETHACK_STATE_DIR/${PREF}${SEP}${BNAME}"
+            sudo cp -f "$F" "$NETHACK_STATE_DIR/${SEP}${SEP}${BNAME}" #also saves to a separator
+            break
+        done
+    ;;
+    *)
+        usage
+        exit 2
+    ;;
+esac
 
 exit 0

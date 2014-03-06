@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 
-#default value for empty input
+# No default value:
 
+yn=""
 msg="do something? (y/n): "
-echo -n "$msg"
 while true; do
-read yn
-    case $yn in
-        n|y ) break;;
-        *   ) echo -n "$msg";;
-    esac
+  read -p "$msg" yn
+  case "$yn" in
+    n|y ) break;;
+    * ) echo "Invalid choice.";;
+  esac
 done
-echo "$yn"
+echo "You chose: $yn"
 
-#default value for empty input
+# Default value for empty input:
 
+yn=""
 msg="do something? ([y]/n): "
-echo -n "$msg"
 while true; do
-read yn
-    case $yn in
-        y|n )           break;;
-        ''  ) yn=y;     break;;
-        *   ) echo -n "$msg";;
-    esac
+  read -p "$msg" yn
+  case "$yn" in
+    n|y ) break;;
+    "" ) yn=y; break;;
+    * ) echo "Invalid choice.";;
+  esac
 done
-echo "$yn"
+echo "You chose: $yn"
 
 exit 0

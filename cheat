@@ -56,16 +56,16 @@ set -e # stop execution if one command returns != 0
 
     #so you can't use newlines at will as you can in c
 
-function init_test {
-        wd="`pwd`"
-        tmp="`mktemp -d`"
-        cd $tmp
-}
+        function init_test {
+                wd="`pwd`"
+                tmp="`mktemp -d`"
+                cd $tmp
+        }
 
-function cleanup_test {
-        cd "$wd"
-        rm -r "$tmp"
-}
+        function cleanup_test {
+                cd "$wd"
+                rm -r "$tmp"
+        }
 
 #execute outside path
 
@@ -259,6 +259,14 @@ b")" = ab ]
 ANYTHING
 )" = a ]
 
+            # A common values for anything is `EOF`.
+
+            # This is a great combo to create files with fixed content:
+
+                cat <<EOF > filename
+content
+EOF
+
         # One line heredoc:
 
             assert [ "$(cat <<< "a")" = a ]
@@ -432,7 +440,7 @@ b'
 
     # Does not spawn a subshell.
 
-##variable substitution ##${}
+##variable substitution ##parameter expansion ##${}
 
     # Replace a variable by its value.
 
@@ -463,48 +471,96 @@ b'
 
     # But I woud not rely on such obscure behaviour.
 
+    # String length:
+
+        s='abcd'
+        assert [ ${#s} -eq 4 ]
+
+    # Substrings:
+
+        s='abcd'
+        assert [ ${s:0:1}   = a   ]
+        assert [ ${s:1:1}   = b   ]
+        assert [ ${s:0:2}   = ab  ]
+        assert [ ${s:2}     = cd  ]
+
+    # You can do certain glob operations on strings:
+
+        s='12223'
+
+    # Remove shortest matching preffix:
+
+        assert [ ${s#1*2} = 223 ]
+
+    # Uses pattern matching notation to replace.
+
+    # Mnemonic: `#` (under 3) comes before `%` (under 5),
+    # so it is the prefix, and not suffix
+
+    # Remove longest matching preffix
+
+        assert [ ${s##1*2} = 3 ]
+
+    # Mnemonic: two `##` is for long, one `#` is for short
+
+    # Remove shortest matching suffix:
+
+        assert [ ${s%2*3} = 122 ]
+
+    # Remove shortest matching suffix:
+
+        assert [ ${s%%2*3} = 1 ]
+
+    ##applications
+
+        # Get file extension or path without the extension:
+
+            s='a/b.ext'
+            assert [ ${s%.*} = a/b ]
+            assert [ ${s##*.} = ext ]
+
 ##command substitution ##`` ##$()
 
     #<http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_03>
 
     ##backquote
 
-        #same as <#eval expression>
+        # Same as <#eval expression>
 
             assert [ `echo a` = a ]
 
-        #external double quote not assumed.
+        # External double quote not assumed.
 
             assert [ ! `echo "a b"`  = "a b" ]
             assert [ "`echo "a b"`" = "a b" ]
 
-        #inner double or single quotes are fine:
+        # Inner double or single quotes are fine:
 
             assert [ "`echo "a b"`" = "a b" ]
             assert [ "`echo 'a b'`" = "a b" ]
 
-        #inner backquotes are not fine:
+        # Inner backquotes are not fine:
 
             #`echo `echo a``
 
-        #this is why `$()` is better: you can nest it because it has an open/close pair:
+        # This is why `$()` is better: you can nest it because it has an open/close pair:
 
             #$( echo $( echo a ))
 
-        #therfore consider always using `$()`
+        # Therfore consider always using `$()`.
 
     #$()
 
-        #Similar to backquote:
+        # Similar to backquote:
 
             assert [ "$(echo abc)" = "abc" ]
             assert [ "`echo abc`"  = "abc" ]
 
-        #Better than backquote because it can be nested:
+        # Better than backquote because it can be nested:
 
             assert [ "$(echo $(echo a))" = "a" ]
 
-        #Trailing newlines **are removed**!:
+        # Trailing newlines **are removed**!:
 
             assert [ a"$(printf "\n\n")" = "a" ]
 
@@ -524,6 +580,36 @@ b'
             # Possible output:
             #/dev/fd/63
         assert [ "$(cat < <(echo "$A"))" = "$A" ]
+
+##history expansion ##! ##exclamation mark
+
+    # Expands to the last command that starts with string.
+
+    # Also expands inside double quotes! but not inside single quotes.
+
+    # Controlled by the `H` option. Turned on by default on interactive shells.
+
+        set -H
+        echo a
+        !e
+        # Shell shows:
+        # echo a
+        # Output:
+        # a
+        [ "!e" = "echo a" ] || exit 1
+
+    # The substitution happens early and insanely: it even affects what will go into history.
+
+        echo a
+        echo !e
+        #echo echo a
+        echo !e
+        #echo echo echo a
+
+    # TODO why the following expands: http://stackoverflow.com/questions/22125658/escape-history-expansion-exclamation-mark-inside-command-substitution
+
+        echo a
+        echo "$(echo '!e')"
 
 ##string
 
@@ -550,122 +636,115 @@ b'
 
         assert [ '' = $'\0' ]
 
-    #string length
-
-        s='abcd'
-        assert [ ${#s} -eq 4 ]
-
-    #substrings:
-
-        s='abcd'
-        assert [ ${s:0:1}   = a   ]
-        assert [ ${s:1:1}   = b   ]
-        assert [ ${s:0:2}   = ab  ]
-        assert [ ${s:2}     = cd  ]
-
-    ##glob operations
-
-        #you can do certain glob operations on strings
-
-            s='12223'
-
-        #remove shortest matching preffix
-
-            assert [ ${s#1*2} = 223 ]
-
-        #mnemonic: `#` (under 3) comes before `%` (under 5),
-        #so it is the prefix, and not suffix
-
-        #remove longest matching preffix
-
-            assert [ ${s##1*2} = 3 ]
-
-        #mnemonic: two `##` is for long, one `#` is for short
-
-        #remove shortest matching suffix:
-
-            assert [ ${s%2*3} = 122 ]
-
-        #remove shortest matching suffix:
-
-            assert [ ${s%%2*3} = 1 ]
-
-        ##applications
-
-            #get file extension or path without the extension:
-
-                s='a/b.ext'
-                assert [ ${s%.*} = a/b ]
-                assert [ ${s##*.} = ext ]
+    # Many string operations such as length and basic pattern matching notation
+    # operations can be achieved via parameter expansion.
 
 ##expansion
 
     ##pathname expansion ##globbing
 
-        #formal name: #<pathname expansion>
+        # Formal name: #<pathname expansion>
 
-        #simple regex like expanded before command is evaluated
+        # Bash expands certain sequences to filenames before issuing commands.
 
-        #nonhidden files cur dir:
+        #  Nonhidden files cur dir (if there is at least one non-hidden file):
 
             echo *
 
-        #hidden in files cur dir. Includes the annoying `.` and `..`:
+        # Expansion only happens if there is at least one match.
+        # If not, the original sequence is used.
+
+            mkdir empty
+            cd empty
+            assert [ `printf *` = '*' ]
+
+        # Hidden in files cur dir. Includes the annoying `.` and `..`:
 
             echo .*
 
-        #hidden files cur dir except `.` and `..`: <http://stackoverflow.com/questions/2910049/how-to-use-the-wildcard-in-bash-but-exclude-the-parent-directory>
+        ##list all files in cur dir except `.` and `..` ##GLOBIGNORE
 
-            echo .[^.]* ..?*
+            # <http://stackoverflow.com/questions/2910049/how-to-use-the-wildcard-in-bash-but-exclude-the-parent-directory>
+            # <http://unix.stackexchange.com/questions/1168/how-to-glob-every-hidden-file-except-current-and-parent-directory>
 
-        # Consequence of the above: all files in current dir except `.` and `..`:
+            # The problem is that `.*` includes `.` and `..`, and `..?*` becomes literal if no files match it.
 
-        #all files in cur dir except `.` and `..`:
+            # I am yet to find a satisfactory POSIX commpliant way to do this.
 
-            #- `ls -A` is good but fails if filenames have spaces
+            ##globignore
 
-            echo * .[^.]* ..?*
+                # The best bash extension way is:
 
-        # This is really horrible when listing a given directory since it
-        # requires to repeat it 3 times (there is no alternation for basic glob):
+                    GLOBIGNORE_OLD=".:.."
+                    GLOBIGNORE=".:.."
+                    echo .*
+                    GLOBIGNORE="$GLOBIGNORE_OLD"
 
-            echo a/* a/.[^.]* a/..?*
+                    env GLOBIGNORE=".:.." bash -c 'echo .*'
+
+                # The following *does not work* TODO why:
+
+                    env GLOBIGNORE=".:.." echo *
+
+            ##dotglob
+
+                # Works for this case, but only if we also want the non hidden files.
+
+                # Harder to properly restore state than `GLOBIGNORE`:
+
+                    OPT="nullglob"
+                    shopt -u | grep -q "$OPT" && changed=true && shopt -s "$OPT"
+                    echo *
+                    [ $changed ] && shopt -u "$OPT"; unset changed
+
+            ##nullglob
+
+                # Harder to properly restore state than `GLOBIGNORE` and longer than dotglob, so not useful:
+
+                    OPT="nullglob"
+                    shopt -u | grep -q "$OPT" && changed=true && shopt -s "$OPT"
+                    echo * .[^.]* ..?*
+                    [ $changed ] && shopt -u "$OPT"; unset changed
+
+                # nullglob is required because ..?* expands to a literal otherwise.
+
+            #- `ls -A` is good to view, but not usable programmatically if filenames have spaces.
 
         # Escape:
 
             echo '*'
             echo "*"
 
-        #start with a:
+        # Start with a:
 
             echo a*
 
-        #second letter a:
+        # Second letter a:
 
             echo ?a*
 
-        #* matches "".
+        # * matches "".
 
-        #start with a or b:
+        # Start with a or b:
 
             echo [ab]*
 
-        #start with 0, 1 or 2.
+        # Start with 0, 1 or 2.
 
             echo [0-2]*
 
-        #works with vars:
+        # Works with vars:
 
             a=b
             "$a"*
 
-        #shows all the files that start with b
+        # Shows all the files that start with b
 
-        #only nonhidden:
+        # Only nonhidden:
 
         ##combos
 
-            #for loop in cur dir:
+            # For loop in cur dir:
 
                 for f in .* *; do echo "$f"; done
 
@@ -859,40 +938,38 @@ b'
 
     ##let
 
-        #comput and assign arigthmetic
+        # bash extension.
+
+        # Compute and assign arigthmetic:
 
                 let i=1+1
                 let i=i+1
                 [ $i -eq 3 ] || echo fail
 
-        #this is the nicest way to do it i think
+        # This is the nicest way to do it i think.
 
-        #NO SPACES ALLOWED! all fail:
+        # NO SPACES ALLOWED! all fail:
 
             #let i =1+1
             #let i= 1+1
             #let i=1 +1
 
-    #double parenthesis
+    ##double parenthesis ##((
 
         [ $(( 1+1 )) -eq 2 || echo fail
 
         (( 1>2 )) || echo fail
 
-    #double square brackets
-
-        #aka #[[
-
-        #aka #extended logical test
+    ##extended logical test ##double square brackets ##[[
 
 ##boolean
 
-    #&& only execute next command if previous command gives status = 1
-    #||                                                            = 0
+    # && only execute next command if previous command gives status = 1
+    # ||                                                            = 0
 
-    #if they don't execute, status is unchanged
+    # If they don't execute, status is unchanged.
 
-    #therefore, for if ``&&`` has the same effect as and and ``||`` the same effect as or!
+    # Therefore, for if `&&` has the same effect as and and `||` the same effect as or.
 
         assert [ `true && echo a` = a ]
         assert [ -z `false && echo a` ]
@@ -909,28 +986,33 @@ b'
         assert [ `if true || false; then echo a; fi` = a ]
         assert [ -z `if false || false; then echo a; fi` ]
 
-##colon
+##colon ##:
 
-    #do nothing
+    # Do nothing statement:
 
         if true; then : ; fi
 
 ##case
 
-    #each case is a <#pathname expansion> pattern
-    #or an pattern | pattern (not a feature in regular glob):
+    # Each case is a "pattern matching notation" pattern
+    # or an pattern | pattern (not a feature in general "pattern matching notation").
 
         a=
         case $a in
             [a-c])
                 echo "1"
-                ;;
+            ;;
             [d-e]|[1-3])
                 echo "2"
-                ;;
+            ;;
+            # There can be no spaces between `*` and the rest of the string!
+            # Use quoting to avoid the spaces.
+            "a "*)
+                echo "a b"
+            ;;
             *)
                 echo "3"
-                ;;
+            ;;
         esac
 
     #single line:
@@ -940,23 +1022,18 @@ b'
 
 ##if
 
-    #either:
-
         if false; then
-            echo fail
+            exit 1
         fi
 
-    #or:
+    ##not ##! ##exclamation mark
 
-        if false; then
-            echo fail
-        fi
+        # `!` can be either:
+        #
+        # - part of the if statement
+        # - part of the `test` command which is the same as bracket notation `[  ]`.
 
-    ##not
-
-        #! can be part of the if
-
-        #note that [test] also understands !
+        # Part of the `if` statement:
 
             assert [ `if ! false; then echo a; fi` = a ]
 
@@ -972,7 +1049,7 @@ b'
         for i in {1..5..2}; do echo $i; done
             #$'1\n3\n5\n'
 
-    #break:
+    # Break:
 
         i=0
         while [ $i -lt 10 ]; do
@@ -985,7 +1062,7 @@ b'
 
 ##function
 
-    #mandatory `;` on single line func:
+    # Mandatory `;` on single line func:
 
         function f { echo $1; }
 
@@ -994,18 +1071,18 @@ b'
             echo $1
         }
 
-    #unbound variable:
+    # Unbound variable:
 
         #f
 
-        assert [ "`f a`"    = $'a' ]
-        assert [ "`f a b`"  = $'a' ]
+            assert [ "`f a`"    = $'a' ]
+            assert [ "`f a b`"  = $'a' ]
 
     #ERROR:
 
         #function f { echo $1; }
 
-    #must have newlines.
+    # Must have newlines.
 
 ##redirection
 
@@ -1214,22 +1291,114 @@ b'
 
     ##set
 
-        #view/modify vars, functions and SHELLOPTS
+        # POSIX 7
 
-        #list all vars and functions that are set
+        # View/modify vars, functions and SHELLOPTS
+
+        # List all vars and functions that are set
 
             set
 
-        #sets the -e option:
+        # Sets the -e option:
 
             set -e
 
-        #unsets the -e option:
+        # Unsets the -e option:
 
             set +e
 
             man bash
             #/SHELLOPTS
+
+        # The `-+o` option allows to input long names.
+
+        # Most, but not all, of the long names have short versions.
+
+            echo a
+            set -H
+            !e
+            set +H
+            !e
+            set -o histexpand
+            !e
+            set +o histexpand
+            !e
+
+    ##shopt
+
+        # Controls boolean options that determine how the shell behaves.
+
+        # shopt vs set: <http://unix.stackexchange.com/questions/32409/set-and-shopt-why-two>
+        # shopt is not POSIX, so it only contains bash extensions.
+
+        # Show all options:
+
+            shopt
+
+        # Show one option:
+
+            shopt dotglob
+
+        # Set option:
+
+            shopt -s op
+
+        # Unset option:
+
+            shopt -u op
+
+        # Store shopt state for a single command: http://stackoverflow.com/questions/9126060/is-there-an-easy-way-to-set-nullglob-for-one-glob
+
+            OPT="nullglob"
+            shopt -u | grep -q "$OPT" && changed=true && shopt -s "$OPT"
+            echo ..*
+            [ $changed ] && shopt -u "$OPT"; unset changed
+
+    ##hash
+
+        # The first time bash calls an executable,
+        # it searches the path for it.
+
+        # It then stores the basename -> path
+        # in a hashmap, and only uses the hashmap from then on.
+
+        # If the command changes location, bash does not search for it
+        # again, and just gives an error.
+
+            set -h
+            mkdir d
+            echo "echo 2" > d/echon
+            chmod +x d/echon
+            PATH="$PATH:`pwd`:`pwd`/d"
+            assert [ `echon` = 2 ]
+            for i in {}
+            echo "echo 1" > echon
+            chmod +x echon
+            assert [ `echon` = 2 ]
+            #surprise!
+            rm -r d
+            rm echon
+
+            #./echon is first in path
+            #and sould print 1!
+
+            #with `set -h`
+            #bash does not search the path every time
+            #it would take too long
+            #it remembers paths!
+
+        # Show usage count of used commands:
+
+            hash
+
+        # Forget all paths:
+
+            hash -r
+
+        # Forget path for a single command:
+
+            hash -d firefox
+
 
     ##type
 
@@ -1352,86 +1521,89 @@ b'
 
 ##environment variables
 
-    #bash automatically sets lots of environment variables for its child processes.
+    # Bash automatically sets lots of environment variables for its child processes,
+    # in addition to those that are inherited from the parent process
 
-    #commented list : <http://wikibash-hackers.org/syntax/shellvars>
-    #also see man bash / shell variables.
+    # Some of those are readonly, others, such as GLOBIGNORE control the behaviour of bash.
 
-    #home dir. /home/ciro/ for me:
+    # Commented list : <http://wikibash-hackers.org/syntax/shellvars>
+    # also see man bash / shell variables.
+
+    # Home dir. /home/ciro/ for me:
 
         echo $HOME
 
-    #cur username:
+    # Cur username:
 
         echo $USER
 
-    #cur hostname:
+    # cur hostname:
 
         echo $HOSTNAME
 
-    #i686:
+    # i686:
 
         echo $HOSTTYPE
 
         #x86_64
 
-    #xterm on terminals run from x
+    # xterm on terminals run from x
 
         echo $TERM
 
-    #not sure what it means
+    # Not sure what it means
 
         #linux on ctrl+alt+f1 terminal
 
-    #cur working dir. ``pwd``
+    #cur working dir. ``pwd`
 
         echo $PWD
 
-    #last working dir. ``pwd``
+    # Last working dir. `pwd`
 
         echo $OLDPWD
 
-    #is printed on every terminal line:
+    # Is printed on every terminal line:
 
         echo $PS1
 
-    #may be very large due to coloring ansi coloring sequences.
+    # May be very large due to coloring ansi coloring sequences.
 
-    #second line terminal. default '>' !
+    # Second line terminal. default '>' !
 
         echo $PS2
 
-    #list of current on bash options
+    # List of current on bash options
 
         echo $BASHOPTS
 
-    #readonly, modified indirectly by ``shopts``
-    #on subshell startup, options in this list are set
-    #``man bash`` ``/shopts`` for full list
+    # Readonly, modified indirectly by ``shopts``
+    # on subshell startup, options in this list are set
+    # ``man bash`` ``/shopts`` for full list
 
-    #similar to `BASHOPTS but set with ``set`` command instead:
+    # Similar to `BASHOPTS but set with ``set`` command instead:
 
         echo $SHELLOPTS
 
-    #4.2.37(1)-release
+    # 4.2.37(1)-release
 
         echo $BASH_VERSION
 
-    #random number between 0 and 32767:
+    # Random number between 0 and 32767:
 
         echo $RANDOM
         echo $RANDOM
 
-    #seconds since shell started:
+    # Seconds since shell started:
 
         echo $SECONDS
         echo $SECONDS
 
-    #en_US.UTF-8:
+    # en_US.UTF-8:
 
         echo $LANG
 
-    #terminal width/height:
+    # Terminal width/height:
 
         echo $COLUMNS
         echo $LINES
@@ -1453,22 +1625,22 @@ b'
 
 ##tab expansion
 
-    #Bash in interactive mode uses tab for command completion.
+    # Bash in interactive mode uses tab for command completion.
 
-    #`sh` does not implement this, so this is not required by POSIX.
+    # `sh` does not implement this, so this is not required by POSIX.
 
-    #For example, if you type:
+    # For example, if you type:
 
         #ec
 
-    #and then hit `<tab>`, you will get a list like:
+    # and then hit `<tab>`, you will get a list like:
 
         #echo      eclipse   econvert
 
-    #If there is only one possible command, it expands automatically.
+    # If there is only one possible command, it expands automatically.
 
-    #To avoid this and insert a literal tab, do `<c-v><tab>`, in analogy to the other
-    #escape characters input.
+    # To avoid this and insert a literal tab, do `<c-v><tab>`, in analogy to the other
+    # escape characters input.
 
 ##exec
 
@@ -1499,7 +1671,6 @@ b'
             env
             exit
 
-
 ##history
 
     ##fc
@@ -1524,78 +1695,17 @@ b'
 
 ##clear
 
-    #clear terminal screen
+    # Clear terminal screen
 
             clear
 
-##shopt
-
-    ##builtin
-
-        #show all options:
-
-            shopt
-
-        #set option:
-
-            shopt -s op
-
-        #unset option:
-
-            shopt -u op
-
-    ##hash
-
-        # The first time bash calls an executable,
-        # it searches the path for it.
-
-        # It then stores the basename -> path
-        # in a hashmap, and only uses the hashmap from then on.
-
-        # If the command changes location, bash does not search for it
-        # again, and just gives an error.
-
-            set -h
-            mkdir d
-            echo "echo 2" > d/echon
-            chmod +x d/echon
-            PATH="$PATH:`pwd`:`pwd`/d"
-            assert [ `echon` = 2 ]
-            for i in {}
-            echo "echo 1" > echon
-            chmod +x echon
-            assert [ `echon` = 2 ]
-            #surprise!
-            rm -r d
-            rm echon
-
-            #./echon is first in path
-            #and sould print 1!
-
-            #with `set -h`
-            #bash does not search the path every time
-            #it would take too long
-            #it remembers paths!
-
-        # Show usage count of used commands:
-
-            hash
-
-        # Forget all paths:
-
-            hash -r
-
-        # Forget path for a single command:
-
-            hash -d firefox
-
 ##dirs stack
 
-    #move between dirs in stack
+    # Move between dirs in stack.
 
-    #builtins, not in `sh`
+    # Builtins, not in `sh`.
 
-    #show dir stack
+    # Show dir stack:
 
         dirs
 
@@ -1603,15 +1713,15 @@ b'
 
         dirs -v
 
-    #push to dir stack
+    # Push to dir stack
 
         pushd .
 
-    #pop fro dir stack and cd to it
+    # Pop from dir stack and cd to it
 
         popd
 
-    #very useful in when you need to cd somewherelse and come back later:
+    # Very useful in when you need to cd somewherelse and come back later:
 
         pushd .
             cd d

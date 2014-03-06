@@ -1,14 +1,20 @@
 Simple bash scripts and cheats.
 
+Most useful files:
+
+- [cheat](cheat): main cheatsheet.
+
 Bash is a backwards compatible version of `sh` with extensions.
 
 It is probably the most widespread version of `sh` today.
+
+Google coding guidelines recommend that it be the only shell variant used.
 
 POSIX 7 specifies a `sh` utility, and the GNU implementations of both `bash` and `sh` contain many extensions.
 
 You should avoid relying on those features when writing portable code.
 
-Differences between GNU bash, GNU sh, and POSIX sh shall be noted.
+Differences between GNU bash, GNU sh, and POSIX sh shall be noted in this directory.
 
 POSIX mandates things like
 
@@ -20,19 +26,17 @@ POSIX mandates things like
 
     In practice some utilities are almost always implemented as built-ins such as:
 
-    - cd
-    - eval
-    - read
+    - `cd`
+    - `eval`
+    - `read`
 
     because they directly affect the inner state of the shell, for example its variables or the current dirctory.
 
-    Other commands which could be implemented as separate binaries,
-    but it may be that bash or sh also implement built-in versions of those,
-    which is the case for example:
+    Other commands which could be implemented as separate binaries, but it may be that bash or sh also implement built-in versions of those, which is the case for example:
 
-    - echo
-    - printf
-    - test
+    - `echo`
+    - `printf`
+    - `test`
 
     POSIX does not specify if commands must be built-ins or separate binaries in path.
 
@@ -41,20 +45,21 @@ POSIX mandates things like
     In that case, the built-in version will be used.
 
 Utilities mandated by POSIX shall not in general be docummented here, even if bash or sh implement them as built-ins.
+
 This is so because it is arbitrary if utilities are a part of bash or separate binaries, so it does not make sense to
 document them together with bash.
 
 Utilities that exist only as sh or bash built-ins and which are not mandated by POSIX shall be documented here.
 
-# featured
+#Featured
 
-scripts that you may like follow. the others may be useless.
+Scripts that you may like follow. the others may be useless.
 
-## find-music-make-m3u
+##find-music-make-m3u
 
-check the recursive function which for each directory, makes an m3u all.m3u with all music under that directory.
+Check the recursive function which for each directory, makes an m3u all.m3u with all music under that directory.
 
-ex:
+Ex:
 
 * **dir1**
     * f11.wma
@@ -74,7 +79,7 @@ becomes:
 
 where the all.m3u contains all music files under its parent dir.
 
-# why not to use bash
+#Why not to use bash
 
 bash is evil:
 
@@ -92,7 +97,7 @@ bash has the following good things:
 - history
 - tab completion (partially circunvented by other languages editor autocompletion)
 
-# command line interface
+#Command line interface
 
 Execute commands from a file and exit:
 
