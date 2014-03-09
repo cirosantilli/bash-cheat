@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-set -u # error on undefined variable
-set -e # stop execution if one command returns != 0
+set -eu
+
+# Main bash language cheatsheet.
 
 #sources
 
@@ -9,52 +10,52 @@ set -e # stop execution if one command returns != 0
 
 #POSIX
 
-    #If you aim at portability, watch out not to rely on non POSIX features!
+    # If you aim at portability, watch out not to rely on non POSIX features!
 
-    #Utilities in general will not be described here, only:
+    # Utilities in general will not be described here, only:
 
-    #- language features:
-    #- POSIX extensions to utilities that have a built-in implementation
+    # - language features:
+    # - POSIX extensions to utilities that have a built-in implementation
 
 ##comments
 
         echo #
 
-    #escape comment:
+    # Escape comment:
 
         echo \#
 
 ##help
 
-    #Prints help on a built-in commands.
+    # Prints help on a built-in commands.
 
-    #Bash extension.
+    # Bash extension.
 
-    #Bash built-in
+    # Bash built-in
 
-    #View all built-in commands:
+    # View all built-in commands:
 
         help
 
-    #Get help on an specific command:
+    # Get help on an specific command:
 
         help help
         help for
 
 ##spaces
 
-    #more than one tabs or spaces are useless like in c
+    # more than one tabs or spaces are useless like in c
 
-    #`;` can be used to separate commands much like in c:
+    # `;` can be used to separate commands much like in c:
 
         echo a; echo b
 
-    #unlike c, newlines have the same meaning as `;`:
+    # Unlike C, newlines at the end od a command imply `;`:
 
         echo a
         echo b
 
-    #so you can't use newlines at will as you can in c
+    # So you can't use newlines at will as you can in C
 
         function init_test {
                 wd="`pwd`"
@@ -210,6 +211,85 @@ echo "$#"' > a
             #cur line number!
 
                 echo $LINENO
+
+##variable substitution ##parameter expansion ##${}
+
+    # Replace a variable by its value.
+
+        a="printf b"
+        assert [ $($a) = b ]
+
+    # Inside double quotes, variable substitution can happen.
+
+        a=b
+        b="$a"
+        assert [ $b = b ]
+
+        a=b
+        b="${a}c"
+        assert [ $b = bc ]
+
+    # Cannot happens inside single quoted strings.
+
+    # Escape:
+
+        a=b
+        assert [ "\$a" = '$a' ]
+
+    # Single dollars become literal dolars:
+
+        assert [ "$"  = "\$" ]
+        assert [ "$ " = "\$ " ]
+
+    # But I woud not rely on such obscure behaviour.
+
+    # String length:
+
+        s='abcd'
+        assert [ ${#s} -eq 4 ]
+
+    # Substrings:
+
+        s='abcd'
+        assert [ ${s:0:1}   = a   ]
+        assert [ ${s:1:1}   = b   ]
+        assert [ ${s:0:2}   = ab  ]
+        assert [ ${s:2}     = cd  ]
+
+    # You can do certain glob operations on strings:
+
+        s='12223'
+
+    # Remove shortest matching preffix:
+
+        assert [ ${s#1*2} = 223 ]
+
+    # Uses pattern matching notation to replace.
+
+    # Mnemonic: `#` (under 3) comes before `%` (under 5),
+    # so it is the prefix, and not suffix
+
+    # Remove longest matching preffix
+
+        assert [ ${s##1*2} = 3 ]
+
+    # Mnemonic: two `##` is for long, one `#` is for short
+
+    # Remove shortest matching suffix:
+
+        assert [ ${s%2*3} = 122 ]
+
+    # Remove shortest matching suffix:
+
+        assert [ ${s%%2*3} = 1 ]
+
+    ##applications
+
+        # Get file extension or path without the extension:
+
+            s='a/b.ext'
+            assert [ ${s%.*} = a/b ]
+            assert [ ${s##*.} = ext ]
 
 ##quoting
 
@@ -440,85 +520,6 @@ b'
 
     # Does not spawn a subshell.
 
-##variable substitution ##parameter expansion ##${}
-
-    # Replace a variable by its value.
-
-        a="printf b"
-        assert [ $($a) = b ]
-
-    # Inside double quotes, variable substitution can happen.
-
-        a=b
-        b="$a"
-        assert [ $b = b ]
-
-        a=b
-        b="${a}c"
-        assert [ $b = bc ]
-
-    # Cannot happens inside single quoted strings.
-
-    # Escape:
-
-        a=b
-        assert [ "\$a" = '$a' ]
-
-    # Single dollars become literal dolars:
-
-        assert [ "$"  = "\$" ]
-        assert [ "$ " = "\$ " ]
-
-    # But I woud not rely on such obscure behaviour.
-
-    # String length:
-
-        s='abcd'
-        assert [ ${#s} -eq 4 ]
-
-    # Substrings:
-
-        s='abcd'
-        assert [ ${s:0:1}   = a   ]
-        assert [ ${s:1:1}   = b   ]
-        assert [ ${s:0:2}   = ab  ]
-        assert [ ${s:2}     = cd  ]
-
-    # You can do certain glob operations on strings:
-
-        s='12223'
-
-    # Remove shortest matching preffix:
-
-        assert [ ${s#1*2} = 223 ]
-
-    # Uses pattern matching notation to replace.
-
-    # Mnemonic: `#` (under 3) comes before `%` (under 5),
-    # so it is the prefix, and not suffix
-
-    # Remove longest matching preffix
-
-        assert [ ${s##1*2} = 3 ]
-
-    # Mnemonic: two `##` is for long, one `#` is for short
-
-    # Remove shortest matching suffix:
-
-        assert [ ${s%2*3} = 122 ]
-
-    # Remove shortest matching suffix:
-
-        assert [ ${s%%2*3} = 1 ]
-
-    ##applications
-
-        # Get file extension or path without the extension:
-
-            s='a/b.ext'
-            assert [ ${s%.*} = a/b ]
-            assert [ ${s##*.} = ext ]
-
 ##command substitution ##`` ##$()
 
     #<http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_03>
@@ -673,18 +674,24 @@ b'
 
             ##globignore
 
-                # The best bash extension way is:
+                # The best bash extension way without subshell is:
 
                     GLOBIGNORE_OLD=".:.."
                     GLOBIGNORE=".:.."
                     echo .*
                     GLOBIGNORE="$GLOBIGNORE_OLD"
 
-                    env GLOBIGNORE=".:.." bash -c 'echo .*'
-
                 # The following *does not work* TODO why:
 
                     env GLOBIGNORE=".:.." echo *
+
+                # With subshell:
+
+                    (GLOBIGNORE=".:.."; echo .*)
+
+                # The following *does not work* TODO why:
+
+                    env GLOBIGNORE=".:.." bash -c 'echo .*'
 
             ##dotglob
 
@@ -780,7 +787,7 @@ b'
 
         #{}
 
-        #quite useful
+        # Quite useful.
 
         ##alternatives
 
@@ -1293,11 +1300,31 @@ b'
 
         # POSIX 7
 
-        # View/modify vars, functions and SHELLOPTS
+        # View/modify vars, functions and SHELLOPTS.
 
-        # List all vars and functions that are set
+        ##invocation
+
+            # All of the set options options can be set from the command line invocation.
+
+            # For example, it is the same to do:
+
+                #bash -e a.sh
+
+            # and to add:
+
+                #set -e
+
+            # To the top of `a.sh`.
+
+            # There are however certain options which can only be used as command line arguments, such as `-c`.
+
+        # List all vars and functions that are set:
 
             set
+
+        # List only set options:
+
+            echo $-
 
         # Sets the -e option:
 
@@ -1323,6 +1350,78 @@ b'
             !e
             set +o histexpand
             !e
+
+        # View the values of all `-o` options:
+
+            set -o
+
+        # TODO: how to save and restore both single letter and `-o` options?
+
+        ##set readline options
+
+            # `set` can also be used to set readline options that determine how lines are read.
+
+            # If lines are longer than screen, put then on a pager that allows you to navigate right / left with arrow keys.
+
+                set horizontal-scroll-mode on
+
+        ##most useful options
+
+            ##e
+
+                # Stop execution if one command returns != 0
+
+                    set +e
+                    false
+                    set -e
+                    # The following whould stop the execution of this script:
+                    #false
+
+                # It is recommended to add it to all scripts.
+
+            ##u
+
+                # Error on undefined variable:
+
+                    set -u
+
+                # It is recommended to add it to all scripts together with `-e`:
+
+                    set -eu
+
+            ##v
+
+                # Print every string before it is executed.
+
+                # Useful for debugging.
+
+                # For exapmle:
+
+                    a=b
+                    set -v
+                    echo $a
+
+                # Outputs:
+
+                    #echo $a       #stderr
+                    #b             #stdout
+
+            ##x
+
+                # Print every string before it is executed with all expansions done.
+
+                # Useful for debugging.
+
+                # For exapmle:
+
+                    a=b
+                    set -x
+                    echo $a
+
+                # Outputs:
+
+                    #+ echo b       #stderr
+                    #b              #stdout
 
     ##shopt
 
@@ -1353,6 +1452,26 @@ b'
             shopt -u | grep -q "$OPT" && changed=true && shopt -s "$OPT"
             echo ..*
             [ $changed ] && shopt -u "$OPT"; unset changed
+
+        ##invocation
+
+            # All shopt options can be set from the command line invocation with `[-+]O <opt>`
+
+            # For example:
+
+                bash -O dotglob a.sh
+
+            # Is the same as adding:
+
+                shopt -s dotglob
+
+            # to `a.sh`, and:
+
+                bash +O dotglob a.sh
+
+            # is the same as adding:
+
+                shopt -u dotglob a.sh
 
     ##hash
 
@@ -1521,107 +1640,117 @@ b'
 
 ##environment variables
 
-    # Bash automatically sets lots of environment variables for its child processes,
-    # in addition to those that are inherited from the parent process
+    # It is not possible to set an environment variable for a single command:
 
-    # Some of those are readonly, others, such as GLOBIGNORE control the behaviour of bash.
+        A=a
+        [ "$(env A=b echo "$A")" = "a" ] || exit 1
+        [ "$A" = "a" ] || exit 1
 
-    # Commented list : <http://wikibash-hackers.org/syntax/shellvars>
-    # also see man bash / shell variables.
+    ##magic
 
-    # Home dir. /home/ciro/ for me:
+        # Some variables:
 
-        echo $HOME
+        # - are automatically set by bash to special values in addition to those inherited from parent
+        # - control the behaviour of bash such as GLOBIGNORE
 
-    # Cur username:
+        # Some are readonly, others read write.
 
-        echo $USER
+        # Commented list : <http://wikibash-hackers.org/syntax/shellvars>
+        # also see man bash / shell variables.
 
-    # cur hostname:
+        # Home dir. /home/ciro/ for me:
 
-        echo $HOSTNAME
+            echo $HOME
 
-    # i686:
+        # Cur username:
 
-        echo $HOSTTYPE
+            echo $USER
 
-        #x86_64
+        # cur hostname:
 
-    # xterm on terminals run from x
+            echo $HOSTNAME
 
-        echo $TERM
+        # i686:
 
-    # Not sure what it means
+            echo $HOSTTYPE
 
-        #linux on ctrl+alt+f1 terminal
+            #x86_64
 
-    #cur working dir. ``pwd`
+        # xterm on terminals run from x
 
-        echo $PWD
+            echo $TERM
 
-    # Last working dir. `pwd`
+        # Not sure what it means
 
-        echo $OLDPWD
+            #linux on ctrl+alt+f1 terminal
 
-    # Is printed on every terminal line:
+        #cur working dir. ``pwd`
 
-        echo $PS1
+            echo $PWD
 
-    # May be very large due to coloring ansi coloring sequences.
+        # Last working dir. `pwd`
 
-    # Second line terminal. default '>' !
+            echo $OLDPWD
 
-        echo $PS2
+        # Is printed on every terminal line:
 
-    # List of current on bash options
+            echo $PS1
 
-        echo $BASHOPTS
+        # May be very large due to coloring ansi coloring sequences.
 
-    # Readonly, modified indirectly by ``shopts``
-    # on subshell startup, options in this list are set
-    # ``man bash`` ``/shopts`` for full list
+        # Second line terminal. default '>' !
 
-    # Similar to `BASHOPTS but set with ``set`` command instead:
+            echo $PS2
 
-        echo $SHELLOPTS
+        # List of current on bash options
 
-    # 4.2.37(1)-release
+            echo $BASHOPTS
 
-        echo $BASH_VERSION
+        # Readonly, modified indirectly by ``shopts``
+        # on subshell startup, options in this list are set
+        # ``man bash`` ``/shopts`` for full list
 
-    # Random number between 0 and 32767:
+        # Similar to `BASHOPTS but set with ``set`` command instead:
 
-        echo $RANDOM
-        echo $RANDOM
+            echo $SHELLOPTS
 
-    # Seconds since shell started:
+        # 4.2.37(1)-release
 
-        echo $SECONDS
-        echo $SECONDS
+            echo $BASH_VERSION
 
-    # en_US.UTF-8:
+        # Random number between 0 and 32767:
 
-        echo $LANG
+            echo $RANDOM
+            echo $RANDOM
 
-    # Terminal width/height:
+        # Seconds since shell started:
 
-        echo $COLUMNS
-        echo $LINES
+            echo $SECONDS
+            echo $SECONDS
 
-    ##shlvl
+        # en_US.UTF-8:
 
-        #depth level of cur shell
+            echo $LANG
 
-            assert [ "`echo $SHLVL`" = 1 ]
-            bash
-            assert [ "`echo $SHLVL`" = 2 ]
-            exit
-            assert [ "`echo $SHLVL`" = 1 ]
-            bash &
-            assert [ "`echo $SHLVL`" = 1 ]
-            #does not increase
-            #only increases in nested bashes
-            kill %+
+        # Terminal width/height:
+
+            echo $COLUMNS
+            echo $LINES
+
+        ##SHLVL
+
+            #depth level of cur shell
+
+                assert [ "`echo $SHLVL`" = 1 ]
+                bash
+                assert [ "`echo $SHLVL`" = 2 ]
+                exit
+                assert [ "`echo $SHLVL`" = 1 ]
+                bash &
+                assert [ "`echo $SHLVL`" = 1 ]
+                #does not increase
+                #only increases in nested bashes
+                kill %+
 
 ##tab expansion
 
