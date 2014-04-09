@@ -49,13 +49,13 @@ Bash golfs extremely well for:
 Bash is evil:
 
 - has evil quoting
-- has arithmetics, boolean arithmetics, etc
+- has arithmetics, boolean arithmetics, etc.
 - evil to get values out of functions
 - does not cross operating systems
 - lacks good libraries
 - slow
 
-#Build-ins
+#Built-ins
 
 Some utilities are almost always implemented as built-ins such as:
 
@@ -63,7 +63,7 @@ Some utilities are almost always implemented as built-ins such as:
 - `eval`
 - `read`
 
-because they directly affect the inner state of the shell, for example its variables or the current dirctory.
+because they directly affect the inner state of the shell, for example its variables or the current directory.
 
 Other commands which could be implemented as separate binaries, but it may be that bash or sh also implement built-in versions of those, which is the case for example:
 
