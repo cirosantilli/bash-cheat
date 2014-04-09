@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-#exactly like seq but sleep 1 sec between counts
+# Exactly like seq but sleep 1 sec between counts.
 
-#useful for testing job control
+# Useful for testing job control.
 
 for i in `seq "$@"`; do
   echo $i

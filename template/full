@@ -6,48 +6,31 @@ set -e # stop execution if one command goes wrong
 usage()
 {
     F="$(basename "$0")"
-    echo "# usage
+    echo "
 
-        $F
+		$F
 
+One line summary.
 
-# summary
+#Install on Ubuntu 12.04
 
+		sudo aptitude install
 
+#Examples
 
-# description
+		$F
 
-
-
-# install ubuntu
-
-        sudo aptitude install
-
-# tips
-
-
-
-# caveats
-
-
-
-# output
-
-
-
-# side effects
-
-
-
-# examples
-
-        $F
-
-# todo
+#Invocation
 " 1>&2
 }
 
-#check and install dependencies
+# Check only:
+for cmd in "latex" "pandoc"; do
+  printf "%-10s" "$cmd"
+  if hash "$cmd" 2>/dev/null; then printf "OK\n"; else printf "missing\n"; fi
+done
+
+# check suggest ubuntu pacakge if missing.
 CMD=
 PKG=
 if -n which "$CMD" &> /dev/null; then
@@ -58,6 +41,7 @@ not found. To install on Ubuntu:
     exit 1
 fi
 
+# check and suggest wget script if missing.
 CMD=
 URL=
 if -n which "$CMD" &> /dev/null; then
@@ -70,7 +54,7 @@ not found. To install:
 ' 1>&2
 fi
 
-#optional args
+# Optional args
 FLAG=false
 IPATH="./"
 OPATH="./"
@@ -99,7 +83,7 @@ done
 
 shift `expr $OPTIND - 1`
 
-#obligatory positional args
+# Obligatory positional args.
 if [ $# -gt 0 ]; then
     ="$1"
     shift
@@ -109,7 +93,7 @@ else
     exit 2
 fi
 
-#positional args with default
+# Positional args with default.
 if [ $# -gt 0 ]; then
     ="$1"
     shift
