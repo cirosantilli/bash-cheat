@@ -2,7 +2,7 @@ Bash information, cheatsheets and simple scripts.
 
 Most useful files:
 
-- [cheat](cheat): main cheatsheet.
+- [main.sh](main.sh): main cheatsheet.
 - [bin/find-music-make-m3u](bin/find-music-make-m3u)
 
 #Introduction
