@@ -1,4 +1,4 @@
-Simple Bash scripts and cheats. `sh` and other variants may also be included.
+Bash information, cheatsheets and simple scripts.
 
 Most useful files:
 
