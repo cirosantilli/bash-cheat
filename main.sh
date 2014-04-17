@@ -936,7 +936,7 @@ echo "$#"' > a
 
       # Command substitution is done inside them:
 
-        [ "$(printf a)" = a ] || exit 1
+        [ "$(printf a)" = "a" ] || exit 1
 
       ##backslash escapes
 
@@ -973,15 +973,15 @@ b")" = ab ]
 ANYTHING
 )" = a ]
 
-        # A common values for anything is `EOF`.
+        # A common values for `ANYTHING` is `EOF`.
 
         # This is a great combo to create files with fixed content:
 
-          cat <<EOF > filename
+          cat <<EOF >filename
 content
 EOF
 
-      # One line heredoc:
+      # Single line heredoc:
 
         [ "$(cat <<< "a")" = a ] || exit 1
 
@@ -999,6 +999,18 @@ EOF
 b'
 
       # Produces $'a\\\nb'
+
+    # Multiple adjacent quoted strings are joined:
+
+      function f { printf "$1"; }
+      [ "$(f "a "" b")" = "a  b" ] || exit 1
+      [ "$(f 'a '' b')" = "a  b" ] || exit 1
+
+    # When you want to add varaibles to single quoted strings, don't forget to also doble quote the variables:
+
+      S=" b "
+      [ "$(f 'a'$S'c')" = "a" ] || exit 1
+      [ "$(f 'a'"$S"'c')" = "a b c" ] || exit 1
 
     ##dollar double quote ##$"
 
