@@ -787,18 +787,24 @@ echo "$#"' > a
 
     ##extended globbing
 
-      #glob with ERE-like expressions instead of BREs
+      # Glob with ERE-like expressions instead of BREs
 
-      #activate:
+      # Activate:
 
         shopt -s extglob
 
-      #glob       ERE mnemonic
-      #?(pattern-list)  (...|...)?
-      #*(pattern-list)  (...|...)*
-      #+(pattern-list)  (...|...)+
-      #@(pattern-list)  (...|...)  [@ not a RE syntax]
-      #!(pattern-list)  "!" used as for negative assertions in RE syntax
+        # glob             ERE mnemonic
+        # ?(pattern-list)  (...|...)?
+        # *(pattern-list)  (...|...)*
+        # +(pattern-list)  (...|...)+
+        # @(pattern-list)  (...|...)  [@ not a RE syntax]
+        # !(pattern-list)  "!" used as for negative assertions in RE syntax
+
+      # All files except two:
+
+        #echo !(a|b)
+
+      # If you are going to copy things, use `rsync -av --exclude --exclude`.
 
   ##tilde expansion
 
