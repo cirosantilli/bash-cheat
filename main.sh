@@ -777,8 +777,6 @@ echo "$#"' > a
 
     # Shows all the files that start with b
 
-    # Only nonhidden:
-
     ##combos
 
       # For loop in cur dir:
@@ -793,6 +791,8 @@ echo "$#"' > a
 
         shopt -s extglob
 
+      # Behavior:
+
         # glob             ERE mnemonic
         # ?(pattern-list)  (...|...)?
         # *(pattern-list)  (...|...)*
@@ -800,11 +800,19 @@ echo "$#"' > a
         # @(pattern-list)  (...|...)  [@ not a RE syntax]
         # !(pattern-list)  "!" used as for negative assertions in RE syntax
 
+      # Parenthesis are mandatory.
+
+      # Examples:
+
       # All files except two:
 
         #echo !(a|b)
 
-      # If you are going to copy things, use `rsync -av --exclude --exclude`.
+      # All files inside directory except two:
+
+        #echo d/!(a|b)
+
+      # If you are going to copy things, use `rsync --exclude a --exclude b`.
 
   ##tilde expansion
 
@@ -1806,8 +1814,6 @@ b'
 
     # POSIX 7
 
-    # View/modify vars, functions and SHELLOPTS.
-
     ##invocation
 
       # All of the set options options can be set from the command line invocation.
@@ -1823,6 +1829,8 @@ b'
       # To the top of `a.sh`.
 
       # There are however certain options which can only be used as command line arguments, such as `-c`.
+
+      # A few options are automatically turned on only for interactive shells, e.g. History Expansion.
 
     # List all vars and functions that are set:
 
@@ -2076,7 +2084,7 @@ b'
 
     #good tutorial: <http://ruslanspivak.com/2010/11/20/bash-history-reverse-intelligent-search/>
 
-  ##history expansion ##! ##exclamation mark
+  ##history expansion ##! ##exclamation mark #history substitution
 
     # Expands to the last command that starts with string.
 

@@ -35,6 +35,12 @@ This is so because it is arbitrary if utilities are a part of bash or separate b
 
 Utilities that exist only as sh or bash built-ins and which are not mandated by POSIX shall be documented here.
 
+#Style guides
+
+-   Google style guide: <https://google-styleguide.googlecode.com/svn/trunk/shell.xml>
+
+    - Variable names lowercase, unless constants or environment.
+
 #Why use Bash
 
 Bash golfs extremely well for:
@@ -71,11 +77,9 @@ Other commands which could be implemented as separate binaries, but it may be th
 - `printf`
 - `test`
 
-POSIX does not specify if commands must be built-ins or separate binaries in path.
-TODO: possibly false.
-Include info on special vs regular built-ins:
-GNU Bash info <http://www.gnu.org/software/bash/manual/html_node/Special-Builtins.html>
-POSIX info: <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_14>
+POSIX does not specify if commands must be built-ins or separate binaries in path. TODO: possibly false.
+
+TODO: Include info on special vs regular built-ins. GNU Bash info <http://www.gnu.org/software/bash/manual/html_node/Special-Builtins.html>. POSIX info: <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_14>
 
 It is possible that those commands also have a separate binary implementation in the path.
 
@@ -103,16 +107,16 @@ Execute commands from stdin and exit:
 
     [ `echo 'echo a' | bash` = a ] || exit 1
 
-- `-c`: execute commands from string and exit:
+-   `-c`: execute commands from string and exit:
 
         [ `bash -c 'echo a'` = a ] || exit 1
 
-- `-s`: add command line arguments to stdin input or `-c` execution:
+-   `-s`: add command line arguments to stdin input or `-c` execution:
 
         [ `bash -c 'echo $1$2' -s a b` = ab ] || exit 1
         [ `'echo $1$2' | bash -s a b` = ab ] || exit 1
 
-- `--rcfile`: use given rc file instead of `~/.bashrc`.
+-   `--rcfile`: use given rc file instead of `~/.bashrc`.
 
     Important because of the famous combo:
 
@@ -138,7 +142,7 @@ Nice (closed) SO answer: <http://stackoverflow.com/questions/415403/whats-the-di
 
 Different files are sourced based on how bash was invocated. There are two boolean invocation parameters to consider:
 
-- login shell or not?
+-   login shell or not?
 
     In the past, there were no GUI, so the first thing you saw was a shell. That was the login shell.
 
@@ -152,7 +156,7 @@ Different files are sourced based on how bash was invocated. There are two boole
 
         shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'
 
-- interactive shell or not?
+-   interactive shell or not?
 
     To get a non interactive shell, use:
 
@@ -182,8 +186,7 @@ The files which may be sourced depending on the above parameters are:
 - `~/.bash_login`. Login if `bash_profile` not found. Never use this.
 - `~/.profile`. Login if neither `bash_profile` nor `bash_login` are found. Also used by `sh`, so only portable code here.
 - `/etc/bash.bashrc`. Non-login interactive.
-- `~/.bashrc` Non-login interactive. It is common practice to source this file from the `~/.profile` family,
-    so that interactive login shells will also gain commands like aliases.
+- `~/.bashrc` Non-login interactive. It is common practice to source this file from the `~/.profile` family, so that interactive login shells will also gain commands like aliases.
 
 The above is only a general outline of the most important behaviors. See `man bash` for the nitty-gritty.
 
