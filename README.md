@@ -13,9 +13,12 @@ It is probably the most widespread version of `sh` today.
 
 Google coding guidelines recommend that it be the only shell variant used.
 
-POSIX 7 specifies a `sh` utility, and the GNU implementations of both `bash` and `sh` contain many extensions.
+POSIX 7 specifies a `sh` utility,
+and the GNU implementations of both `bash` and `sh` contain many extensions.
 
-In modern systems such as Ubuntu 12.04, invoking as either `sh` or `bash --posix` turns on POSIX mode which attempts to be fully POSIX compatible. It does not seem to be possible to turn on POSIX mode from inside a script.
+In modern systems such as Ubuntu 12.04, invoking as either `sh` or `bash --posix`
+turns on POSIX mode which attempts to be fully POSIX compatible.
+It does not seem to be possible to turn on POSIX mode from inside a script.
 
 You should avoid relying on those features when writing portable code.
 
@@ -23,23 +26,33 @@ Differences between GNU bash, GNU sh, and POSIX sh shall be noted in this direct
 
 POSIX mandates things like:
 
-- POSIX language features, which account for a large part of its language features.
+-   POSIX language features, which account for a large part of its language features.
 
     All language features are documented in this directory.
 
-- utilities, either build-in or not.
+-   utilities, either build-in or not.
 
-Utilities mandated by POSIX shall not in general be documented here, even if bash or sh implement them as built-ins.
+Utilities mandated by POSIX shall not in general be documented here,
+even if bash or sh implement them as built-ins.
 
-This is so because it is arbitrary if utilities are a part of bash or separate binaries, so it does not make sense to document them together with Bash.
+This is so because it is arbitrary if utilities are a part of bash or separate binaries,
+so it does not make sense to document them together with Bash.
 
-Utilities that exist only as sh or bash built-ins and which are not mandated by POSIX shall be documented here.
+Utilities that exist only as sh or bash built-ins
+and which are not mandated by POSIX shall be documented here.
 
 #Style guides
 
 -   Google style guide: <https://google-styleguide.googlecode.com/svn/trunk/shell.xml>
 
     - Variable names lowercase, unless constants or environment.
+
+Our additions:
+
+- use `$HOME` instead of `~`. Same portability, clearer, can be put inside quoted strings.
+- always quote strings. Lower risk of forgetting to escape some expansion.
+    Looks more like other languages.
+- use the dot `.` operator instead of `source` as it is POSIX 7.
 
 #Why use Bash
 
@@ -69,9 +82,12 @@ Some utilities are almost always implemented as built-ins such as:
 - `eval`
 - `read`
 
-because they directly affect the inner state of the shell, for example its variables or the current directory.
+because they directly affect the inner state of the shell,
+for example its variables or the current directory.
 
-Other commands which could be implemented as separate binaries, but it may be that bash or sh also implement built-in versions of those, which is the case for example:
+Other commands which could be implemented as separate binaries,
+but it may be that bash or sh also implement built-in versions of those,
+which is the case for example:
 
 - `echo`
 - `printf`
@@ -140,7 +156,8 @@ Explained in detail at `man bash` `INVOCATION` section: very good read.
 
 Nice (closed) SO answer: <http://stackoverflow.com/questions/415403/whats-the-difference-between-bashrc-bash-profile-and-environment>
 
-Different files are sourced based on how bash was invocated. There are two boolean invocation parameters to consider:
+Different files are sourced based on how bash was invocated.
+There are two boolean invocation parameters to consider:
 
 -   login shell or not?
 
@@ -167,7 +184,11 @@ Different files are sourced based on how bash was invocated. There are two boole
 
     `man bash` says that:
 
-    > An interactive shell is one started without non-option arguments and without the -c option whose standard input and error are both connected to terminals (as determined by isatty(3)), or one started with the -i option.  PS1 is set and $- includes i if bash is interactive, allowing a shell script or a startup file to test this state.
+    > An interactive shell is one started without non-option arguments
+    > and without the -c option whose standard input and error are both connected
+    > to terminals (as determined by isatty(3)), or one started with the -i option.
+    > PS1 is set and $- includes i if bash is interactive,
+    > allowing a shell script or a startup file to test this state.
 
     So, to determine if you are on interactive shell or not, do:
 
@@ -184,18 +205,29 @@ The files which may be sourced depending on the above parameters are:
 - `/etc/profile`. Login.
 - `~/.bash_profile`. Login. Ubuntu 12.04 default template sources `.profile` here.
 - `~/.bash_login`. Login if `bash_profile` not found. Never use this.
-- `~/.profile`. Login if neither `bash_profile` nor `bash_login` are found. Also used by `sh`, so only portable code here.
+- `~/.profile`. Login if neither `bash_profile` nor `bash_login` are found.
+    Also used by `sh`, so only portable code here.
 - `/etc/bash.bashrc`. Non-login interactive.
-- `~/.bashrc` Non-login interactive. It is common practice to source this file from the `~/.profile` family, so that interactive login shells will also gain commands like aliases.
+- `~/.bashrc` Non-login interactive. It is common practice to source this file from the `~/.profile` family,
+    so that interactive login shells will also gain commands like aliases.
 
 The above is only a general outline of the most important behaviors. See `man bash` for the nitty-gritty.
 
-As usual, the `/etc` files are shared amongst all users, while those under `~` are only for a single user. `/etc/` files are always sourced before the home counterparts.
+As usual, the `/etc` files are shared amongst all users,
+while those under `~` are only for a single user.
+`/etc/` files are always sourced before the home counterparts.
 
 Things that are not inherited such as `alias` must be declared on the `.bashrc` family.
 
-If you want your `PATH` to be visible to applications launched from the GUI launcher method (Ubuntu Dash or other methods analogous to Windows start menu), you must put it into the `.profile` family, since they will be launched from a login shell.
+If you want your `PATH` to be visible to applications launched from the GUI launcher method
+(Ubuntu Dash or other methods analogous to Windows start menu),
+you must put it into the `.profile` family,
+since they will be launched from a login shell.
 
-Put all `sh` portable commands in `.profile`, and source `.profile` from `.bash_profile`. Done by default by Ubuntu 12.04.
+Put all `sh` portable commands in `.profile`,
+and source `.profile` from `.bash_profile`. Done by default by Ubuntu 12.04.
 
-When you modify the `.profile` family, you must log out, and login again for changes to take effect. Logout from a login shell can be done via `logout`, and from Ubuntu GUI, you have to use the GUI. Should be close to shutdown.
+When you modify the `.profile` family, you must log out,
+and login again for changes to take effect.
+Logout from a login shell can be done via `logout`,
+and from Ubuntu GUI, you have to use the GUI. Should be close to `shutdown`.

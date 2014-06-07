@@ -83,7 +83,7 @@ set -eu
   `realpath a`
   #a
 
-##source ##dot
+##source ##dot ##.
 
   # Same as copy pasting commands from another file in the current shell.
 
