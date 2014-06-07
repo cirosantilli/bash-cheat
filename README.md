@@ -50,8 +50,6 @@ and which are not mandated by POSIX shall be documented here.
 Our additions:
 
 - use `$HOME` instead of `~`. Same portability, clearer, can be put inside quoted strings.
-- always quote strings. Lower risk of forgetting to escape some expansion.
-    Looks more like other languages.
 - use the dot `.` operator instead of `source` as it is POSIX 7.
 
 #Why use Bash
@@ -194,11 +192,12 @@ There are two boolean invocation parameters to consider:
 
         [[ $- == *i* ]] && echo 'Interactive' || echo 'Not interactive'
 
-    Consequence of `PS1` no being set:
+    Ubuntu 12.04's default `~/.bashrc` does:
 
-    > **Never** source `~/.bashrc` nor `~/.profile` from a non-interactive script
+    > **Never** source `~/.bashrc` nor `~/.profile` from a non-interactive script.
 
-    because `~/.bashrc` often modifies `PS1` and expects it to be defined, and `~/.profile` often sources `~/.bashrc`.
+    because default `~/.bashrc` like Ubuntu's modify `PS1` and expect it to be defined,
+    and `~/.profile` often sources `~/.bashrc`.
 
 The files which may be sourced depending on the above parameters are:
 

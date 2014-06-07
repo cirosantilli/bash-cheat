@@ -106,7 +106,7 @@ set -eu
 
   # Replace a variable by its value.
 
-    a="printf b"
+    a='printf b'
     [ $($a) = b ] || exit 1
 
   # Inside double quotes, variable substitution can happen.
@@ -162,7 +162,7 @@ set -eu
 
     # Because bash is treating "printf b" as a single command.
 
-  ##vars are not expand recursivelly
+  ##parameters are not expand recursivelly
 
       b=c
       a='$b'
@@ -170,75 +170,98 @@ set -eu
       a="$b"
       [ "$a" = c ] || exit 1
 
+  ##Modifiers in parameter expansion
 
-  # String length:
+    # String length:
 
-    s='abcd'
-    [ ${#s} -eq 4 ] || exit 1
+      s='abcd'
+      [ ${#s} -eq 4 ] || exit 1
 
-  # Substrings:
+    # Substrings:
 
-    s='abcd'
-    [ ${s:0:1}  = a  ] || exit 1
-    [ ${s:1:1}  = b  ] || exit 1
-    [ ${s:0:2}  = ab ] || exit 1
-    [ ${s:2}   = cd ] || exit 1
+      s='abcd'
+      [ ${s:0:1} = 'a'  ] || exit 1
+      [ ${s:1:1} = 'b'  ] || exit 1
+      [ ${s:0:2} = 'ab' ] || exit 1
+      [ ${s:2}   = 'cd' ] || exit 1
 
-  # You can do certain glob operations on strings:
+    # You can do certain glob operations on strings:
 
-    s='12223'
+      s='12223'
 
-  # Remove shortest matching preffix:
+    # Remove shortest matching preffix:
 
-    [ ${s#1*2} = 223 ] || exit 1
+      [ ${s#1*2} = '223' ] || exit 1
 
-  # Uses pattern matching notation to replace.
+    # Uses pattern matching notation to replace.
 
-  # Mnemonic: `#` (under 3) comes before `%` (under 5),
-  # so it is the prefix, and not suffix
+    # Mnemonic: `#` (under 3) comes before `%` (under 5),
+    # so it is the prefix, and not suffix
 
-  # Remove longest matching preffix
+    # Remove longest matching preffix
 
-    [ ${s##1*2} = 3 ] || exit 1
+      [ ${s##1*2} = '3' ] || exit 1
 
-  # Mnemonic: two `##` is for long, one `#` is for short
+    # Mnemonic: two `##` is for long, one `#` is for short
 
-  # Remove shortest matching suffix:
+    # Remove shortest matching suffix:
 
-    [ ${s%2*3} = 122 ] || exit 1
+      [ ${s%2*3} = '122' ] || exit 1
 
-  # Remove shortest matching suffix:
+    # Remove shortest matching suffix:
 
-    [ ${s%%2*3} = 1 ] || exit 1
+      [ ${s%%2*3} = '1' ] || exit 1
 
-  ##applications
+    # Alternate values: <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02>
 
-    # Get file extension or path without the extension:
+    # Check if variable is unset (not null):
 
-      s='a/b.ext'
-      [ ${s%.*} = a/b ] || exit 1
-      [ ${s##*.} = ext ] || exit 1
+      var=''
+      [ -z "${var+a}" ] && exit 1
+      unset var
+      [ -z "${var+a}" ] || exit 1
+
+    # Check if variable is unset or null:
+
+      var='a'
+      [ -z "${var:+a}" ] && exit 1
+      var=''
+      [ -z "${var:+a}" ] || exit 1
+      unset var
+      [ -z "${var:+a}" ] || exit 1
+
+    # Important distinction when running with `-u`, where `[ -z "$VAR" ]` would give an error.
+    # This often bytes when running scripts that use `PS1` to check if running interactively with `[ -z "$PS1" ]`,
+    # when you want to source them from a non interactive script like a Vagrant provision script.
+
+    ##applications
+
+      # Get file extension or path without the extension:
+
+        s='a/b.ext'
+        [ ${s%.*}  = 'a/b' ]  || exit 1
+        [ ${s##*.} = 'ext' ] || exit 1
 
   ##unset
 
-      a=b
+      a=''
       unset a
-      [ -z "`echo $a`" ] || exit 1
+      [ -z "${a+a}" ] || exit 1
 
   ##readonly
 
       readon=b
       readonly readon
-    #readon=c
-      #error: a is readonly
+      #readon=c
+      #error: readon is readonly
 
-    #TODO how to undo readonly?
+    # TODO how to undo readonly?
 
   ##Null character
 
     # It seems that variables cannot contain nul characters in POSIX: http://stackoverflow.com/questions/6570531/assign-string-containing-null-character-0-to-a-variable-in-bash
 
-      printf "a\0b" | od -tx1
+      printf 'a\0b' | od -tx1
       A="$(printf "a\0b")"
       printf "$A" | od -tx1
 
@@ -1695,7 +1718,7 @@ b'
       PATH="$PATH:`pwd`:`pwd`/d"
       [ `echon` = 2 ] || exit 1
       for i in {}
-      echo "echo 1" > echon
+      echo 'echo 1' > echon
       chmod +x echon
       [ `echon` = 2 ] || exit 1
       #surprise!
