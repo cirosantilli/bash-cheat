@@ -816,12 +816,22 @@ echo "$#"' > a
 
       # Behavior:
 
-        # glob             ERE mnemonic
-        # ?(pattern-list)  (...|...)?
-        # *(pattern-list)  (...|...)*
-        # +(pattern-list)  (...|...)+
-        # @(pattern-list)  (...|...)  [@ not a RE syntax]
-        # !(pattern-list)  "!" used as for negative assertions in RE syntax
+          # glob             ERE mnemonic
+          # ?(pattern-list)  (...|...)?
+          # *(pattern-list)  (...|...)*
+          # +(pattern-list)  (...|...)+
+          # @(pattern-list)  (...|...)  [@ not a RE syntax]
+          # !(pattern-list)  "!" used as for negative assertions in RE syntax
+
+      # Note that `|` can only be used if the parenthesis are preceeded by a special char.
+
+      # Works:
+
+          # .@(js|coffee)
+
+      # Fails:
+
+          # .@(js|coffee)
 
       # Parenthesis are mandatory.
 
@@ -1458,9 +1468,13 @@ b'
 
     echo a >f
 
-  # Descriptors 1 and 2 to file f:
+  # Redirect both stdin and stdout to file:
 
     echo a &>f
+
+  # Bash extension, not present in `sh`, so only in scripts only use:
+
+    echo a >f 2>&1
 
   # Same as above but desincouraged by the manual since it breaks if file name is a number:
 
@@ -1804,29 +1818,29 @@ b'
 
     # The following print nothing:
 
-      which im-not-in-path
+      which 'im-not-in-path'
 
-      which im-not-executable
+      which 'im-not-executable'
 
       which cd
 
   ##Check if command is present
 
-      # Don't use `which`.
-
       # <http://stackoverflow.com/questions/592620/how-to-check-if-a-program-exists-from-a-bash-script>
+
+      # Don't use `which`.
 
       # Options:
 
-        command -v foo >/dev/null 2>&1 || echo "foo not present"
-        type foo >/dev/null 2>&1 || echo "foo not present"
-        hash foo 2>/dev/null || echo "foo not present"
+        command -v 'foo' >'/dev/null' 2>&1 || echo 'foo not present'
+        type 'foo' >'/dev/null' 2>&1 || echo 'foo not present'
+        hash 'foo' 2>'/dev/null' || echo 'foo not present'
 
       # Copy paste for your script:
 
-        for cmd in "latex" "pandoc"; do
-          printf "%-10s" "$cmd"
-          if hash "$cmd" 2>/dev/null; then printf "OK\n"; else printf "missing\n"; fi
+        for cmd in 'latex' 'pandoc'; do
+          printf '%-10s' "$cmd"
+          if hash "$cmd" 2>'/dev/null'; then printf 'OK\n'; else printf 'missing\n'; fi
         done
 
 ##Options
@@ -2013,10 +2027,10 @@ b'
 
     # Store shopt state for a single command: http://stackoverflow.com/questions/9126060/is-there-an-easy-way-to-set-nullglob-for-one-glob
 
-      OPT="nullglob"
+      OPT='nullglob'
       shopt -u | grep -q "$OPT" && changed=true && shopt -s "$OPT"
       echo ..*
-      [ $changed ] && shopt -u "$OPT"; unset changed
+      [ "$changed" ] && shopt -u "$OPT"; unset changed
 
     ##invocation
 
