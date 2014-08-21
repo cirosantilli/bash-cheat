@@ -141,7 +141,7 @@ set -eu
       [ "$(env A=b echo "$A")" = "a" ] || exit 1
       [ "$A" = "a" ] || exit 1
 
-  ##expansion
+  ##Expansion
 
     # Variables are not called variables, but parameter expansion for a reason:
     # they expand at an early stage, and whatever they expand to is evaluated afterwards.
@@ -162,7 +162,7 @@ set -eu
 
     # Because bash is treating "printf b" as a single command.
 
-  ##parameters are not expand recursivelly
+  ##Parameters are not expand recursivelly
 
       b=c
       a='$b'
@@ -483,6 +483,13 @@ echo "$#"' > a
         #does not increase
         #only increases in nested bashes
         kill %+
+
+  ##Valid variable names ##identifiers
+
+    # Inconclusive to me: http://stackoverflow.com/questions/2821043/allowed-characters-in-linux-environment-variable-names
+
+    # Seems that at least colon can be used `:`, which is abused on the famous `:(){ :|: & };:` fork bomb obfuscation.
+    # http://www.cyberciti.biz/faq/understanding-bash-fork-bomb/
 
 ##parenthesis ##() ##command groups
 
@@ -1254,7 +1261,7 @@ b'
     [ `if true || false; then echo a; fi` = a ] || exit 1
     [ -z `if false || false; then echo a; fi` ] || exit 1
 
-##colon ##true
+##colon ##: ##true
 
   # In bash and zsh, exactly identical to `true`:
 
@@ -1263,7 +1270,8 @@ b'
     :
     [ "$?" = 0 ] || exit 1
 
-  # Both are POSIX specified, and POSIX specifies a minor difference: `:` is a special built-in and `true` a regular built-in.
+  # Both are POSIX specified, and POSIX specifies a minor difference:
+  # `:` is a special built-in and `true` a regular built-in.
 
     ( x=hi :; [ "$x" = "hi" ] || echo fail )
     ( x=hi true; [ -z "$x" ] || echo fail )
@@ -1272,6 +1280,10 @@ b'
 
   # Bottomline: always use `true` because it is more readable,
   # and never do anything whose behaviour depends on being a special built-in or not.
+
+  # If seems however that both of them can be defined to something else by an insane programmer:
+
+    (:(){ echo a; }; :)
 
 ##case
 
@@ -1658,7 +1670,7 @@ b'
         unalias echo
         [ `command echo a` = a ] || exit 1
 
-    # Aliases are not exported, and it does not seem to be possible 
+    # Aliases are not exported, and it does not seem to be possible to do so:
 
       alias a="echo a"
       [ `a` = a ] || exit 1
