@@ -26,6 +26,14 @@ set -eu
 
     echo \#
 
+  # If a number sign appears in the middle of a string, no need to escape it:
+
+    echo a#b
+
+  # But you should anyways because it is insane. If there is a space, it becomes a comment again:
+
+    echo a #b
+
 ##help
 
   # Prints help on a built-in commands. The information shown is the same as in the highly recommended:
