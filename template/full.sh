@@ -5,8 +5,8 @@ set -e # stop execution if one command goes wrong
 
 usage()
 {
-    F="$(basename "$0")"
-    echo "
+  F="$(basename "$0")"
+  echo "
 
 		$F
 
@@ -34,23 +34,23 @@ done
 CMD=
 PKG=
 if -n which "$CMD" &> /dev/null; then
-    echo "$CMD
+  echo "$CMD
 not found. To install on Ubuntu: 
-    sudo apt-get install $PKG
+  sudo apt-get install $PKG
 " 1>&2
-    exit 1
+  exit 1
 fi
 
 # check and suggest wget script if missing.
 CMD=
 URL=
 if -n which "$CMD" &> /dev/null; then
-    echo $CMD'
+  echo $CMD'
 not found. To install:
-    INPATH=~/bin
-    OUT=$INPATH/'$CMD'
-    wget -nc -O "$OUT" "'$URL'" && \
-    chmod +x \"\$OUT\"
+  INPATH=~/bin
+  OUT=$INPATH/'$CMD'
+  wget -nc -O "$OUT" "'$URL'" && \
+  chmod +x \"\$OUT\"
 ' 1>&2
 fi
 
@@ -60,58 +60,58 @@ IPATH="./"
 OPATH="./"
 
 while getopts hi:o: OPT; do
-    case "$OPT" in
-        f)
-            FLAG=true
-            ;;
-        h)
-            usage
-            exit 0
-            ;;
-        i)
-            IPATH=$OPTARG
-            ;;
-        o)
-            OPATH=$OPTARG
-            ;;
-        \?)
-            usage
-            exit 2
-            ;;
-    esac
+  case "$OPT" in
+    f)
+      FLAG=true
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    i)
+      IPATH=$OPTARG
+      ;;
+    o)
+      OPATH=$OPTARG
+      ;;
+    \?)
+      usage
+      exit 2
+      ;;
+  esac
 done
 
 shift `expr $OPTIND - 1`
 
 # Obligatory positional args.
 if [ $# -gt 0 ]; then
-    ="$1"
-    shift
+  ="$1"
+  shift
 else
-    echo "too few arguments" 1>&2
-    usage
-    exit 2
+  echo "too few arguments" 1>&2
+  usage
+  exit 2
 fi
 
 # Positional args with default.
 if [ $# -gt 0 ]; then
-    ="$1"
-    shift
+  ="$1"
+  shift
 else
-    =
+  =
 fi
 
-#there must be no args left
+# There must be no args left.
 if [ $# -gt 0 ]; then
-    echo "too many arguments" 1>&2
-    usage
-    exit 2
+  echo "too many arguments" 1>&2
+  usage
+  exit 2
 fi
 
-#there must still be args left: undefined number
+# There must still be args left: undefined number.
 if [ $# -eq 0 ]; then
-    usage
-    exit 2
+  usage
+  exit 2
 fi
 
 for in "$@"; do

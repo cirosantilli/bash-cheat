@@ -295,24 +295,45 @@ set -eu
     # Commented list : <http://wikibash-hackers.org/syntax/shellvars>
     # also see man bash / shell variables.
 
-    ##$0
+    ##Paths related to current script
 
-      #path of cur scrip relative to cd
+      # <http://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script>
 
-        echo '#!/bin/bash
-    echo "$0"' > a
-        chmod +x a
-        ./a
-        #./a
+      # See the relpath.sh scripts in current directory for some tests.
 
-        DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-        #for the full path
+      ##$0
+
+        # Relative path to the current executed script:
+
+          printf '#!/bin/bash\necho "$0"\n' > a
+          chmod +x a
+          ./a
+
+      ##BASH_SOURCE
+
+        # Vs `$0`: `BASH_SOURCE` is also modified when a script is sourced,
+        # so it can also find the path of the sourced script.
+
+        # Get the full path of currently executing script:
+
+          DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+        # Force a script to run from current directory no matter where it was called from:
+
+          #cd "$(dirname "${BASH_SOURCE[0]}")"
+
+      ##$_
+
+        # First argument of invocation.
+
+        # Vs `$0`: `$_` follows the exact way the script was invoqued:
+        # it will give different results if you do `bash script.sh` and `./script.sh`:
+        # `/bin/bash` and `./scrit.sh` respectively.
+        # `$0` always gives `./script.sh` for both.
 
     ##$1
 
-        echo '#!/bin/bash
-    echo "$1"
-    echo "$2"' > a
+      printf '#!/bin/bash\necho "$1"\necho "$2"\n' > a
       ./a a b
       #a
       #b
@@ -424,7 +445,7 @@ echo "$#"' > a
 
       #linux on ctrl+alt+f1 terminal
 
-    #cur working dir. ``pwd`
+    #cur working dir. `pwd`
 
       echo $PWD
 
@@ -446,11 +467,11 @@ echo "$#"' > a
 
       echo $BASHOPTS
 
-    # Readonly, modified indirectly by ``shopts``
+    # Readonly, modified indirectly by `shopts`
     # on subshell startup, options in this list are set
-    # ``man bash`` ``/shopts`` for full list
+    # `man bash` `/shopts` for full list
 
-    # Similar to `BASHOPTS but set with ``set`` command instead:
+    # Similar to `BASHOPTS but set with `set` command instead:
 
       echo $SHELLOPTS
 
@@ -645,7 +666,7 @@ echo "$#"' > a
       [ "`echo "a b"`" = "a b" ] || exit 1
       [ "`echo 'a b'`" = "a b" ] || exit 1
 
-    # Inner backquotes are not fine:
+    # Inner backquotes don't work:
 
       #`echo `echo a``
 
@@ -875,37 +896,42 @@ echo "$#"' > a
 
     #*obvioustly* this does not work from scripts since scripts can be run as any user
 
-  ##brace expansion
+  ##brace expansion ##{..}
 
-    #{}
+    # Bash extension.
 
-    # Quite useful.
+    # There seems to be no decent POSIX alternative except an explicit for loop:
 
-    ##alternatives
+    # - <http://stackoverflow.com/questions/169511/how-do-i-iterate-over-a-range-of-numbers-defined-by-variables-in-bash>
+    # - <http://stackoverflow.com/questions/7300070/bash-script-looping-through-alphabet>
+
+    # The only options are to use `(())` or `bc`, both of which are really clumsy.
+
+    ## Alternatives
 
         [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ] || exit 1
 
-      #nested is ok:
+      # Nested is ok:
 
         [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ] || exit 1
 
-    ##number ranges
+    ##Number ##range
 
         [ "`for a in a{1..3}b; do echo -n "$a"; done`" = $'a1b a2b a3b ' ] || exit 1
         [ "`for a in a{-1..-3}b; do echo "$a"; done`" = $'a-1b\na-2b\na-3b' ] || exit 1
         [ "`for a in a{1..5..2}b; do echo "$a"; done`" = $'a1b\na3b\na5b' ] || exit 1
         [ "`for a in a{5..1..2}b; do echo "$a"; done`" = $'a5b\na3b\na1b' ] || exit 1
 
-    ##letter ranges
+    ##Letter range
 
         [ "`for a in 0{a..c}1; do echo "$a"; done`" = $'0a1\n0b1\n0c1' ] || exit 1
         [ "`for a in 0{a..e..2}1; do echo "$a"; done`" = $'0a1\n0c1\n0e1' ] || exit 1
 
-    #escape:
+    # Escape:
 
       echo "{1..3}"
 
-    #applications:
+    # Applications:
 
       for i in {1..5}; do echo $i; done
 
@@ -913,7 +939,7 @@ echo "$#"' > a
 
       cp a{,.bak}
 
-##array ##list
+##Array ##List
 
   # Bash extension.
 
@@ -1175,7 +1201,7 @@ b'
 
 ##true ##false
 
-  # False it is a program that does one thing: ``exit(1);`` !
+  # False it is a program that does one thing: `exit(1);` !
 
   # Very useful with bash
 
@@ -1216,11 +1242,33 @@ b'
   # Like `[]`, but more powerful.
   # Exact differences: <http://mywiki.wooledge.org/BashFAQ/031>
 
-##arithmetic
+##Arithmetic
+
+  ##Arithmetic expansion ##Double parenthesis ##$((
+
+    # Does an arithmetic comparison.
+
+      [ $(( 1+1 )) -eq 2 || exit 1
+      (( 1 + 2 == 3 )) || exit 1
+
+    # Can only evaluate a single expression.
+
+    # For multiple exressions, consider `bc`.
+
+  ##Arithmetic test
+
+    # Bash extension.
+
+    # Return true iff the arithmetic expression evaluates to non-zero.
+
+      ((2 - 3)) || exit 1
+      ((2 - 0)) && exit 1
+
+    # Same as `[ "$(())" = 0 ]`, so no need to ever use this.
 
   ##let
 
-    # bash extension.
+    # Bash extension.
 
     # Compute and assign arigthmetic:
 
@@ -1235,15 +1283,6 @@ b'
       #let i =1+1
       #let i= 1+1
       #let i=1 +1
-
-  ##double parenthesis ##((
-
-    # Does an arithmetic comparison.
-
-    # Not POSIX TODO confirm.
-
-      [ $(( 1+1 )) -eq 2 || exit 1
-      (( 1 + 2 == 3 )) || exit 1
 
 ##boolean
 
