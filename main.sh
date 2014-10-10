@@ -18,7 +18,7 @@ set -eu
   # - utilities which are closely related to bash internal state such as `compgen` or `which`.
   # - POSIX extensions to utilities that have a built-in implementation
 
-##comments
+##Comments
 
     echo #
 
@@ -34,7 +34,7 @@ set -eu
 
     echo a #b
 
-##help
+##Help
 
   # Prints help on a built-in commands. The information shown is the same as in the highly recommended:
 
@@ -53,7 +53,7 @@ set -eu
     help help
     help for
 
-##spaces
+##Spaces
 
   # More than one tabs or spaces are useless like in C.
 
@@ -110,7 +110,7 @@ set -eu
 
   # However don't use it as it is not POSIX 7.
 
-##variable substitution ##parameter expansion ##${}
+##Variable substitution ##parameter expansion ##${}
 
   # Replace a variable by its value.
 
@@ -247,7 +247,7 @@ set -eu
       # Get file extension or path without the extension:
 
         s='a/b.ext'
-        [ ${s%.*}  = 'a/b' ]  || exit 1
+        [ ${s%.*}  = 'a/b' ] || exit 1
         [ ${s##*.} = 'ext' ] || exit 1
 
   ##unset
@@ -283,7 +283,7 @@ set -eu
 
     # Bash has the `$""` extension that works for literals.
 
-  ##special vars
+  ##Special variables
 
     # Some variables:
 
@@ -512,6 +512,21 @@ echo "$#"' > a
         #does not increase
         #only increases in nested bashes
         kill %+
+
+    ##IFS
+
+      # Determines at which arguments are to be separated *after expansion and read*.
+
+        (IFS='0'; [ "$(printf '%s%s' 'a0b')" = 'a0b' ]) || exit 1
+        (IFS='0'; [ "$(printf '%s%s' $(echo 'a0b'))" = 'ab' ]) || exit 1
+
+      # Important applications:
+      #
+      # -   transform newline separated list into arguments:x
+      #     <http://unix.stackexchange.com/questions/39473/command-substitution-splitting-on-newline-but-not-space>
+      #
+      # -   loop over the lines of a file:
+      #     <http://unix.stackexchange.com/a/7012/32558>
 
   ##Valid variable names ##identifiers
 
