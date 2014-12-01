@@ -45,6 +45,9 @@ Ubuntu 14.04 symlinks `/bin/sh` into `/bin/dash`, and `man dash` says:
 
 You should avoid relying on extensions so that your code will be more portable.
 
+The actual history of all those shells is mind bending. Just for the `ash` family:
+<http://www.in-ulm.de/~mascheck/various/ash/>
+
 Differences between GNU bash, POSIX and `sh` shall be noted in this directory.
 
 See also:
@@ -63,14 +66,12 @@ POSIX mandates things like:
 
 -   utilities, either build-in or not, e.g. `ls`, `mkdir`, etc.
 
-Utilities mandated by POSIX shall not in general be documented here,
-even if bash or sh implement them as built-ins.
+    As a rule of thumb, utilities which seem touch bash internals,
+    and are more easily implemented as built-ins will be documented here,
+    e.g. `cd`, `pwd`.
 
-This is so because it is arbitrary if utilities are a part of bash or separate binaries,
-so it does not make sense to document them together with Bash.
-
-Utilities that exist only as sh or bash built-ins
-and which are not mandated by POSIX shall be documented here.
+    Other utilities which feel more external will documented at the
+    [Linux Cheat](https://github.com/cirosantilli/linux-cheat/tree/96a1478c66190df4c219bdbb79bde2a3e2cc2423)
 
 ## Style guides
 

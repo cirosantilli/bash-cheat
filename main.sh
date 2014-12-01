@@ -4,19 +4,9 @@ set -eu
 
 # Main bash language cheatsheet.
 
-#sources
-
-  #<http://tldp.org/LDP/abs/html/abs-guide.html>
-
-#POSIX
-
-  # If you aim at portability, watch out not to rely on non POSIX features!
-
-  # Utilities in general will not be described here, only:
-
-  # - language features
-  # - utilities which are closely related to bash internal state such as `compgen` or `which`.
-  # - POSIX extensions to utilities that have a built-in implementation
+# The goal is to make this fully executable and automatic self checking,
+# but currently it should not be run as it may do bad things:
+# copy and paste individual commands of interest on a shell instead.
 
 ##Comments
 
@@ -91,7 +81,11 @@ set -eu
   `realpath a`
   #a
 
-##source ##dot ##.
+##source
+
+##dot
+
+##.
 
   # Same as copy pasting commands from another file in the current shell.
 
@@ -110,7 +104,11 @@ set -eu
 
   # However don't use it as it is not POSIX 7.
 
-##Variable substitution ##parameter expansion ##${}
+##Variable substitution
+
+##parameter expansion
+
+##${}
 
   # Replace a variable by its value.
 
@@ -141,7 +139,7 @@ set -eu
 
   # But I woud not rely on such obscure behaviour.
 
-  ##environment variables
+  ##Environment variables
 
     # It is not possible to set an environment variable for a single command:
 
@@ -560,7 +558,11 @@ echo "$#"' > a
     # Seems that at least colon can be used `:`, which is abused on the famous `:(){ :|: & };:` fork bomb obfuscation.
     # http://www.cyberciti.biz/faq/understanding-bash-fork-bomb/
 
-##parenthesis ##() ##command groups
+##Parenthesis
+
+##()
+
+##Command groups
 
   # Formal name: command group.
 
@@ -707,7 +709,11 @@ echo "$#"' > a
         declare +x a
         bash -c '[ -z "$a" ]' || exit 1
 
-##braces ##{} ##inline group
+##Braces
+
+##{}
+
+##Inline group
 
   # Formal name: inline group.
 
@@ -721,11 +727,13 @@ echo "$#"' > a
 
   # Does not spawn a subshell.
 
-##command substitution ##`` ##$()
+##Command substitution
 
-  #<http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_03>
+  # <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html>
 
-  ##backquote
+  ##``
+
+  ##Backtick
 
     # Same as <#eval expression>
 
@@ -751,7 +759,7 @@ echo "$#"' > a
 
     # Therfore consider always using `$()`.
 
-  #$()
+  ##$()
 
     # Similar to backquote:
 
@@ -762,32 +770,35 @@ echo "$#"' > a
 
       [ "$(echo $(echo a))" = "a" ] || exit 1
 
-    ##trailing newlines
+    # Always use `$()` instead of backquotes.
 
-      # Trailing newlines **are removed**!:
+  ##Trailing newlines
 
-        [ "$(printf "a\n\n")" = "a" ] || exit 1
+    # Trailing newlines **are removed** after command substition.
 
-      # Methods to overcome it.
+      [ "$(printf "a\n\n")" = "a" ] || exit 1
 
-      ##Add dummy char and remove it later:
+    # Methods to overcome it.
 
-        # Best POSIX option.
+    ##Add dummy char and remove it later:
 
-          S="$(printf "a\n\n"; printf "a")"
-          [ "$(printf "${S%a}" | wc -c)" = "3" ] || exit 1
+      # Best POSIX option.
 
-      # When reading from a file, Bash extension mapfile:
+        S="$(printf "a\n\n"; printf "a")"
+        [ "$(printf "${S%a}" | wc -c)" = "3" ] || exit 1
 
-        TMP_FILE="$(mktemp)"
-        printf "a\n\n" > "$TMP_FILE"
-        mapfile <"$TMP_FILE" S
-        # TODO why fails?:
-        #[ "$(printf "${S}" | wc -c)" = "3" ] || exit 1
-        rm "$TMP_FILE"
+    # When reading from a file, Bash extension mapfile:
 
+      TMP_FILE="$(mktemp)"
+      printf "a\n\n" > "$TMP_FILE"
+      mapfile <"$TMP_FILE" S
+      # TODO why fails?:
+      #[ "$(printf "${S}" | wc -c)" = "3" ] || exit 1
+      rm "$TMP_FILE"
 
-##process substitution ##<()
+##Process substitution
+
+##<()
 
   # bash extension.
 
@@ -804,9 +815,17 @@ echo "$#"' > a
       #/dev/fd/63
     [ "$(cat < <(echo "$A"))" = "$A" ] || exit 1
 
-##expansion
+##Expansion
 
-  ##pathname expansion ##globbing
+  # Lots of basic bash functionality is done through expansion:
+  # e.g., variables are direclty replaced by their values before the command is evaluated.
+
+  # This allows you to to weird stuff with variables in bash which you couldn't do in other languages,
+  # and greatly increases the insanity of Bash.
+
+  ##Pathname expansion
+
+  ##Globbing
 
     # Formal name: #<pathname expansion>
 
@@ -827,16 +846,16 @@ echo "$#"' > a
 
       echo .*
 
-    ##list all files in cur dir except `.` and `..` ##GLOBIGNORE
+    ##List all files in cur dir except `.` and `..`
 
-      # <http://stackoverflow.com/questions/2910049/how-to-use-the-wildcard-in-bash-but-exclude-the-parent-directory>
-      # <http://unix.stackexchange.com/questions/1168/how-to-glob-every-hidden-file-except-current-and-parent-directory>
+      # - <http://stackoverflow.com/questions/2910049/how-to-use-the-wildcard-in-bash-but-exclude-the-parent-directory>
+      # - <http://unix.stackexchange.com/questions/1168/how-to-glob-every-hidden-file-except-current-and-parent-directory>
 
       # The problem is that `.*` includes `.` and `..`, and `..?*` becomes literal if no files match it.
 
       # I am yet to find a satisfactory POSIX commpliant way to do this.
 
-      ##globignore
+      ##GLOBIGNORE
 
         # The best bash extension way without subshell is:
 
@@ -911,13 +930,13 @@ echo "$#"' > a
 
     # Shows all the files that start with b
 
-    ##combos
+    ##Combos
 
       # For loop in cur dir:
 
         for f in .* *; do echo "$f"; done
 
-    ##extended globbing
+    ##Extended globbing
 
       # Glob with ERE-like expressions instead of BREs
 
@@ -958,7 +977,7 @@ echo "$#"' > a
 
       # If you are going to copy things, use `rsync --exclude a --exclude b`.
 
-  ##tilde expansion
+  ##Tilde expansion
 
       [ "`sudo -u a echo ~`" = /home/a ] || exit 1
       [ "`echo ~a`" = /home/a ] || exit 1
@@ -971,7 +990,9 @@ echo "$#"' > a
 
     #*obvioustly* this does not work from scripts since scripts can be run as any user
 
-  ##brace expansion ##{..}
+  ##Brace expansion
+
+  ##{..}
 
     # Bash extension.
 
@@ -1019,7 +1040,9 @@ echo "$#"' > a
 
       {echo,INJECTION};{echo,RULZ}
 
-##Array ##List
+##Array
+
+##List
 
   # Bash extension.
 
@@ -1084,18 +1107,26 @@ echo "$#"' > a
 
     echo ${a[@]:1:2}
 
-##map ##associative array
+##Map
+
+##Associative array
+
+  # Bash extension.
 
     declare -A aa
     aa=([a]=1 [b]=2)
     [ ${aa[a]} = 1 ] || exit 1
     [ ${aa[b]} = 2 ] || exit 1
 
-##string
+##String
 
-  ##quoting ##string literals
+  ##Quoting
 
-    ##double quotes
+  ##String literals
+
+    ##Double quotes
+
+    ##""
 
       # Space to var:
 
@@ -1106,7 +1137,7 @@ echo "$#"' > a
 
         [ "$(printf a)" = "a" ] || exit 1
 
-      ##backslash escapes
+      ##Backslash escapes
 
         # Backslash is not interpreted on literals.
 
@@ -1118,7 +1149,7 @@ echo "$#"' > a
 
         # Backslash interpretation can also be achieved by using the dollar single quote extension.
 
-      ##multiline literals
+      ##Multiline literals
 
         # Multiline literals include newlines by default:
 
@@ -1130,7 +1161,7 @@ b")" = "$(printf "a\nb" )" ]
           [ "$(echo "a\ || exit 1
 b")" = ab ]
 
-      ##heredoc
+      ##HEREDOC
 
         # Set stdin of command from a string.
 
@@ -1141,7 +1172,7 @@ b")" = ab ]
 ANYTHING
 )" = a ]
 
-        # A common values for `ANYTHING` is `EOF`.
+        # A common values for `ANYTHING` is `EOF` which stands for End Of File.
 
         # This is a great combo to create files with fixed content:
 
@@ -1153,7 +1184,9 @@ EOF
 
         [ "$(cat <<< "a")" = a ] || exit 1
 
-    ##single quotes
+    ##Single quotes
+
+    ##''
 
       # Does not do variable expansion nor command expansion.
 
@@ -1253,7 +1286,7 @@ b'
     [ -z "" ] || exit 1
     [ ! -z "a" ] || exit 1
 
-  ##double square brackets
+  ##Double square brackets
 
     # Glob works:
 
@@ -1279,7 +1312,9 @@ b'
     S="ab "
     [ "$(printf "%${N}s" | sed "s/ /$S/g")" = "ab ab ab " ] || exit 1
 
-##true ##false
+##True
+
+##False
 
   # False it is a program that does one thing: `exit(1);` !
 
@@ -1293,31 +1328,101 @@ b'
     v=true
     [ `if $v; then echo a; fi` = a ] || exit 1
 
-##square brackets ##[
+##Square brackets
+
+##[]
 
   # Bash built-in:
 
-  # Does the exact same as test, which is also usually implemented as a built-in,
-  # so it shall not be documented here.
+  # Does the exact same as the `test` command.
 
-    if test ! 1 = 1; then exit 1; fi
-    if [ ! 1 = 1 ]; then exit 1; fi
+  ##External [ command
 
-  # WARNING: leave a space after `[ ` and before ` ]`!
+    # Is is possible that your system has an *external* `[` command!
 
-  # Is is possible that your system has an *external* `[` command!
+      which \[
 
-    which \[
+    # Gives me:
 
-  # Gives me:
+      #/usr/bin/[
 
-    /usr/bin/[
+    # On Ubuntu 12.04>
 
-  # On Ubuntu 12.04!
+##test
 
-##extended logical test ##double square brackets ##[[
+  # Compare values and check files, answer on exit status.
 
-  # Not POSIX
+  # Bash implements it as a built-in, and Ubuntu also has `/usr/bin/test`:
+
+    which test
+
+  ##String compare
+
+      test a = a && echo a
+        #a
+      test a = b && echo a
+        #
+
+  ##Integer compare
+
+    # Always use `-eq` family, never `=` family:
+
+      [ 1 -eq 1 ] || exit 1
+      [ 1 -eq 01 ] || exit 1
+      [ 1 -lt 2 ] || exit 1
+      [ 2 -gt 2 ] || exit 1
+      [ 1 -le 2 ] || exit 1
+      [ 2 -ge 2 ] || exit 1
+
+  ##File operations
+
+    ##f
+
+      # Exists and is regular file (not a symlink or directory)
+
+        init_test
+        touch a
+        assert test -f a
+        cleanup_test
+
+    ##r
+
+      # File or directory exists and has read permission.
+
+      # Useful in conjunction with `-f` before taking input from a file,
+      # since just checking its exsitence is not enough to read from it.
+
+    ##e
+
+      #file exists
+
+      #may be a symlink or directory
+
+      #useful to avoid overwriting useful files
+
+    ##s
+
+      #exists and has size > 0
+
+        rm -rf a
+        touch a
+        assert test -f a
+
+  ##Logical
+
+      test ! a = a    && assert false
+      test a = a -a b = b && assert false
+      test a = a -a a = b && assert false
+      test a = a -o a = b && assert false
+      test a = b -o a = b && assert false
+
+##Extended logical test
+
+##Double square brackets
+
+##[[]]
+
+  # Bash extension.
 
   # Like `[]`, but more powerful.
   # Exact differences: <http://mywiki.wooledge.org/BashFAQ/031>
@@ -1364,7 +1469,7 @@ b'
       #let i= 1+1
       #let i=1 +1
 
-##boolean
+##Boolean
 
   # && only execute next command if previous command gives status = 1
   # ||                              = 0
@@ -1388,7 +1493,9 @@ b'
     [ `if true || false; then echo a; fi` = a ] || exit 1
     [ -z `if false || false; then echo a; fi` ] || exit 1
 
-##colon ##: ##true
+##Colon
+
+##:
 
   # In bash and zsh, exactly identical to `true`:
 
@@ -1555,7 +1662,7 @@ b'
 
     # If you don't use `bash -c`, Ctrl + Z will work.
 
-  #stdin
+  ##While from stdin
 
     # While can take stdin, and forwards it to the command it runs:
 
@@ -1655,7 +1762,7 @@ b'
       outerr 2>&1 >/dev/null
       #err
 
-  ##stdin redirection
+  ##Stdin redirection
 
     # Analogous to stdout redirection.
 
@@ -1738,10 +1845,6 @@ b'
     #reason:
 
     #workaround: use sponge from moreutils.
-
-##[]
-
-  # Same interface as the `test` command.
 
 ##Commands, built-ins, functions, aliases.
 
@@ -2249,11 +2352,11 @@ b'
       env
       exit
 
-##history
+##History
 
   ##fc
 
-    #POSIX 7
+    # POSIX 7.
 
     # Open "echo a" in vim for editing when you quit, executes what you wrote:
 
@@ -2267,11 +2370,11 @@ b'
 
   ##ctrl-r
 
-    #*very useful*
+    # *Very useful*.
 
-    #good tutorial: <http://ruslanspivak.com/2010/11/20/bash-history-reverse-intelligent-search/>
+    # Good tutorial: <http://ruslanspivak.com/2010/11/20/bash-history-reverse-intelligent-search/>
 
-  ##history expansion ##! ##exclamation mark #history substitution
+  ##History expansion ##! ##exclamation mark #history substitution
 
     # Expands to the last command that starts with string.
 
@@ -2307,7 +2410,7 @@ b'
 
       clear
 
-##dirs stack
+##dirs
 
   # Move between dirs in stack.
 
