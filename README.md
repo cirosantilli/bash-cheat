@@ -14,8 +14,7 @@ Bash is a backwards compatible version of `sh` with extensions.
 
 It is probably the most widespread version of `sh` today.
 
-[Google coding guidelines](https://en.bitcoin.it/wiki/Satoshi_Client_Node_Discovery)
-recommend that it be the only shell variant used.
+The [Google Style Guide][] recommend that it be the only shell variant used.
 
 ## Implementations
 
@@ -75,7 +74,7 @@ POSIX mandates things like:
 
 ## Style guides
 
--   Google style guide: <https://google-styleguide.googlecode.com/svn/trunk/shell.xml>
+-   [Google Style Guide][]
 
     - Variable names lowercase, unless constants or environment.
 
@@ -307,3 +306,5 @@ When you modify the `.profile` family, you must log out,
 and login again for changes to take effect.
 Logout from a login shell can be done via `logout`,
 and from Ubuntu GUI, you have to use the GUI. Should be close to `shutdown`.
+
+[google style guide]: https://google-styleguide.googlecode.com/svn/trunk/shell.xml
