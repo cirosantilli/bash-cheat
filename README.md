@@ -1,28 +1,59 @@
+# Bash Cheat
+
 Bash information, cheatsheets and simple scripts.
 
 Most useful files:
 
-- [main.sh](main.sh): main cheatsheet.
+- [main.sh](main.sh): main cheatsheet
+- [template/full.sh](main.sh): template for simple CLI interfaces
 - [bin/find-music-make-m3u](bin/find-music-make-m3u)
 
-#Introduction
+## Introduction
 
 Bash is a backwards compatible version of `sh` with extensions.
 
 It is probably the most widespread version of `sh` today.
 
-Google coding guidelines recommend that it be the only shell variant used.
+[Google coding guidelines](https://en.bitcoin.it/wiki/Satoshi_Client_Node_Discovery)
+recommend that it be the only shell variant used.
 
-POSIX 7 specifies a `sh` utility,
-and the GNU implementations of both `bash` and `sh` contain many extensions.
+## Implementations
 
-In modern systems such as Ubuntu 12.04, invoking as either `sh` or `bash --posix`
-turns on POSIX mode which attempts to be fully POSIX compatible.
+## sh
+
+## ash
+
+## dash
+
+POSIX 7 specifies a `sh` utility.
+
+`bash` implements all of `sh` and adds many extensions.
+The dominant bash implementation is by GNU <http://www.gnu.org/software/bash/>
+
+`dash` is a descendant of the <http://en.wikipedia.org/wiki/Almquist_shell>
+It is meant to me more lightweight and faster.
+TODO does it share codebase with bash?
+
+`bash --posix` turns on POSIX mode which attempts to be fully POSIX compatible
+and turns off most extensions.
 It does not seem to be possible to turn on POSIX mode from inside a script.
 
-You should avoid relying on those features when writing portable code.
+Ubuntu 14.04 symlinks `/bin/sh` into `/bin/dash`, and `man dash` says:
 
-Differences between GNU bash, GNU sh, and POSIX sh shall be noted in this directory.
+> Only features designated by POSIX, plus a few Berkeley extensions,
+> are being incorporated into this shell.
+
+You should avoid relying on extensions so that your code will be more portable.
+
+Differences between GNU bash, POSIX and `sh` shall be noted in this directory.
+
+See also:
+
+- <http://askubuntu.com/questions/141928/what-is-difference-between-bin-sh-and-bin-bash>
+- <http://stackoverflow.com/questions/5725296/difference-between-sh-and-bash>
+- <http://unix.stackexchange.com/questions/44912/are-dash-ash-and-sh-script-100-compatible>
+
+## This repository focuses on the language
 
 POSIX mandates things like:
 
@@ -30,7 +61,7 @@ POSIX mandates things like:
 
     All language features are documented in this directory.
 
--   utilities, either build-in or not.
+-   utilities, either build-in or not, e.g. `ls`, `mkdir`, etc.
 
 Utilities mandated by POSIX shall not in general be documented here,
 even if bash or sh implement them as built-ins.
@@ -41,7 +72,7 @@ so it does not make sense to document them together with Bash.
 Utilities that exist only as sh or bash built-ins
 and which are not mandated by POSIX shall be documented here.
 
-#Style guides
+## Style guides
 
 -   Google style guide: <https://google-styleguide.googlecode.com/svn/trunk/shell.xml>
 
@@ -89,7 +120,7 @@ Our additions / modifications:
 
         echo a | cat
 
-#Why use Bash
+## Why use Bash
 
 Bash golfs extremely well for:
 
@@ -98,7 +129,7 @@ Bash golfs extremely well for:
 - history
 - tab completion, partially circumvented on other languages by editor autocompletion
 
-#Why not to use Bash
+## Why not to use Bash
 
 Bash is evil:
 
@@ -109,7 +140,7 @@ Bash is evil:
 - lacks good libraries
 - slow
 
-#Built-ins
+## Built-ins
 
 Some utilities are almost always implemented as built-ins such as:
 
@@ -128,17 +159,19 @@ which is the case for example:
 - `printf`
 - `test`
 
-POSIX does not specify if commands must be built-ins or separate binaries in path. TODO: possibly false.
+POSIX does not specify if commands must be built-ins or separate binaries in path. TODO check
 
-TODO: Include info on special vs regular built-ins. GNU Bash info <http://www.gnu.org/software/bash/manual/html_node/Special-Builtins.html>. POSIX info: <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_14>
+TODO: Include info on special vs regular built-ins.
+GNU Bash info <http://www.gnu.org/software/bash/manual/html_node/Special-Builtins.html>.
+POSIX info: <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_14>
 
 It is possible that those commands also have a separate binary implementation in the path.
 
 In that case, the built-in version will be used.
 
-#Command line interface
+## Command line interface
 
-#Invocation
+## Invocation
 
 CLI invocation can use:
 
@@ -175,11 +208,11 @@ Execute commands from stdin and exit:
 
     Which opens a new interactive bash shell with certain commands added to it.
 
-#RC files
+##RC files
 
 See below.
 
-#Files autosourced at startup
+##Files autosourced at startup
 
 They are the way to specify things to all shells such as:
 
@@ -189,7 +222,8 @@ They are the way to specify things to all shells such as:
 
 Explained in detail at `man bash` `INVOCATION` section: very good read.
 
-Nice (closed) SO answer: <http://stackoverflow.com/questions/415403/whats-the-difference-between-bashrc-bash-profile-and-environment>
+Nice (closed) SO answer:
+<http://stackoverflow.com/questions/415403/whats-the-difference-between-bashrc-bash-profile-and-environment>
 
 Different files are sourced based on how bash was invocated.
 There are two boolean invocation parameters to consider:
@@ -229,22 +263,27 @@ There are two boolean invocation parameters to consider:
 
         [[ $- == *i* ]] && echo 'Interactive' || echo 'Not interactive'
 
-    Ubuntu 12.04's default `~/.bashrc` does:
+    Ubuntu 12.04's default `~/.bashrc` does implies:
 
     > **Never** source `~/.bashrc` nor `~/.profile` from a non-interactive script.
 
-    because default `~/.bashrc` like Ubuntu's modify `PS1` and expect it to be defined,
+    because the default `~/.bashrc` like Ubuntu's modify `PS1` and expect it to be defined,
     and `~/.profile` often sources `~/.bashrc`.
 
 The files which may be sourced depending on the above parameters are:
 
-- `/etc/profile`. Login.
-- `~/.bash_profile`. Login. Ubuntu 12.04 default template sources `.profile` here.
-- `~/.bash_login`. Login if `bash_profile` not found. Never use this.
-- `~/.profile`. Login if neither `bash_profile` nor `bash_login` are found.
+-   `/etc/profile`. Login.
+
+-   `~/.bash_profile`. Login. Ubuntu 12.04 default template sources `.profile` here.
+
+-   `~/.bash_login`. Login if `bash_profile` not found. Never use this.
+
+-   `~/.profile`. Login if neither `bash_profile` nor `bash_login` are found.
     Also used by `sh`, so only portable code here.
-- `/etc/bash.bashrc`. Non-login interactive.
-- `~/.bashrc` Non-login interactive. It is common practice to source this file from the `~/.profile` family,
+
+-   `/etc/bash.bashrc`. Non-login interactive.
+
+-   `~/.bashrc` Non-login interactive. It is common practice to source this file from the `~/.profile` family,
     so that interactive login shells will also gain commands like aliases.
 
 The above is only a general outline of the most important behaviors. See `man bash` for the nitty-gritty.

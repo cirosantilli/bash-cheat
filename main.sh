@@ -309,6 +309,8 @@ set -eu
           chmod +x a
           ./a
 
+        # When on a login shell, it is set to `-bash`.
+
       ##BASH_SOURCE
 
         # Vs `$0`: `BASH_SOURCE` is also modified when a script is sourced,
@@ -324,7 +326,16 @@ set -eu
 
       ##$_
 
-        # First argument of invocation.
+        # Last word of last command.
+
+          :
+          [ "$_" = ':' ] || exit 1
+          echo a b >/dev/null
+          [ "$_" = 'b' ] || exit 1
+          true
+          [ "$_" = 'true' ] || exit 1
+
+        # Before any other command, it is the first argument of invocation.
 
         # Vs `$0`: `$_` follows the exact way the script was invoqued:
         # it will give different results if you do `bash script.sh` and `./script.sh`:
@@ -427,6 +438,12 @@ echo "$#"' > a
 
       echo $USER
 
+    ##LOGNAME
+
+      # TODO vs USER: http://unix.stackexchange.com/questions/76354/who-sets-user-and-username-environment-variables
+
+        echo $LOGNAME
+
     # cur hostname:
 
       echo $HOSTNAME
@@ -475,7 +492,7 @@ echo "$#"' > a
 
       echo $SHELLOPTS
 
-    # 4.2.37(1)-release
+    # 4.2.37(1)-release:
 
       echo $BASH_VERSION
 
@@ -500,18 +517,26 @@ echo "$#"' > a
 
     ##SHLVL
 
-      #depth level of cur shell
+      # Depth level of current shell:
 
-        [ "$(echo $SHLVL)" = 1 ] || exit 1
+        [ "$SHLVL" = 1 ] || exit 1
         bash
-        [ "$(echo $SHLVL)" = 2 ] || exit 1
+        [ "$SHLVL" = 2 ] || exit 1
         exit
-        [ "$(echo $SHLVL)" = 1 ] || exit 1
-        bash &
-        [ "$(echo $SHLVL)" = 1 ] || exit 1
-        #does not increase
-        #only increases in nested bashes
-        kill %+
+        [ "$SHLVL" = 1 ] || exit 1
+
+      # Does not increase on subshells:
+
+        ( [ "$SHLVL" = 1 ] ) || exit 1
+
+      # `BASH_SUBSHELL` does that.
+
+      ##BASH_SUBSHELL
+
+        # `SHLVL` for subshells:
+
+          [ "$BASH_SUBSHELL" = 0 ] || exit 1
+          ( [ "$BASH_SUBSHELL" = 1 ] ) || exit 1
 
     ##IFS
 
@@ -555,23 +580,22 @@ echo "$#"' > a
 
   # EXCEPT you don't have to do escaping or quoting!
 
-##subshell
+##Subshell
 
-  # Good soure: <http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/subshells.html>
+  # Good source: <http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/subshells.html>
 
-  # Many bash operations are run inside subshells.
-
-  ##create subshells
+  ##Create subshells
 
     # Operations that create subshells:
 
-    # - command groups:
+    # Command groups:
 
         ( echo a )
 
-      #Commands inside braces do not generate subshells.
+    # Commands inside braces do not generate subshells.
 
-    # - both sides of pipes run on subshells:
+    # Both sides of pipes run on subshells:
+    # there is not alternative since a pipe must be created between two processes.
 
       a=0
       echo a | a=1
@@ -581,7 +605,7 @@ echo "$#"' > a
       a=1 | echo
       [ $a = 0 ] || exit 1
 
-    # - for and whil do *not* create a subshell:
+    # For and while do *not* create a subshell:
 
       a=0
       for i in 0 1; do
@@ -595,18 +619,18 @@ echo "$#"' > a
       done < <( printf "0\n1\n" )
       [ $a = 1 ] || exit 1
 
-  ##properties of subshells
+  ##Properties of subshells
 
     # Unexported variables carry over:
 
       a=0
-      [ `( echo $a )` = 0 ] || exit 1
+      [ "$( ( echo "$a" ) )" = 0 ] || exit 1
 
     # Assignments do not affect parent:
 
       a=0
       ( a=1 )
-      [ $a = 0 ] || exit 1
+      [ "$a" = 0 ] || exit 1
 
     # Directory changes do not affect parent:
 
@@ -616,36 +640,72 @@ echo "$#"' > a
 
     # Subshell output can be piped:
 
-      [ $( ( printf a; printf b ) | cat ) = ab ] || exit 1
+      [ "$( ( printf a; printf b ) | cat )" = 'ab' ] || exit 1
 
     # Subshell input for the first command can come from a pipe:
 
-      [ $( echo a | ( cat; cat ) ) = a ] || exit 1
+      [ "$( echo a | ( cat; cat ) )" = 'a' ] || exit 1
 
-    # PID may TODO0 must? be the same as parent:
+    # PID may TODO must? be the same as parent?
+    # But subshells are forks, no?
 
-      [ `echo $$` = `( echo $$ )` ] || echo different
+      [ "$(echo $$)" = "$( ( echo $$ ) )" ] || exit 1
 
-  ##subshell vs shell inside shell
+  ##Nested shells
 
     # A subshell is different from a shell launched inside a shell.
 
-    # For example, subshells inherit variables from parent even it they were not exported:
+    ##export
 
-      a=0
-      [ `( echo $a )` = 0 ] || exit 1
+      # POSIX 7:
+      # <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_22>
 
-    # But a shell inside a shell does not unless they are exported:
+      # Subshells inherit variables from parent even it they were not exported:
 
-      a=0
-      bash
-      [ -z $a ] || exit 1
-      exit 0
+        a=0
+        [ "$( ( echo "$a" ) )" = 0 ] || exit 1
 
-      a=0
-      bash
-      [ -z $a ] || exit 1
-      exit 0
+      # But a shell inside a shell does not unless they are exported:
+
+        a=0
+        bash -c '[ -z "$a" ]' || exit 1
+
+        export a=0
+        bash -c '[ ! -z "$a" ]' || exit 1
+
+      # It does not seem possible to undo an export: only to unset the variable.
+
+      # Functions can only be exported as a bash extension.
+
+        function f { echo a; }
+        export -f f
+        [ "$(bash -c 'f')" = "a" ] || exit 1
+
+      # Seems not possible in POSIX: http://stackoverflow.com/questions/1885871/exporting-a-function-in-shell
+
+      # With the `-p` argument, gives a list of exported variables,
+      # but bash seems to not follow POSIX and use the same format as it uses for `export` (no arguments),
+      # which is unspecified. So use use the `export` extension if you really need to
+      # while we wait for bash to comply.
+
+      # Sample output:
+
+        #declare -x rvm_user_flag
+        #declare -x rvm_version="1.25.31 (stable)"
+        #declare -x rvm_wrapper_name
+
+      # `declare` is a bash extension command that sets properties of variables,
+      # amongst them exportedness.
+
+    ##declare
+
+      # bash extension to set properties of variables.
+
+      # Unexport:
+
+        export a=0
+        declare +x a
+        bash -c '[ -z "$a" ]' || exit 1
 
 ##braces ##{} ##inline group
 
@@ -954,6 +1014,11 @@ echo "$#"' > a
 
       cp a{,.bak}
 
+    # Help with code injection exploits if you can't have spaces on the command:
+    # https://jon.oberheide.org/blog/2008/09/04/bash-brace-expansion-cleverness/
+
+      {echo,INJECTION};{echo,RULZ}
+
 ##Array ##List
 
   # Bash extension.
@@ -1115,11 +1180,11 @@ b'
       [ "$(f 'a'$S'c')" = "a" ] || exit 1
       [ "$(f 'a'"$S"'c')" = "a b c" ] || exit 1
 
-    ##dollar double quote ##$"
+    ##Dollar double quote ##$"
 
       # TODO
 
-    ##dollar single quote ##$''
+    ##Dollar single quote ##$''
 
       # Bash extension.
 
@@ -1137,7 +1202,7 @@ b'
 
         [ "$'a'" = "'\$a'" ] || exit 1
 
-      # Cannote be nested:
+      # Cannot be nested:
 
         #a=`echo `echo a``
 
@@ -1149,7 +1214,7 @@ b'
 
         [ a`printf "\n\n"` = a ] || exit 1
 
-  ##interpret escapes sequences in literals
+  ##Interpret escapes sequences in literals
 
     # `$'` strings interpret backslash escapes:
 
@@ -1518,7 +1583,9 @@ b'
         echo "$LINE"
       done < <(printf "a\nb\n")
 
-##redirection
+##File descriptors
+
+##Redirection
 
   # The following descriptors are always open by default:
 
@@ -1528,7 +1595,7 @@ b'
 
   # Echo to stderr:
 
-    echo "to stderr" 1>&2
+    echo 'to stderr' 1>&2
 
   # Descriptor 3 to descriptor 4:
 
@@ -1542,7 +1609,7 @@ b'
 
     echo a >f
 
-  # Redirect both stdin and stdout to file:
+  # Redirect both stdout and stderr to file:
 
     echo a &>f
 
@@ -1559,8 +1626,8 @@ b'
     echo a >>"$f"
 
     function outerr {
-      echo out
-      echo err 1>&2
+      echo 'out'
+      echo 'err' 1>&2
     }
 
     outerr
@@ -1576,7 +1643,7 @@ b'
     outerr 2>/dev/null
     #out
 
-  ##multiple redirections
+  ##Multiple redirections
 
     # The order of multiple redirections matters.
 
@@ -1612,7 +1679,7 @@ b'
       outerr |& cat
       outerr >/dev/null | cat
 
-  ##other fd
+  ##Create file descriptors
 
     # It is possible to create further file descriptors.
 
@@ -1636,6 +1703,15 @@ b'
 
       exec 3>&-
 
+    # Before you close the file, a file descriptor will be pointing to it:
+
+      #$ exec 3<> /tmp/foo
+      #$ lsof /tmp/foo
+      #COMMAND   PID USER   FD   TYPE DEVICE SIZE/OFF    NODE NAME
+      #bash    22924 ciro    3u   REG    8,8        0 1713824 /tmp/foo
+      #$ exec 3>&-
+      #$ lsof /tmp/foo
+
     # Open file `f` and assign fd 3 to it:
 
       exec 3<>f
@@ -1648,7 +1724,9 @@ b'
 
       exec 3>&-
 
-  ##gotcha
+    # TODO why is exec needed?
+
+  ##Modify in-place gotcha
 
     #YOU CANNOT MODIFY A FILE INLINE WITH REDIRECTION LIKE THIS:
 
@@ -1667,7 +1745,7 @@ b'
 
 ##Commands, built-ins, functions, aliases.
 
-  ##function
+  ##Function
 
     # Mandatory `;` or newline before closing brackets:
 
@@ -1689,16 +1767,6 @@ b'
       function f { echo $1; }
       [ "$(f a)"   = 'a' ] || exit 1
       [ "$(f a b)" = 'a' ] || exit 1
-
-    ##bash extension
-
-      # Export function to subshell via `-f`:
-
-        function f { echo a; }
-        export -f f
-        [ "$(bash -c 'f')" = "a" ] || exit 1
-
-      # Seems not possible in POSIX: http://stackoverflow.com/questions/1885871/exporting-a-function-in-shell
 
   ##alias
 
@@ -1725,12 +1793,21 @@ b'
 
       # The downside of scripts is that since they are not loaded in memory, they may take more time to load.
 
+    ##Run single command without alias:
+
+        alias echo='echo a'
+        [ "$(\echo 'b')" = 'b' ] || exit 1
+        [ "$( echo    )" = 'a' ] || exit 1
+        unalias echo
+
     ##unalias
 
       # Remove alias for good:
 
+        alias echo='echo a'
         unalias echo
-        [ `command echo a` = a ] || exit 1
+        [ "$(echo 'b')" = 'b' ] || exit 1
+        [ "$(echo 'b')" = 'b' ] || exit 1
 
     # Aliases are not exported, and it does not seem to be possible to do so:
 
@@ -1805,7 +1882,6 @@ b'
       chmod +x d/echon
       PATH="$PATH:`pwd`:`pwd`/d"
       [ `echon` = 2 ] || exit 1
-      for i in {}
       echo 'echo 1' > echon
       chmod +x echon
       [ `echon` = 2 ] || exit 1
