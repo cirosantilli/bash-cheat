@@ -1,4 +1,4 @@
-# Bash Cheat
+# ![logo](logo.png) Bash Cheat
 
 Bash information, cheatsheets and simple scripts.
 
