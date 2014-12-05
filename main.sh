@@ -8,7 +8,7 @@ set -eu
 # but currently it should not be run as it may do bad things:
 # copy and paste individual commands of interest on a shell instead.
 
-##Comments
+## Comments
 
     echo #
 
@@ -24,7 +24,7 @@ set -eu
 
     echo a #b
 
-##Help
+## Help
 
   # Prints help on a built-in commands. The information shown is the same as in the highly recommended:
 
@@ -43,7 +43,7 @@ set -eu
     help help
     help for
 
-##Spaces
+## Spaces
 
   # More than one tabs or spaces are useless like in C.
 
@@ -81,11 +81,11 @@ set -eu
   `realpath a`
   #a
 
-##source
+## source
 
-##dot
+## dot
 
-##.
+## .
 
   # Same as copy pasting commands from another file in the current shell.
 
@@ -104,11 +104,11 @@ set -eu
 
   # However don't use it as it is not POSIX 7.
 
-##Variable substitution
+## Variable substitution
 
-##parameter expansion
+## Parameter expansion
 
-##${}
+## ${}
 
   # Replace a variable by its value.
 
@@ -139,7 +139,7 @@ set -eu
 
   # But I woud not rely on such obscure behaviour.
 
-  ##Environment variables
+  ## Environment variables
 
     # It is not possible to set an environment variable for a single command:
 
@@ -147,7 +147,7 @@ set -eu
       [ "$(env A=b echo "$A")" = "a" ] || exit 1
       [ "$A" = "a" ] || exit 1
 
-  ##Expansion
+  ## Expansion
 
     # Variables are not called variables, but parameter expansion for a reason:
     # they expand at an early stage, and whatever they expand to is evaluated afterwards.
@@ -168,7 +168,7 @@ set -eu
 
     # Because bash is treating "printf b" as a single command.
 
-  ##Parameters are not expand recursivelly
+  ## Parameters are not expand recursivelly
 
       b=c
       a='$b'
@@ -176,7 +176,7 @@ set -eu
       a="$b"
       [ "$a" = c ] || exit 1
 
-  ##Modifiers in parameter expansion
+  ## Modifiers in parameter expansion
 
     # String length:
 
@@ -201,20 +201,22 @@ set -eu
 
     # Uses pattern matching notation to replace.
 
-    # Mnemonic: `#` (under 3) comes before `%` (under 5),
-    # so it is the prefix, and not suffix
+    # Mnemonic:
+
+    # - `#` (under 3) comes before `%` (under 5) (left of qwerty) so it is the prefix, and not suffix
+    # - `##` has more characters than `#`, so it is the longest match possible
 
     # Remove longest matching preffix
 
-      [ ${s##1*2} = '3' ] || exit 1
+      [ ${s## 1*2} = '3' ] || exit 1
 
-    # Mnemonic: two `##` is for long, one `#` is for short
+    # Mnemonic: two `## ` is for long, one `#` is for short
 
     # Remove shortest matching suffix:
 
       [ ${s%2*3} = '122' ] || exit 1
 
-    # Remove shortest matching suffix:
+    # Remove longest matching suffix:
 
       [ ${s%%2*3} = '1' ] || exit 1
 
@@ -240,7 +242,7 @@ set -eu
     # This often bytes when running scripts that use `PS1` to check if running interactively with `[ -z "$PS1" ]`,
     # when you want to source them from a non interactive script like a Vagrant provision script.
 
-    ##applications
+    ## Applications
 
       # Get file extension or path without the extension:
 
@@ -248,13 +250,16 @@ set -eu
         [ ${s%.*}  = 'a/b' ] || exit 1
         [ ${s##*.} = 'ext' ] || exit 1
 
-  ##unset
+  ## unset
 
       a=''
       unset a
       [ -z "${a+a}" ] || exit 1
 
-  ##readonly
+  ## readonly
+
+    # POSIX 7:
+    # <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_23>
 
       readon=b
       readonly readon
@@ -263,7 +268,7 @@ set -eu
 
     # TODO how to undo readonly?
 
-  ##Null character
+  ## Null character
 
     # It seems that variables cannot contain nul characters in POSIX: http://stackoverflow.com/questions/6570531/assign-string-containing-null-character-0-to-a-variable-in-bash
 
@@ -281,7 +286,7 @@ set -eu
 
     # Bash has the `$""` extension that works for literals.
 
-  ##Special variables
+  ## Special variables
 
     # Some variables:
 
@@ -293,13 +298,13 @@ set -eu
     # Commented list : <http://wikibash-hackers.org/syntax/shellvars>
     # also see man bash / shell variables.
 
-    ##Paths related to current script
+    ## Paths related to current script
 
       # <http://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script>
 
       # See the relpath.sh scripts in current directory for some tests.
 
-      ##$0
+      ## $0
 
         # Relative path to the current executed script:
 
@@ -309,7 +314,7 @@ set -eu
 
         # When on a login shell, it is set to `-bash`.
 
-      ##BASH_SOURCE
+      ## BASH_SOURCE
 
         # Vs `$0`: `BASH_SOURCE` is also modified when a script is sourced,
         # so it can also find the path of the sourced script.
@@ -322,7 +327,7 @@ set -eu
 
           #cd "$(dirname "${BASH_SOURCE[0]}")"
 
-      ##$_
+      ## $_
 
         # Last word of last command.
 
@@ -340,14 +345,14 @@ set -eu
         # `/bin/bash` and `./scrit.sh` respectively.
         # `$0` always gives `./script.sh` for both.
 
-    ##$1
+    ## $1
 
       printf '#!/bin/bash\necho "$1"\necho "$2"\n' > a
       ./a a b
       #a
       #b
 
-    ##$#
+    ## $#
 
       #number of cli args
 
@@ -376,7 +381,7 @@ echo "$#"' > a
             #destroy arg 2
           fi
 
-    ##$@ ##$*
+    ## $@ ## $*
 
       # Both list of all arguments separated by SPACES, but `$@` is magic and quote arguments individually.
 
@@ -395,25 +400,25 @@ echo "$#"' > a
         echo $?
         #1
 
-    ##$$
+    ## $$
 
       #PID of current process
 
         echo $$
 
-    ##PPID
+    ## PPID
 
       # ID of parent process. Linux processes contain this info.
 
         echo $PPID
 
-    ##LINENO
+    ## LINENO
 
       # Cur line number:
 
         echo $LINENO
 
-    ##$!
+    ## $!
 
       # PID of last process put in the background.
 
@@ -436,7 +441,7 @@ echo "$#"' > a
 
       echo $USER
 
-    ##LOGNAME
+    ## LOGNAME
 
       # TODO vs USER: http://unix.stackexchange.com/questions/76354/who-sets-user-and-username-environment-variables
 
@@ -513,7 +518,7 @@ echo "$#"' > a
       echo $COLUMNS
       echo $LINES
 
-    ##SHLVL
+    ## SHLVL
 
       # Depth level of current shell:
 
@@ -529,14 +534,14 @@ echo "$#"' > a
 
       # `BASH_SUBSHELL` does that.
 
-      ##BASH_SUBSHELL
+      ## BASH_SUBSHELL
 
         # `SHLVL` for subshells:
 
           [ "$BASH_SUBSHELL" = 0 ] || exit 1
           ( [ "$BASH_SUBSHELL" = 1 ] ) || exit 1
 
-    ##IFS
+    ## IFS
 
       # Determines at which arguments are to be separated *after expansion and read*.
 
@@ -551,18 +556,18 @@ echo "$#"' > a
       # -   loop over the lines of a file:
       #     <http://unix.stackexchange.com/a/7012/32558>
 
-  ##Valid variable names ##identifiers
+  ## Valid variable names ## identifiers
 
     # Inconclusive to me: http://stackoverflow.com/questions/2821043/allowed-characters-in-linux-environment-variable-names
 
     # Seems that at least colon can be used `:`, which is abused on the famous `:(){ :|: & };:` fork bomb obfuscation.
     # http://www.cyberciti.biz/faq/understanding-bash-fork-bomb/
 
-##Parenthesis
+## Parenthesis
 
-##()
+## ()
 
-##Command groups
+## Command groups
 
   # Formal name: command group.
 
@@ -582,11 +587,11 @@ echo "$#"' > a
 
   # EXCEPT you don't have to do escaping or quoting!
 
-##Subshell
+## Subshell
 
   # Good source: <http://www.linuxtopia.org/online_books/advanced_bash_scripting_guide/subshells.html>
 
-  ##Create subshells
+  ## Create subshells
 
     # Operations that create subshells:
 
@@ -621,7 +626,7 @@ echo "$#"' > a
       done < <( printf "0\n1\n" )
       [ $a = 1 ] || exit 1
 
-  ##Properties of subshells
+  ## Properties of subshells
 
     # Unexported variables carry over:
 
@@ -653,11 +658,11 @@ echo "$#"' > a
 
       [ "$(echo $$)" = "$( ( echo $$ ) )" ] || exit 1
 
-  ##Nested shells
+  ## Nested shells
 
     # A subshell is different from a shell launched inside a shell.
 
-    ##export
+    ## export
 
       # POSIX 7:
       # <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_22>
@@ -699,7 +704,7 @@ echo "$#"' > a
       # `declare` is a bash extension command that sets properties of variables,
       # amongst them exportedness.
 
-    ##declare
+    ## declare
 
       # bash extension to set properties of variables.
 
@@ -709,11 +714,11 @@ echo "$#"' > a
         declare +x a
         bash -c '[ -z "$a" ]' || exit 1
 
-##Braces
+## Braces
 
-##{}
+## {}
 
-##Inline group
+## Inline group
 
   # Formal name: inline group.
 
@@ -727,13 +732,13 @@ echo "$#"' > a
 
   # Does not spawn a subshell.
 
-##Command substitution
+## Command substitution
 
   # <http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html>
 
-  ##``
+  ## ``
 
-  ##Backtick
+  ## Backtick
 
     # Same as <#eval expression>
 
@@ -759,7 +764,7 @@ echo "$#"' > a
 
     # Therfore consider always using `$()`.
 
-  ##$()
+  ## $()
 
     # Similar to backquote:
 
@@ -772,7 +777,7 @@ echo "$#"' > a
 
     # Always use `$()` instead of backquotes.
 
-  ##Trailing newlines
+  ## Trailing newlines
 
     # Trailing newlines **are removed** after command substition.
 
@@ -780,7 +785,7 @@ echo "$#"' > a
 
     # Methods to overcome it.
 
-    ##Add dummy char and remove it later:
+    ## Add dummy char and remove it later:
 
       # Best POSIX option.
 
@@ -796,9 +801,9 @@ echo "$#"' > a
       #[ "$(printf "${S}" | wc -c)" = "3" ] || exit 1
       rm "$TMP_FILE"
 
-##Process substitution
+## Process substitution
 
-##<()
+## <()
 
   # bash extension.
 
@@ -808,14 +813,14 @@ echo "$#"' > a
   # Typical application: pass variables as file contents to utilities
   # that expect files.
 
-    echo "Process substitution:"
-    A="file content"
+    echo 'Process substitution:'
+    A='file content'
     echo <(echo "$A")
       # Possible output:
       #/dev/fd/63
     [ "$(cat < <(echo "$A"))" = "$A" ] || exit 1
 
-##Expansion
+## Expansion
 
   # Lots of basic bash functionality is done through expansion:
   # e.g., variables are direclty replaced by their values before the command is evaluated.
@@ -823,9 +828,9 @@ echo "$#"' > a
   # This allows you to to weird stuff with variables in bash which you couldn't do in other languages,
   # and greatly increases the insanity of Bash.
 
-  ##Pathname expansion
+  ## Pathname expansion
 
-  ##Globbing
+  ## Globbing
 
     # Formal name: #<pathname expansion>
 
@@ -846,7 +851,7 @@ echo "$#"' > a
 
       echo .*
 
-    ##List all files in cur dir except `.` and `..`
+    ## List all files in cur dir except `.` and `..`
 
       # - <http://stackoverflow.com/questions/2910049/how-to-use-the-wildcard-in-bash-but-exclude-the-parent-directory>
       # - <http://unix.stackexchange.com/questions/1168/how-to-glob-every-hidden-file-except-current-and-parent-directory>
@@ -855,7 +860,7 @@ echo "$#"' > a
 
       # I am yet to find a satisfactory POSIX commpliant way to do this.
 
-      ##GLOBIGNORE
+      ## GLOBIGNORE
 
         # The best bash extension way without subshell is:
 
@@ -876,7 +881,7 @@ echo "$#"' > a
 
           env GLOBIGNORE=".:.." bash -c 'echo .*'
 
-      ##dotglob
+      ## dotglob
 
         # Works for this case, but only if we also want the non hidden files.
 
@@ -887,7 +892,7 @@ echo "$#"' > a
           echo *
           [ $changed ] && shopt -u "$OPT"; unset changed
 
-      ##nullglob
+      ## nullglob
 
         # Harder to properly restore state than `GLOBIGNORE` and longer than dotglob, so not useful:
 
@@ -930,13 +935,13 @@ echo "$#"' > a
 
     # Shows all the files that start with b
 
-    ##Combos
+    ## Combos
 
       # For loop in cur dir:
 
         for f in .* *; do echo "$f"; done
 
-    ##Extended globbing
+    ## Extended globbing
 
       # Glob with ERE-like expressions instead of BREs
 
@@ -977,7 +982,7 @@ echo "$#"' > a
 
       # If you are going to copy things, use `rsync --exclude a --exclude b`.
 
-  ##Tilde expansion
+  ## Tilde expansion
 
       [ "`sudo -u a echo ~`" = /home/a ] || exit 1
       [ "`echo ~a`" = /home/a ] || exit 1
@@ -990,9 +995,9 @@ echo "$#"' > a
 
     #*obvioustly* this does not work from scripts since scripts can be run as any user
 
-  ##Brace expansion
+  ## Brace expansion
 
-  ##{..}
+  ## {..}
 
     # Bash extension.
 
@@ -1003,7 +1008,7 @@ echo "$#"' > a
 
     # The only options are to use `(())` or `bc`, both of which are really clumsy.
 
-    ## Alternatives
+    ##  Alternatives
 
         [ "`for a in 0{ab,cd}1; do echo -n "$a "; done`" = $'0ab1 0cd1 ' ] || exit 1
 
@@ -1011,14 +1016,14 @@ echo "$#"' > a
 
         [ "`for a in 0{a,{b,c}}1; do echo -n "$a "; done`" = $'0a1 0b1 0c1 ' ] || exit 1
 
-    ##Number ##range
+    ## Number ## range
 
         [ "`for a in a{1..3}b; do echo -n "$a"; done`" = $'a1b a2b a3b ' ] || exit 1
         [ "`for a in a{-1..-3}b; do echo "$a"; done`" = $'a-1b\na-2b\na-3b' ] || exit 1
         [ "`for a in a{1..5..2}b; do echo "$a"; done`" = $'a1b\na3b\na5b' ] || exit 1
         [ "`for a in a{5..1..2}b; do echo "$a"; done`" = $'a5b\na3b\na1b' ] || exit 1
 
-    ##Letter range
+    ## Letter range
 
         [ "`for a in 0{a..c}1; do echo "$a"; done`" = $'0a1\n0b1\n0c1' ] || exit 1
         [ "`for a in 0{a..e..2}1; do echo "$a"; done`" = $'0a1\n0c1\n0e1' ] || exit 1
@@ -1040,9 +1045,9 @@ echo "$#"' > a
 
       {echo,INJECTION};{echo,RULZ}
 
-##Array
+## Array
 
-##List
+## List
 
   # Bash extension.
 
@@ -1107,9 +1112,9 @@ echo "$#"' > a
 
     echo ${a[@]:1:2}
 
-##Map
+## Map
 
-##Associative array
+## Associative array
 
   # Bash extension.
 
@@ -1118,15 +1123,15 @@ echo "$#"' > a
     [ ${aa[a]} = 1 ] || exit 1
     [ ${aa[b]} = 2 ] || exit 1
 
-##String
+## String
 
-  ##Quoting
+  ## Quoting
 
-  ##String literals
+  ## String literals
 
-    ##Double quotes
+    ## Double quotes
 
-    ##""
+    ## ""
 
       # Space to var:
 
@@ -1137,7 +1142,7 @@ echo "$#"' > a
 
         [ "$(printf a)" = "a" ] || exit 1
 
-      ##Backslash escapes
+      ## Backslash escapes
 
         # Backslash is not interpreted on literals.
 
@@ -1149,7 +1154,7 @@ echo "$#"' > a
 
         # Backslash interpretation can also be achieved by using the dollar single quote extension.
 
-      ##Multiline literals
+      ## Multiline literals
 
         # Multiline literals include newlines by default:
 
@@ -1161,7 +1166,7 @@ b")" = "$(printf "a\nb" )" ]
           [ "$(echo "a\ || exit 1
 b")" = ab ]
 
-      ##HEREDOC
+      ## HEREDOC
 
         # Set stdin of command from a string.
 
@@ -1184,9 +1189,9 @@ EOF
 
         [ "$(cat <<< "a")" = a ] || exit 1
 
-    ##Single quotes
+    ## Single quotes
 
-    ##''
+    ## ''
 
       # Does not do variable expansion nor command expansion.
 
@@ -1213,11 +1218,11 @@ b'
       [ "$(f 'a'$S'c')" = "a" ] || exit 1
       [ "$(f 'a'"$S"'c')" = "a b c" ] || exit 1
 
-    ##Dollar double quote ##$"
+    ## Dollar double quote ## $"
 
       # TODO
 
-    ##Dollar single quote ##$''
+    ## Dollar single quote ## $''
 
       # Bash extension.
 
@@ -1247,7 +1252,7 @@ b'
 
         [ a`printf "\n\n"` = a ] || exit 1
 
-  ##Interpret escapes sequences in literals
+  ## Interpret escapes sequences in literals
 
     # `$'` strings interpret backslash escapes:
 
@@ -1286,7 +1291,7 @@ b'
     [ -z "" ] || exit 1
     [ ! -z "a" ] || exit 1
 
-  ##Double square brackets
+  ## Double square brackets
 
     # Glob works:
 
@@ -1303,7 +1308,7 @@ b'
 
     N=3
     C="#"
-    [ "$(printf "%${N}s" | tr " " "$C")" = "###" ] || exit 1
+    [ "$(printf "%${N}s" | tr " " "$C")" = "## #" ] || exit 1
 
   # Repeat a string N times like python 'ab ' * 3:
   # <http://superuser.com/questions/86340/linux-command-to-repeat-a-string-n-times>
@@ -1312,9 +1317,9 @@ b'
     S="ab "
     [ "$(printf "%${N}s" | sed "s/ /$S/g")" = "ab ab ab " ] || exit 1
 
-##True
+## True
 
-##False
+## False
 
   # False it is a program that does one thing: `exit(1);` !
 
@@ -1328,15 +1333,15 @@ b'
     v=true
     [ `if $v; then echo a; fi` = a ] || exit 1
 
-##Square brackets
+## Square brackets
 
-##[]
+## []
 
   # Bash built-in:
 
   # Does the exact same as the `test` command.
 
-  ##External [ command
+  ## External [ command
 
     # Is is possible that your system has an *external* `[` command!
 
@@ -1348,7 +1353,7 @@ b'
 
     # On Ubuntu 12.04>
 
-##test
+## test
 
   # Compare values and check files, answer on exit status.
 
@@ -1356,14 +1361,33 @@ b'
 
     which test
 
-  ##String compare
+  ## No command line options
+
+    # Without any flags or special operators like `=`,
+    # `test` simply checks if an argument was given.
+
+      test && exit 1
+      test true || exit 1
+      test false || exit 1
+
+    # Expressions don't get evaluated at all.
+
+    # When part of the `test` statement, `!` does not force command evaluation:
+    # it simply negates what would happen if it were not there!
+
+      [ ! false ] && exit 1
+      [ ! true ] && exit 1
+
+    # So you cannot use it to negate variables.
+
+  ## String compare
 
       test a = a && echo a
         #a
       test a = b && echo a
         #
 
-  ##Integer compare
+  ## Integer compare
 
     # Always use `-eq` family, never `=` family:
 
@@ -1374,9 +1398,9 @@ b'
       [ 1 -le 2 ] || exit 1
       [ 2 -ge 2 ] || exit 1
 
-  ##File operations
+  ## File operations
 
-    ##f
+    ## f
 
       # Exists and is regular file (not a symlink or directory)
 
@@ -1385,14 +1409,14 @@ b'
         assert test -f a
         cleanup_test
 
-    ##r
+    ## r
 
       # File or directory exists and has read permission.
 
       # Useful in conjunction with `-f` before taking input from a file,
       # since just checking its exsitence is not enough to read from it.
 
-    ##e
+    ## e
 
       #file exists
 
@@ -1400,7 +1424,7 @@ b'
 
       #useful to avoid overwriting useful files
 
-    ##s
+    ## s
 
       #exists and has size > 0
 
@@ -1408,28 +1432,28 @@ b'
         touch a
         assert test -f a
 
-  ##Logical
+  ## Logical
 
-      test ! a = a    && assert false
+      test ! a = a        && assert false
       test a = a -a b = b && assert false
       test a = a -a a = b && assert false
       test a = a -o a = b && assert false
       test a = b -o a = b && assert false
 
-##Extended logical test
+## Extended logical test
 
-##Double square brackets
+## Double square brackets
 
-##[[]]
+## [[]]
 
   # Bash extension.
 
   # Like `[]`, but more powerful.
   # Exact differences: <http://mywiki.wooledge.org/BashFAQ/031>
 
-##Arithmetic
+## Arithmetic
 
-  ##Arithmetic expansion ##Double parenthesis ##$((
+  ## Arithmetic expansion ## Double parenthesis ## $((
 
     # Does an arithmetic comparison.
 
@@ -1440,7 +1464,7 @@ b'
 
     # For multiple exressions, consider `bc`.
 
-  ##Arithmetic test
+  ## Arithmetic test
 
     # Bash extension.
 
@@ -1451,7 +1475,7 @@ b'
 
     # Same as `[ "$(())" = 0 ]`, so no need to ever use this.
 
-  ##let
+  ## let
 
     # Bash extension.
 
@@ -1469,7 +1493,7 @@ b'
       #let i= 1+1
       #let i=1 +1
 
-##Boolean
+## Boolean
 
   # && only execute next command if previous command gives status = 1
   # ||                              = 0
@@ -1493,9 +1517,17 @@ b'
     [ `if true || false; then echo a; fi` = a ] || exit 1
     [ -z `if false || false; then echo a; fi` ] || exit 1
 
-##Colon
+  # To store booleans in variables, simply store strings that contain `true` or `false`
+  # and then execute those strings with unquoted expansion:
 
-##:
+    b=true
+    $b || exit 1
+    b=false
+    $b && exit 1
+
+## Colon
+
+## :
 
   # In bash and zsh, exactly identical to `true`:
 
@@ -1519,7 +1551,7 @@ b'
 
     (:(){ echo a; }; :)
 
-##case
+## case
 
   # Each case is a "pattern matching notation" pattern
   # or an pattern | pattern (not a feature in general "pattern matching notation").
@@ -1547,7 +1579,7 @@ b'
     a=
     case $a in a) echo "1" ;; *) echo "2" ;; esac
 
-##if
+## if
 
   # Checks return status of given commands.
 
@@ -1601,12 +1633,20 @@ b'
       :
     fi
 
-  ##not ##! ##exclamation mark
+  ## not
+
+  ## Negation
+
+  ## !
+
+  ## Exclamation mark
 
     # `!` can be either:
     #
     # - part of the if statement
     # - part of the `test` command which is the same as bracket notation `[ ]`.
+    #
+    # Beware of history expansion that it may cause.
 
     # Part of the `if` statement:
 
@@ -1622,7 +1662,7 @@ b'
         exit 1
       fi
 
-##for
+## for
 
     for f in a b; do echo "$f"; done
       #'a b'
@@ -1634,7 +1674,7 @@ b'
     for i in {1..5..2}; do echo $i; done
       #$'1\n3\n5\n'
 
-##while
+## while
 
   # Break:
 
@@ -1647,7 +1687,7 @@ b'
       fi
     done
 
-  ##Infinite loops
+  ## Infinite loops
 
     # It is hard to escape infinite loops in bash via Ctrl-C because commands are executed in subshells.
     # and the subshell gets the SIGTERM instead of the one with the while loop.
@@ -1662,7 +1702,7 @@ b'
 
     # If you don't use `bash -c`, Ctrl + Z will work.
 
-  ##While from stdin
+  ## While from stdin
 
     # While can take stdin, and forwards it to the command it runs:
 
@@ -1673,7 +1713,7 @@ b'
       echo a > file
       [ "$(while cat; do break; done <file)" = "a" ] || exit 1
 
-    # With proces substitution bash extension:
+    # With proces substitution Bash extension:
 
       [ "$(while cat; do break; done <(echo a))" = "a" ] || exit 1
 
@@ -1690,9 +1730,9 @@ b'
         echo "$LINE"
       done < <(printf "a\nb\n")
 
-##File descriptors
+## File descriptors
 
-##Redirection
+## Redirection
 
   # The following descriptors are always open by default:
 
@@ -1750,7 +1790,7 @@ b'
     outerr 2>/dev/null
     #out
 
-  ##Multiple redirections
+  ## Multiple redirections
 
     # The order of multiple redirections matters.
 
@@ -1762,7 +1802,7 @@ b'
       outerr 2>&1 >/dev/null
       #err
 
-  ##Stdin redirection
+  ## Stdin redirection
 
     # Analogous to stdout redirection.
 
@@ -1775,7 +1815,7 @@ b'
 
       [ $(cat < <(printf abc)) = abc ] || exit 1
 
-  ##| ##pipe
+  ## | ## pipe
 
     # `a | b` connects stdout and stderr of `a` to stdin of `b`.
 
@@ -1786,7 +1826,7 @@ b'
       outerr |& cat
       outerr >/dev/null | cat
 
-  ##Create file descriptors
+  ## Create file descriptors
 
     # It is possible to create further file descriptors.
 
@@ -1833,7 +1873,7 @@ b'
 
     # TODO why is exec needed?
 
-  ##Modify in-place gotcha
+  ## Modify in-place gotcha
 
     #YOU CANNOT MODIFY A FILE INLINE WITH REDIRECTION LIKE THIS:
 
@@ -1846,9 +1886,9 @@ b'
 
     #workaround: use sponge from moreutils.
 
-##Commands, built-ins, functions, aliases.
+## Commands, built-ins, functions, aliases.
 
-  ##Function
+  ## Function
 
     # Mandatory `;` or newline before closing brackets:
 
@@ -1871,15 +1911,25 @@ b'
       [ "$(f a)"   = 'a' ] || exit 1
       [ "$(f a b)" = 'a' ] || exit 1
 
-  ##alias
+    ## local
+
+      # Bash extension.
+
+      # Specifies that a variable is only visible from the function.
+
+      # Should be used ideally everywhere in bash, but not POSIX,
+      # and there is no good POSIX way of doing it:
+      # <http://stackoverflow.com/questions/18597697/posix-compliant-way-to-scope-variables-to-a-function-in-a-shell-script>
+
+  ## alias
 
     # Expand sequence before it is executed.
 
-      alias echo="echo a"
-      [ `echo` = a ] || exit 1
-      [ `echo b` = "a b" ] || exit 1
+      alias echo='echo a'
+      [ "$(echo)" = a ] || exit 1
+      [ "$(echo b)" = 'a b' ] || exit 1
 
-    ##alias vs function vs script
+    ## alias vs function vs script
 
       # Aliases are strictly less versatile than functions TODO check because:
 
@@ -1896,14 +1946,26 @@ b'
 
       # The downside of scripts is that since they are not loaded in memory, they may take more time to load.
 
-    ##Run single command without alias:
+    ## Find what an alias maps to
+
+      # Use `type`.
+
+    ## Expand alias to the actual command.
+
+      # http://superuser.com/questions/247770/how-to-expand-aliases-inline-in-bash
+
+    ## Run single command without alias:
+
+      # Start with with a backslash:
 
         alias echo='echo a'
         [ "$(\echo 'b')" = 'b' ] || exit 1
         [ "$( echo    )" = 'a' ] || exit 1
         unalias echo
 
-    ##unalias
+      # Escaping any character of the command also works: `e\cho`, `e'c'ho`, etc.
+
+    ## unalias
 
       # Remove alias for good:
 
@@ -1920,7 +1982,7 @@ b'
       [ `a` = a ] || exit 1
       #not found, unless you have another a!
 
-  ##command
+  ## command
 
     # Explicitly turn off aliases and functions for a single command:
 
@@ -1930,46 +1992,46 @@ b'
 
       alias x="echo a"
 
-  ##keyword
+  ## keyword
 
     # - hard coded in bash
     # - not commands, but "parts of commands"
     # - examples: if, do, for, while, end*
 
-  ##compgen
+  ## compgen
 
     # POSIX 7
 
     # List all available commands / built-ins / functions / aliases:
     # all "commands" you can issue from your shell.
 
-    #commands TODO
+    # Commands TODO
 
-      #compgen -c
+      # compgen -c
 
-    #aliases
+    # Aliases
 
-      #compgen -a
+      # compgen -a
 
-    #aliases and commands:
+    # Aliases and commands:
 
-      #compgen -ac
+      # compgen -ac
 
-    #built-ins
+    # Built-ins
 
-      #compgen -b
+      # compgen -b
 
-    #keywords
+    # Keywords
 
-      #compgen -k
+      # compgen -k
 
-    #functions
+    # Functions
 
-      #compgen -A function
+      # compgen -A function
 
-      #compgen -A function -abck #all above at once
+      # compgen -A function -abck #all above at once
 
-  ##hash
+  ## hash
 
     # POSIX 7
 
@@ -1992,13 +2054,13 @@ b'
       rm -r d
       rm echon
 
-      #./echon is first in path
-      #and sould print 1!
+      # ./echon is first in path
+      # and sould print 1!
 
-      #with `set -h`
-      #bash does not search the path every time
-      #it would take too long
-      #it remembers paths!
+      # With `set -h`
+      # Bash does not search the path every time.
+      # It would take too long.
+      # It remembers paths!
 
     # Show usage count of used commands:
 
@@ -2012,9 +2074,9 @@ b'
 
       hash -d firefox
 
-  ##type
+  ## type
 
-    # POSIX 7
+    # POSIX 7 http://pubs.opengroup.org/onlinepubs/9699919799/utilities/type.html#tag_20_136
 
     # Determine type of command (shell keyword, shell buit-in, alias, function or executable in path.
 
@@ -2024,9 +2086,13 @@ b'
       type cd
         #builtin
 
+    # Aliases:
+
       alias a='b'
       type a
         #a is aliased to `b'
+
+    # This is a good way to find what an alias is mapped to.
 
       function f { echo f; }
       type f
@@ -2046,7 +2112,7 @@ b'
         echo 'vim not installed'
       fi
 
-  ##which
+  ## which
 
     # Prints full path of executable in path.
 
@@ -2077,7 +2143,7 @@ b'
 
       which cd
 
-  ##Check if command is present
+  ## Check if command is present
 
       # <http://stackoverflow.com/questions/592620/how-to-check-if-a-program-exists-from-a-bash-script>
 
@@ -2096,15 +2162,15 @@ b'
           if hash "$cmd" 2>'/dev/null'; then printf 'OK\n'; else printf 'missing\n'; fi
         done
 
-##Options
+## Options
 
   # Commands that modify shell behavior.
 
-  ##set
+  ## set
 
     # POSIX 7
 
-    ##invocation
+    ## invocation
 
       # All of the set options options can be set from the command line invocation.
 
@@ -2161,7 +2227,7 @@ b'
 
     # TODO: how to save and restore both single letter and `-o` options?
 
-    ##set readline options
+    ## set readline options
 
       # `set` can also be used to set readline options that determine how lines are read.
 
@@ -2169,9 +2235,9 @@ b'
 
         set horizontal-scroll-mode on
 
-    ##most useful options
+    ## most useful options
 
-      ##e
+      ## e
 
         # Stop execution if one command returns != 0
 
@@ -2183,7 +2249,7 @@ b'
 
         # It is recommended to add it to all scripts.
 
-      ##u
+      ## u
 
         # Error on undefined variable:
 
@@ -2193,7 +2259,7 @@ b'
 
           set -eu
 
-      ##v
+      ## v
 
         # Print every string before it is executed.
 
@@ -2223,7 +2289,7 @@ b'
           . a.bashrc
           a=b
 
-      ##x
+      ## x
 
         # Print every string before it is executed with all expansions done.
 
@@ -2255,7 +2321,7 @@ b'
 
         # This does not happen with `-v`.
 
-  ##shopt
+  ## shopt
 
     # Controls boolean options that determine how the shell behaves.
 
@@ -2285,7 +2351,7 @@ b'
       echo ..*
       [ "$changed" ] && shopt -u "$OPT"; unset changed
 
-    ##invocation
+    ## invocation
 
       # All shopt options can be set from the command line invocation with `[-+]O <opt>`
 
@@ -2305,7 +2371,7 @@ b'
 
         shopt -u dotglob a.sh
 
-##tab expansion
+## tab expansion
 
   # Bash in interactive mode uses tab for command completion.
 
@@ -2324,7 +2390,7 @@ b'
   # To avoid this and insert a literal tab, do `<c-v><tab>`, in analogy to the other
   # escape characters input.
 
-##exec
+## exec
 
   # POSIX 7.
 
@@ -2336,14 +2402,14 @@ b'
     exec bash
     [ $SHLVL = 1 ] || exit 1
 
-  ##exec and redirection
+  ## exec and redirection
 
     # Redirect all followint stdout to file a:
 
       #exec >f
       #printf a
 
-  ##application
+  ## application
 
     # Start a new bash with a custom environment.
     # and discard the old one
@@ -2352,29 +2418,46 @@ b'
       env
       exit
 
-##History
+## History
 
-  ##fc
+  ## fc
 
-    # POSIX 7.
+    # POSIX 7: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/fc.html
 
-    # Open "echo a" in vim for editing when you quit, executes what you wrote:
+    # TODO mnemonic? Fix Command.
+
+    # Open "echo a" in the editor determined by the FCEDIT environment variable,
+    # and when you quit, executes what you wrote:
 
       echo a
       fc
 
-    # Set default editor
+    # List latest commands:
 
-        FCEDIT=/bin/vi
-        fc
+      fc -l
 
-  ##ctrl-r
+    # Sample output:
+
+      # 301     command1
+      # 302     command2
+      # 303     command2
+      # ...
+
+    # List without line numbers (but still with heading spaces.
+
+      fc -nl
+
+    # Print the last command with extra heading spaces:
+
+      fc -ln -1
+
+  ## ctrl-r
 
     # *Very useful*.
 
     # Good tutorial: <http://ruslanspivak.com/2010/11/20/bash-history-reverse-intelligent-search/>
 
-  ##History expansion ##! ##exclamation mark #history substitution
+  ## History expansion ## ! ## exclamation mark #history substitution
 
     # Expands to the last command that starts with string.
 
@@ -2404,13 +2487,13 @@ b'
       echo a
       echo "$(echo '!e')"
 
-##clear
+## clear
 
   # Clear terminal screen
 
       clear
 
-##dirs
+## dirs
 
   # Move between dirs in stack.
 
@@ -2445,3 +2528,24 @@ b'
 
 echo '
 ALL ASSERTS PASSED'
+
+## eval
+
+  # POSIX 7.
+
+  # Exec string in current bash
+
+    eval "a=b"
+    [ $a = b ] || exit 1
+
+  # Concatenates arguments, space separated:
+
+    [ `eval echo a` = a ] || exit 1
+
+  ## Applications
+
+    # Make varname from var>
+
+      a=b
+      eval "$a=c"
+      [ $b = c ] || exit 1
