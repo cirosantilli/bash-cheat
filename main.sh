@@ -345,16 +345,26 @@ set -eu
         # `/bin/bash` and `./scrit.sh` respectively.
         # `$0` always gives `./script.sh` for both.
 
+    ## Command line arguments
+
     ## $1
 
-      printf '#!/bin/bash\necho "$1"\necho "$2"\n' > a
-      ./a a b
-      #a
-      #b
+    ## $2
+
+        printf '#!/bin/bash\necho "$1"\necho "$2"\n' > a
+        ./a a b
+        #a
+        #b
+
+      # Cannot be set directly:
+
+        #1='a'
+
+      # but can be set indirectly with `set`.
 
     ## $#
 
-      #number of cli args
+      # Number of CLI args.
 
         echo '#!/bin/bash
 echo "$#"' > a
@@ -363,9 +373,7 @@ echo "$#"' > a
         ./a a b c d
         #4
 
-      #usage
-
-        #safe opt arg getting with shift
+      # Usage: safe opt arg getting with shift:
 
           if [ $# -gt 0 ]; then
             arg1="$1"
@@ -381,7 +389,9 @@ echo "$#"' > a
             #destroy arg 2
           fi
 
-    ## $@ ## $*
+    ## $@
+
+    ## $*
 
       # Both list of all arguments separated by SPACES, but `$@` is magic and quote arguments individually.
 
@@ -389,7 +399,7 @@ echo "$#"' > a
 
       # TODO examples
 
-    #$?
+    ## $?
 
       # Exit status of last program run:
 
@@ -1045,9 +1055,11 @@ echo "$#"' > a
 
       {echo,INJECTION};{echo,RULZ}
 
-## Array
-
 ## List
+
+  # See array.
+
+## Array
 
   # Bash extension.
 
@@ -1105,12 +1117,18 @@ echo "$#"' > a
       # four lines. @ with quotes "" expands similary to "$@"
       # quotes for each element are actually put on the terminal
 
-
   # Range:
 
     echo ${a[@]:1}
 
     echo ${a[@]:1:2}
+
+  ## POSIX alternatives to arrays
+
+    # No perfect alternative, but some partial options:
+
+    # - `set -- a b c`
+    # - `a0=a; a1=b; i=1; eval echo \$a$i`
 
 ## Map
 
@@ -2168,9 +2186,9 @@ b'
 
   ## set
 
-    # POSIX 7
+    # POSIX 7 http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html
 
-    ## invocation
+    ## Invocation
 
       # All of the set options options can be set from the command line invocation.
 
@@ -2196,16 +2214,25 @@ b'
 
       echo $-
 
-    # Sets the -e option:
+    # Set the -e option:
 
       set -e
 
-    # Unsets the -e option:
+    # Unset the -e option:
 
       set +e
 
       man bash
       #/SHELLOPTS
+
+    # Set the command line options `$1` `$2` and `$3`:
+
+      set -- a b c
+      [ "$1" = 'a' ] || exit 1
+      [ "$2" = 'b' ] || exit 1
+      [ "$3" = 'c' ] || exit 1
+
+    # This is a possible POSIX way to emulate Bash arrays.
 
     # The `-+o` option allows to input long names.
 
@@ -2235,7 +2262,7 @@ b'
 
         set horizontal-scroll-mode on
 
-    ## most useful options
+    ## Most useful options
 
       ## e
 
