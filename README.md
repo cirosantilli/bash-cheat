@@ -8,7 +8,7 @@ Bash information, cheatsheets and simple scripts.
 1. [Implementations](implementations.md)
 1. [RC files](rc-files.md)
 1. [Built-ins](built-ins.md)
-1. [CLI](cli.md)
+1. [Invocation](invocation.md)
 1. [Pros and cons](pros-and-cons.md)
 1. [template/full.sh](full.sh): template for simple CLI interfaces
 1. [bin/find-music-make-m3u](bin/find-music-make-m3u)

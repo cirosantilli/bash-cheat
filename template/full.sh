@@ -3,20 +3,21 @@
 set -u # error on undefined variable
 set -e # stop execution if one command goes wrong
 
-usage()
-{
+usage() {
   F="$(basename "$0")"
-  echo "
-
-		$F
+  echo "$F [OPTION]... [FILE]...
 
 One line summary.
 
-#Install on Ubuntu 12.04
+# Options
+
+  -o option o
+
+# Install on Ubuntu 12.04
 
 		sudo aptitude install
 
-#Examples
+# Examples
 
 		$F
 
@@ -81,7 +82,7 @@ while getopts hi:o: OPT; do
   esac
 done
 
-shift `expr $OPTIND - 1`
+shift "$(($OPTIND - 1))"
 
 # Obligatory positional args.
 if [ $# -gt 0 ]; then

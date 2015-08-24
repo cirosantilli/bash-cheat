@@ -1,5 +1,3 @@
-# CLI
-
 # Invocation
 
 CLI invocation can use:

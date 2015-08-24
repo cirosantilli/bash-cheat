@@ -61,13 +61,13 @@ set -eu
 
   # So you can't use newlines at will as you can in C
 
-    function init_test {
+    init_test() {
       wd="`pwd`"
       tmp="`mktemp -d`"
       cd $tmp
     }
 
-    function cleanup_test {
+    cleanup_test() {
       cd "$wd"
       rm -r "$tmp"
     }
@@ -170,11 +170,42 @@ set -eu
 
   ## Parameters are not expand recursivelly
 
+    # Goes for `$`, quotes, etc.
+
       b=c
       a='$b'
       [ "$a" = '$b' ] || exit 1
       a="$b"
       [ "$a" = c ] || exit 1
+
+    # One possibility is to use eval:
+    # http://stackoverflow.com/questions/2005192/how-to-execute-a-bash-command-stored-as-a-string-with-quotes-and-asterisk
+
+  ## Dynamic variable name
+
+  ## Store variable name inside a variable and set it
+
+    # http://stackoverflow.com/questions/16553089/bash-dynamic-variable-names
+
+      a=b
+      # Command not found: b=c
+      #$a=c
+
+    # `eval` workaround
+
+      b=0
+      a=b
+      eval "$a=1"
+      [ "$b" = 1 ] || exit 1
+
+    ## declare
+
+      # bash extension to set properties of variables.
+
+        b=0
+        a=b
+        declare $a=1
+        [ "$b" = 1 ] || exit 1
 
   ## Modifiers in parameter expansion
 
@@ -229,14 +260,30 @@ set -eu
       unset var
       [ -z "${var+a}" ] || exit 1
 
-    # Check if variable is unset or null:
+    ## :+
 
-      var='a'
-      [ -z "${var:+a}" ] && exit 1
-      var=''
-      [ -z "${var:+a}" ] || exit 1
-      unset var
-      [ -z "${var:+a}" ] || exit 1
+      # ${a:+b}: expand to b if a is neither unset nor null. Expand to nothing otherwise:
+
+        x='a'
+        [ "${x:+b}" = 'b' ] || exit 1
+        unset x
+        [ -z "${x:+b}" ] || exit 1
+
+      # Application 1: check if variable is unset or null:
+
+        x='a'
+        [ -z "${x:+a}" ] && exit 1
+        x=''
+        [ -z "${x:+a}" ] || exit 1
+        unset x
+        [ -z "${x:+a}" ] || exit 1
+
+      # Application 1: only add path separator if the prefix is not null:
+
+        pref='a'
+        path="${pref}${pref:+/}b"
+
+      # This allows relative paths
 
     # Important distinction when running with `-u`, where `[ -z "$VAR" ]` would give an error.
     # This often bytes when running scripts that use `PS1` to check if running interactively with `[ -z "$PS1" ]`,
@@ -320,10 +367,11 @@ set -eu
         # so it can also find the path of the sourced script.
 
         # Get the full path of currently executing script:
+        # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 
           DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-        # Force a script to run from current directory no matter where it was called from:
+        # Force script to run from current directory no matter where it was called from:
 
           #cd "$(dirname "${BASH_SOURCE[0]}")"
 
@@ -362,6 +410,22 @@ set -eu
 
       # but can be set indirectly with `set`.
 
+      ## shift
+
+          if [ $# -gt 0 ]; then
+            arg1="$1"
+            # Argument 1
+            shift
+            # Destroy arg 1
+          fi
+
+          if [ $# -gt 0 ]; then
+            arg2="$1"
+            #argument 2
+            shift
+            #destroy arg 2
+          fi
+
     ## $#
 
       # Number of CLI args.
@@ -372,22 +436,6 @@ echo "$#"' > a
         #2
         ./a a b c d
         #4
-
-      # Usage: safe opt arg getting with shift:
-
-          if [ $# -gt 0 ]; then
-            arg1="$1"
-            #argument 1
-            shift
-            #destroy arg 1
-          fi
-
-          if [ $# -gt 0 ]; then
-            arg2="$1"
-            #argument 2
-            shift
-            #destroy arg 2
-          fi
 
     ## $@
 
@@ -579,23 +627,36 @@ echo "$#"' > a
 
 ## Command groups
 
-  # Formal name: command group.
+  # Formal name: command group..
 
-  # Spawn subshell and exec command in it.
+  # What is inside runs inside what Bash and POSIX call a "subshell environment".
 
-  # Change current dir, prints previous dir:
+  # This may or may not generate a `fork` system call, but is distinct from an actual bash subprocess,
+  # e.g. bash -c 'command'.
 
-    cd; pwd
+  # - http://unix.stackexchange.com/questions/138463/do-parentheses-really-put-the-command-in-a-subshell
+  # - http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_12
 
-  # Does not change current dir and prints home dir:
+  # Basically, the command group is a clone of the parent,
+  # but anything done to it like setting variables is not visible from the parent.
 
-    ( cd; pwd )
+  # The only things you can get out of it are exit status and stdout.
 
-  # Equivalent to
+  ## Command group PID
 
-    bash -c 'cd; pwd'
+    # Unchanged.
 
-  # EXCEPT you don't have to do escaping or quoting!
+      [ "$$" = "$( (echo "$$") )" ] || exit 1
+
+  ## Command group and directory
+
+    # Change current dir, prints previous dir:
+
+      cd; pwd
+
+    # Does not change current dir and prints home dir:
+
+      ( cd; pwd )
 
 ## Subshell
 
@@ -694,7 +755,7 @@ echo "$#"' > a
 
       # Functions can only be exported as a bash extension.
 
-        function f { echo a; }
+        f() { echo a; }
         export -f f
         [ "$(bash -c 'f')" = "a" ] || exit 1
 
@@ -714,9 +775,7 @@ echo "$#"' > a
       # `declare` is a bash extension command that sets properties of variables,
       # amongst them exportedness.
 
-    ## declare
-
-      # bash extension to set properties of variables.
+    ## declare +x
 
       # Unexport:
 
@@ -1186,6 +1245,8 @@ b")" = ab ]
 
       ## HEREDOC
 
+      ## EOF
+
         # Set stdin of command from a string.
 
         # Interprets variable expansion and command expansion in its interior like `""` quoted strings.
@@ -1197,15 +1258,17 @@ ANYTHING
 
         # A common values for `ANYTHING` is `EOF` which stands for End Of File.
 
+        # EOS for End Of String also gets some usage.
+
         # This is a great combo to create files with fixed content:
 
-          cat <<EOF >filename
+          cat <<EOF >/tmp/eof
 content
 EOF
 
       # Single line heredoc:
 
-        [ "$(cat <<< "a")" = a ] || exit 1
+        [ "$(cat <<< 'a')" = 'a' ] || exit 1
 
     ## Single quotes
 
@@ -1226,7 +1289,7 @@ b'
 
     # Multiple adjacent quoted strings are joined:
 
-      function f { printf "$1"; }
+    f() { printf "$1"; }
       [ "$(f "a "" b")" = "a  b" ] || exit 1
       [ "$(f 'a '' b')" = "a  b" ] || exit 1
 
@@ -1309,18 +1372,6 @@ b'
     [ -z "" ] || exit 1
     [ ! -z "a" ] || exit 1
 
-  ## Double square brackets
-
-    # Glob works:
-
-      [[ abcd == a*d ]] || exit 1
-      [[ abc == a?c ]] || exit 1
-      [[ abc == a[bB]c ]] || exit 1
-
-    # Cannot quote right:
-
-      [[ abcd != "a*d" ]] || exit 1
-
   # Repeat a character N times like Python 'a' * 3.
   # <http://stackoverflow.com/questions/3211891/shell-script-create-string-of-repeated-characters>
 
@@ -1369,7 +1420,29 @@ b'
 
       #/usr/bin/[
 
-    # On Ubuntu 12.04>
+    # on Ubuntu 12.04.
+
+## Extended logical test
+
+## [[  ]]
+
+## Double square brackets
+
+  # Bash extension.
+
+  # Like `[]`, but more powerful.
+
+  # Exact differences: http://mywiki.wooledge.org/BashFAQ/031
+
+  # Glob works:
+
+    [[ abcd == a*d ]] || exit 1
+    [[ abc == a?c ]] || exit 1
+    [[ abc == a[bB]c ]] || exit 1
+
+  # Cannot quote right:
+
+    [[ abcd != "a*d" ]] || exit 1
 
 ## test
 
@@ -1458,40 +1531,46 @@ b'
       test a = a -o a = b && assert false
       test a = b -o a = b && assert false
 
-## Extended logical test
-
-## Double square brackets
-
-## [[]]
-
-  # Bash extension.
-
-  # Like `[]`, but more powerful.
-  # Exact differences: <http://mywiki.wooledge.org/BashFAQ/031>
-
 ## Arithmetic
 
-  ## Arithmetic expansion ## Double parenthesis ## $((
+  ## Arithmetic expansion
 
-    # Does an arithmetic comparison.
+  ## Double parenthesis
 
-      [ $(( 1+1 )) -eq 2 || exit 1
-      (( 1 + 2 == 3 )) || exit 1
+  ## $((
 
-    # Can only evaluate a single expression.
+    # POSIX, despit the flashy syntax =)
+
+      [ $((1+1)) -eq 2 ] || exit 1
+
+    # Expression syntax: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap01.html#tag_17_01_02_01
+
+    # Can only evaluate a single expression at a time.
+
+    # Variables can be used as:
+
+      x=1
+      x=$((x+1))
+      [ $x -eq 2 ] || exit 1
+
+    # TODO is the `$` inside `$((` mandatory?
+    # POSIX examples use it, but seems to work without on `sh`.
 
     # For multiple exressions, consider `bc`.
 
   ## Arithmetic test
 
-    # Bash extension.
+    # Bash extension, explicitly mentioned as a common extension at:
+    # http://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_09_04
+    #
+    # > shells which implement an extension whereby "((expression))" is evaluated as an arithmetic expression
 
     # Return true iff the arithmetic expression evaluates to non-zero.
 
       ((2 - 3)) || exit 1
       ((2 - 0)) && exit 1
 
-    # Same as `[ "$(())" = 0 ]`, so no need to ever use this.
+    # Same as `[ $(()) -ne 0 ]`, so no need to ever use this.
 
   ## let
 
@@ -1662,7 +1741,7 @@ b'
     # `!` can be either:
     #
     # - part of the if statement
-    # - part of the `test` command which is the same as bracket notation `[ ]`.
+    # - an argument of the `test` command which is the same as bracket notation `[ ]`.
     #
     # Beware of history expansion that it may cause.
 
@@ -1790,7 +1869,7 @@ b'
 
     echo a >>"$f"
 
-    function outerr {
+    outerr() {
       echo 'out'
       echo 'err' 1>&2
     }
@@ -1910,22 +1989,22 @@ b'
 
     # Mandatory `;` or newline before closing brackets:
 
-      function f { echo $1; }
+      f() { echo $1; }
 
-      function f {
+      f() {
         echo $1
       }
 
     # Function actions take effect on calling shell:
 
       x=a
-      function setx { x=b; }
+      setx() { x=b; }
       setx
       [ "$x" = "b" ] || exit 1
 
     # Number of arguments is not fixed.
 
-      function f { echo $1; }
+      f() { echo $1; }
       [ "$(f a)"   = 'a' ] || exit 1
       [ "$(f a b)" = 'a' ] || exit 1
 
@@ -1933,11 +2012,76 @@ b'
 
       # Bash extension.
 
-      # Specifies that a variable is only visible from the function.
+      # Specifies that a variable is only visible from the function, which is false by default.
 
       # Should be used ideally everywhere in bash, but not POSIX,
       # and there is no good POSIX way of doing it:
-      # <http://stackoverflow.com/questions/18597697/posix-compliant-way-to-scope-variables-to-a-function-in-a-shell-script>
+      # http://stackoverflow.com/questions/18597697/posix-compliant-way-to-scope-variables-to-a-function-in-a-shell-script
+
+      # `unset` is a workaround to prevent the annoyance of false command expansion,
+      # although not as DRY and will destroy external variables.
+
+      # Does not exist for functions:
+      # http://stackoverflow.com/questions/8426077/how-to-define-a-function-inside-another-function-in-bash
+
+        unset g
+        f() {
+          g=G
+        }
+
+        # It only gets defined when the call is made.
+        [ -z "$g" ] || exit 1
+
+        f
+        [ "$g" = 'G' ] || exit 1
+
+      ## Function definition with parenthesis ()
+
+    ## Function body in braces {} vs parenthesis ()
+
+      # The function body can be any *compound command*, which includes parenthesis, braces, if else, etc.
+
+      # The semantics are the same for each.
+
+      # http://stackoverflow.com/questions/14651980/defining-bash-function-body-using-parenthesis-instead-of-braces
+      # http://stackoverflow.com/questions/27801932/bash-functions-enclosing-the-body-in-braces-vs-parentheses
+
+        unset x
+        f() {
+          x=0
+        }
+        f
+        [ "$x" = '0' ] || exit 1
+
+      # Actually, there are more compound commands out there:
+
+        unset x
+        f() (
+          x=0
+        )
+        f
+        [ -z "$x" ] || exit 1
+
+      # Parenthesis is a good one, as it creates a subshell and limits scope of things. 
+
+        f() if [ "$1" = 'a' ]; then true; else false; fi
+        f a || exit 1
+        f b && exit 1
+
+    ## function keyword
+
+      # Bash way to define functions.
+
+      # Deprecated, and less powerful since can only take braces.
+
+      # http://stackoverflow.com/questions/4654700/what-are-the-parentheses-used-for-in-a-bash-shell-script-function-definition-lik
+
+        function f {
+          a=0
+        }
+        unset a
+        f
+        [ "$a" = '0' ] || exit 1
 
   ## alias
 
@@ -1953,7 +2097,7 @@ b'
 
       # - cannot take arguments like `$1`, to use them inside the command or multiple times as in:
 
-          function f { echo "$1"; echo "$1"; }
+          f() { echo "$1"; echo "$1"; }
 
       # - cannot be exported to subshells like functions via `export -f` (bash extension to POSIX).
 
@@ -2005,7 +2149,7 @@ b'
     # Explicitly turn off aliases and functions for a single command:
 
       unalias cd
-      function cd { echo f; }
+      cd() { echo f; }
       [ $(command x) = "f" ] || exit 1
 
       alias x="echo a"
@@ -2112,7 +2256,7 @@ b'
 
     # This is a good way to find what an alias is mapped to.
 
-      function f { echo f; }
+      f() { echo f; }
       type f
         #f is a function
         #f ()
@@ -2288,7 +2432,9 @@ b'
 
       ## v
 
-        # Print every string before it is executed.
+        # Print every string read by the shell before it is executed.
+
+        # Everything is printed out, including comments.
 
         # Useful for debugging.
 
@@ -2296,11 +2442,13 @@ b'
 
           a=b
           set -v
+          # comment
           echo $a
           set +v
 
         # Outputs:
 
+          # comment
           #echo $a  #stderr
           #b        #stdout
 
