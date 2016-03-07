@@ -1373,14 +1373,14 @@ b'
     [ ! -z "a" ] || exit 1
 
   # Repeat a character N times like Python 'a' * 3.
-  # <http://stackoverflow.com/questions/3211891/shell-script-create-string-of-repeated-characters>
+  # http://stackoverflow.com/questions/3211891/shell-script-create-string-of-repeated-characters
 
     N=3
     C="#"
     [ "$(printf "%${N}s" | tr " " "$C")" = "## #" ] || exit 1
 
   # Repeat a string N times like python 'ab ' * 3:
-  # <http://superuser.com/questions/86340/linux-command-to-repeat-a-string-n-times>
+  # http://superuser.com/questions/86340/linux-command-to-repeat-a-string-n-times
 
     N=3
     S="ab "

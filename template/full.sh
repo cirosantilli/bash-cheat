@@ -60,6 +60,9 @@ FLAG=false
 IPATH="./"
 OPATH="./"
 
+# CLI options.
+# http://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+
 while getopts hi:o: OPT; do
   case "$OPT" in
     f)
@@ -70,10 +73,10 @@ while getopts hi:o: OPT; do
       exit 0
       ;;
     i)
-      IPATH=$OPTARG
+      IPATH="$OPTARG"
       ;;
     o)
-      OPATH=$OPTARG
+      OPATH="$OPTARG"
       ;;
     \?)
       usage
