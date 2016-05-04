@@ -13,6 +13,7 @@ Other commands which could be implemented as separate binaries, but it may be th
 - `echo`
 - `printf`
 - `test`
+- `time` <http://stackoverflow.com/questions/8870333/shell-time-command-source-code>
 
 POSIX does not specify if commands must be built-ins or separate binaries in path. TODO check
 
