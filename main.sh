@@ -260,6 +260,10 @@ set -eu
       unset var
       [ -z "${var+a}" ] || exit 1
 
+    ## :-
+
+      # ${a:-b}: expand to `$a` if `a` is neither unset nor null, and expand to `b` otherwise.
+
     ## :+
 
       # ${a:+b}: expand to b if a is neither unset nor null. Expand to nothing otherwise:
