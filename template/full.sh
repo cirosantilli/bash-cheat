@@ -63,6 +63,7 @@ OPATH="./"
 # CLI options.
 # http://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 
+OPTIND=1
 while getopts hi:o: OPT; do
   case "$OPT" in
     f)
@@ -84,7 +85,6 @@ while getopts hi:o: OPT; do
       ;;
   esac
 done
-
 shift "$(($OPTIND - 1))"
 
 # Obligatory positional args.

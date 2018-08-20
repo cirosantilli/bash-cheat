@@ -10,6 +10,7 @@ Bash information, cheatsheets and simple scripts.
 1.  [Built-ins](built-ins.md)
 1.  [Invocation](invocation.md)
 1.  [Pros and cons](pros-and-cons.md)
+1.  [getopt](getopt_example.sh)
 1.  Templates
     1.  [template/full.sh](template/full.sh): template for simple CLI interfaces
     1.  [template/parse-args.sh](template/parse-args.sh)
