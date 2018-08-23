@@ -3,6 +3,7 @@ set -eu
 
 # CLI arguments.
 parsed=$(getopt -o dfo:v -l debug,force,output:,verbose -- "$@")
+echo "parsed: ${parsed}"
 eval set -- "$parsed"
 d=n
 f=n
